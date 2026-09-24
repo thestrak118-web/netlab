@@ -174,7 +174,7 @@ def window(app, engine, tmp_path):
     w.timer.stop()
     engine.hosts.apply_context(context())
     w.analysis = engine
-    w.devices_page.engine = w.hosts_page.engine = engine
+    w.devices_page.engine = engine
     w.live_page.set_engine(engine)
     w.connections_page.set_engine(engine)
     w._tick()
@@ -204,11 +204,27 @@ def test_device_navigation_uses_existing_pages(window, action):
 
 
 def test_hosts_open_device_details(window):
-    window._goto('Hosts')
-    assert window.hosts_page.select_device(CLIENT)
-    assert window.hosts_page.detail.ip == CLIENT
-    window.hosts_page.detail.buttons['Connections'].click()
+    # Hosts and Devices are one list now; it opens a host's detail evidence.
+    window._show_page('devices')
+    assert window.devices_page.select_device(CLIENT)
+    assert window.devices_page.detail.ip == CLIENT
+    window.devices_page.detail.buttons['Connections'].click()
     assert window.stack.currentWidget() is window.connections_page
+
+
+def test_double_click_drills_into_selected_device(window):
+    # The host-centric flow: activating a host row opens its Selected Device
+    # tabs (the drill-down), and the back button returns to the host list.
+    window.monitor_page.engine = window.analysis
+    window._show_page('devices')
+    assert window.devices_page.select_device(CLIENT)
+    model = window.devices_page.model
+    device = next(model.object_at(r) for r in range(model.rowCount())
+                  if getattr(model.object_at(r), 'ip', '') == CLIENT)
+    window.devices_page._activated(device)
+    assert window.stack.currentWidget() is window.monitor_page
+    window.monitor_page.back_requested.emit()
+    assert window.stack.currentWidget() is window.devices_page
 
 
 def test_context_lifecycle_rejects_stale_or_offline_results(window):

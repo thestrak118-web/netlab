@@ -41,7 +41,6 @@ from netlab.gui.pages.console import ConsolePage
 from netlab.gui.pages.connections import ConnectionsPage
 from netlab.gui.pages.dashboard import DashboardPage
 from netlab.gui.pages.dnspage import DnsPage
-from netlab.gui.pages.hosts import HostsPage
 from netlab.gui.pages.httppage import HttpPage
 from netlab.gui.pages.interfaces import InterfacesPage
 from netlab.gui.pages.live import LiveTrafficPage
@@ -59,8 +58,7 @@ PAGES = [
     ("Interfaces", "interfaces"),
     ("Live Traffic", "live"),
     ("Connections", "connections"),
-    ("Hosts", "hosts"),
-    ("Devices", "devices"),
+    ("Hostlar", "devices"),
     ("Topology", "topology"),
     ("Selected Device", "monitor"),
     ("DNS", "dns"),
@@ -77,25 +75,21 @@ PAGES = [
     ("Konsol", "console"),
 ]
 
-# The sidebar groups the pages into Intercepter-NG-style modes so the flow
-# reads top to bottom: scan the network, watch the traffic, read what it
-# leaked, then intercept. Each group is (stable_id, display_label, leaves);
-# the id is stable so a collapsed-state setting survives a re-label, and each
-# (label, key) leaf points at a PAGES key.
-# Five modes. Settings and Interfaces live in the menu bar, not a mode tab.
+# Host-centric: three top modes. SKANER lands on the host list; clicking a
+# host drills into its Selected Device tabs (Faollik / DNS / HTTP / TLS /
+# Parollar / Saytlar), so those are not top-level pages. KONSOL is the live
+# read side, INTERCEPTION the active side. Each group is (stable_id, label,
+# leaves); leaves point at PAGES keys. Pages not listed here (Selected Device,
+# DNS/HTTP/TLS, Captures, PCAP, Settings, Interfaces, Dashboard) are reached by
+# drilling in from a host or from the menu, not from a mode tab.
 NAV_GROUPS = [
-    ("scan", "SKANER", [("Dashboard", "dashboard"), ("Hostlar", "hosts"),
-                        ("Qurilmalar", "devices"), ("Topologiya", "topology"),
+    ("scan", "SKANER", [("Hostlar", "devices"), ("Topologiya", "topology"),
                         ("Nmap skan", "nmap")]),
-    ("traffik", "TRAFFIK", [("Jonli traffik", "live"),
-                            ("Ulanishlar", "connections"),
-                            ("Tanlangan qurilma", "monitor"),
-                            ("DNS", "dns"), ("HTTP", "http"), ("TLS", "tls")]),
-    ("passwords", "PAROLLAR", [("Parollar", "creds")]),
-    ("files", "FAYLLAR", [("Tiklash", "files"), ("Yozuvlar", "captures"),
-                          ("PCAP ko'ruvchi", "pcap")]),
-    ("mitm", "MITM", [("Konsol", "console"), ("Interception", "mitm"),
-                      ("Qoidalar", "rules")]),
+    ("konsol", "KONSOL", [("Konsol", "console"), ("Jonli traffik", "live"),
+                          ("Ulanishlar", "connections"),
+                          ("Parollar", "creds")]),
+    ("mitm", "INTERCEPTION", [("Interception", "mitm"), ("Qoidalar", "rules"),
+                              ("Tiklash", "files")]),
 ]
 
 
@@ -153,6 +147,10 @@ class MainWindow(QMainWindow):
         self._active_credentials: list = []
         self._carved_files: list = []
         self._status_next = 0.0
+        # Created before the UI so the initial page's refresh (the host list
+        # now lands first, and it reads timer.interval()) has it available.
+        self.timer = QTimer(self)
+
         self._build_ui()
         self._build_menu()
         self._connect()
@@ -161,7 +159,6 @@ class MainWindow(QMainWindow):
         self._apply_retention_on_start()
         self.refresh_interfaces()
 
-        self.timer = QTimer(self)
         self.timer.timeout.connect(self._tick)
         self.timer.start(min(1000, max(250, int(self.config.get("gui_refresh_ms")))))
 
@@ -306,14 +303,14 @@ class MainWindow(QMainWindow):
         self.interfaces_page = InterfacesPage()
         self.live_page = LiveTrafficPage()
         self.connections_page = ConnectionsPage()
-        self.hosts_page = HostsPage()
-        self.devices_page = DevicesPage()
+        # One host list, labelled "Hostlar" (Hosts and Devices were the same
+        # DevicesPage projection -- the duplicate is gone).
+        self.devices_page = DevicesPage('Hostlar')
         self.topology_page = TopologyPage()
         self.monitor_page = MonitorPage(self.analysis, lambda: self._source_path,
                                         lambda: self.capture.is_running,
                                         creds_provider=self._all_credentials)
         self.devices_page.engine = self.analysis
-        self.hosts_page.engine = self.analysis
         self.dns_page = DnsPage()
         self.http_page = HttpPage()
         self.tls_page = TlsPage()
@@ -327,7 +324,7 @@ class MainWindow(QMainWindow):
         self.settings_page = SettingsPage(self.config)
         self.console_page = ConsolePage()
         for page in (self.dashboard, self.interfaces_page, self.live_page,
-                     self.connections_page, self.hosts_page, self.devices_page, self.topology_page, self.monitor_page, self.dns_page,
+                     self.connections_page, self.devices_page, self.topology_page, self.monitor_page, self.dns_page,
                      self.http_page, self.tls_page, self.creds_page,
                      self.files_page, self.mitm_page, self.rules_page,
                      self.captures_page,
@@ -380,6 +377,13 @@ class MainWindow(QMainWindow):
         act_ifaces = QAction("&Interfeyslar", self)
         act_ifaces.triggered.connect(lambda: self._show_page("interfaces"))
         file_menu.addAction(act_ifaces)
+        # Capture management lives in the menu now, not a mode tab.
+        act_captures = QAction("&Yozuvlar (Captures)", self)
+        act_captures.triggered.connect(lambda: self._show_page("captures"))
+        file_menu.addAction(act_captures)
+        act_pcap = QAction("&PCAP ko'ruvchi", self)
+        act_pcap.triggered.connect(lambda: self._show_page("pcap"))
+        file_menu.addAction(act_pcap)
         file_menu.addSeparator()
 
         act_quit = QAction("&Quit", self)
@@ -421,7 +425,7 @@ class MainWindow(QMainWindow):
         help_menu.addAction(act_about)
 
     def _connect(self) -> None:
-        self._show_page("dashboard")     # opens the first mode and clears the nav guard
+        self._show_page("devices")       # land on the host list, clear the nav guard
         self.refresh_btn.clicked.connect(self.refresh_interfaces)
         self.start_btn.clicked.connect(self.start_capture)
         self.stop_btn.clicked.connect(self.stop_capture)
@@ -466,7 +470,7 @@ class MainWindow(QMainWindow):
         self.discovery.progress.connect(lambda text: self._discovery_status(text, True))
         self.discovery.finished.connect(lambda text: self._discovery_status(text, False))
         self.discovery.failed.connect(lambda text: self._discovery_status('Discovery: ' + text, False))
-        for page in (self.devices_page, self.hosts_page):
+        for page in (self.devices_page,):
             page.detail.navigate.connect(self._device_action)
             page.monitor_requested.connect(self._monitor_device)
             page.intercept_requested.connect(self._send_to_interception)
@@ -474,6 +478,7 @@ class MainWindow(QMainWindow):
             page.discovery_cancelled.connect(self.discovery.cancel)
         self.monitor_page.open_connection.connect(self._show_connection)
         self.monitor_page.indicator_changed.connect(self._monitor_indicator)
+        self.monitor_page.back_requested.connect(lambda: self._show_page("devices"))
         self.topology_page.device_selected.connect(self._open_device)
         self.topology_page.remote_action.connect(self._device_action)
 
@@ -555,7 +560,7 @@ class MainWindow(QMainWindow):
 
     def _show_related_packets(self, filter_text: str) -> None:
         self.live_page.set_filter_text(filter_text)
-        self._goto("Live Traffic")
+        self._show_page("live")
 
     def _show_connection(self, flow) -> None:
         """Jump from a packet to the connection it belongs to."""
@@ -563,7 +568,7 @@ class MainWindow(QMainWindow):
         self.connections_page.set_filter_text(
             "ip:%s ip:%s port:%s" % (flow.client, flow.server,
                                      flow.server_port or ""))
-        self._goto("Connections")
+        self._show_page("connections")
         model = self.connections_page.model
         for row in range(model.rowCount()):
             candidate = model.object_at(row)
@@ -576,7 +581,7 @@ class MainWindow(QMainWindow):
             self.status_source.setText('Remote destination: use View Traffic or View Connections.')
             return
         self.monitor_page.select_device(ip)
-        self._goto('Selected Device')
+        self._show_page('monitor')
 
     def _send_to_interception(self, ips):
         """Intercepter-NG 'add to NAT': scanned host(s) become MiTM targets."""
@@ -586,7 +591,7 @@ class MainWindow(QMainWindow):
         if not ips:
             return
         added = sum(1 for ip in ips if self.mitm_page.add_target(ip))
-        self._goto('Interception')
+        self._show_page('mitm')
         if added:
             self.status_source.setText(
                 '%d host(s) added to the engagement scope.' % added)
@@ -598,12 +603,12 @@ class MainWindow(QMainWindow):
 
     def _toolbar_scan(self):
         """Toolbar Scan: same LAN discovery as the Devices page."""
-        self._goto('Devices')
+        self._show_page('devices')
         self._start_discovery()
 
     def _toolbar_mitm_toggle(self):
         """Toolbar MITM: arm or disarm, always through the engagement gate."""
-        self._goto('Interception')
+        self._show_page('mitm')
         if self._armed:
             self.mitm_page.disarm_requested.emit()
         else:
@@ -649,7 +654,7 @@ class MainWindow(QMainWindow):
             self._device_action('Connections', ip)
             return
         self.devices_page.refresh(self.analysis.device_view()[0])
-        self._goto('Devices')
+        self._show_page('devices')
         self.devices_page.select_device(ip)
 
     def _device_action(self, action, ip):
@@ -663,7 +668,7 @@ class MainWindow(QMainWindow):
             self._show_related_packets(expression)
         elif action == 'PCAP':
             self.pcap_page.set_device_source(self._source_path, tuple(sorted(addresses)), self.analysis.stats())
-            self._goto('PCAP Viewer')
+            self._show_page('pcap')
         else:
             page = {'Connections': self.connections_page, 'DNS': self.dns_page,
                     'HTTP': self.http_page, 'TLS': self.tls_page}[action]
@@ -674,7 +679,7 @@ class MainWindow(QMainWindow):
             page.update_counts(f'{len(relations[action.lower()])} related records retained')
 
     def _discovery_status(self, text, running):
-        for page in (self.devices_page, self.hosts_page):
+        for page in (self.devices_page,):
             page.set_discovery_status(text, running)
 
     def _start_discovery(self):
@@ -700,7 +705,7 @@ class MainWindow(QMainWindow):
         if not self.analysis.hosts.context.interface:
             self.analysis.hosts.apply_context(context)
         self.analysis.hosts.apply_discovery(context, records)
-        for page in (self.devices_page, self.hosts_page):
+        for page in (self.devices_page,):
             page.refresh(self.analysis.device_view()[0])
         self._network_next = 0
 
@@ -881,7 +886,7 @@ class MainWindow(QMainWindow):
             % (name, "  (filter: %s)" % bpf if bpf else "", Path(path).name))
         self.console_page.capture_started(
             name, getattr(self, "_iface_addr", {}).get(name, ""), bpf)
-        self._goto("Live Traffic")
+        self._show_page("live")
 
     def _capture_stopped(self, reason: str) -> None:
         self._reset_capture_controls()
@@ -933,7 +938,7 @@ class MainWindow(QMainWindow):
         self._set_source(Path(path))
         self._mode = "offline"
         self.pcap_page.import_started(path)
-        self._goto("PCAP Viewer")
+        self._show_page("pcap")
         self.importer.start(path)
 
     def _import_finished(self, count: int, path: str) -> None:
@@ -1004,7 +1009,7 @@ class MainWindow(QMainWindow):
         self.topology_page.clear()
         self.monitor_page.reset()
         self.pcap_page.device_ip = None
-        for page in (self.devices_page, self.hosts_page):
+        for page in (self.devices_page,):
             page.detail.clear_detail()
             page.model.clear()
             page.banner.setVisible(False)
@@ -1018,7 +1023,7 @@ class MainWindow(QMainWindow):
         self._captured_pps = 0.0
         self._capture_rate_history.clear()
         self.live_page.clear()
-        for page in (self.connections_page, self.hosts_page, self.dns_page,
+        for page in (self.connections_page, self.dns_page,
                      self.http_page, self.tls_page):
             page.model.clear()
             page.update_counts()
@@ -1116,7 +1121,7 @@ class MainWindow(QMainWindow):
         elif page is self.connections_page:
             self.connections_page.model.replace_items(self.analysis.flows.ordered())
             self.connections_page.update_counts()
-        elif page in (self.hosts_page, self.devices_page):
+        elif page in (self.devices_page,):
             page.refresh(self.analysis.device_view()[0])
             page.set_capture_status(self._mode, self.capture.is_running,
                                     self.iface_combo.currentData() or '',

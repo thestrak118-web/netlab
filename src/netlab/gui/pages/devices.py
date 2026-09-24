@@ -222,8 +222,10 @@ class DevicesPage(TablePage):
         self.intercept_button.setEnabled(False)
         self.intercept_button.clicked.connect(self._send_selected_to_intercept)
         self.add_tool(self.intercept_button)
+        # Single click peeks at the inline detail; double-click (or Enter)
+        # drills into the host's Selected Device tabs -- the host-centric flow.
         self.row_selected.connect(self._selected)
-        self.row_activated.connect(self._selected)
+        self.row_activated.connect(self._activated)
 
     def set_discovery_status(self, text, running=False):
         self.discovery_status.setText(text)
@@ -260,6 +262,13 @@ class DevicesPage(TablePage):
         self.intercept_button.setEnabled(bool(getattr(d, 'ip', '')))
         if self.engine:
             self.detail.show_device(d, self.engine.relations_for_device(d.ip))
+
+    def _activated(self, d):
+        """Double-click / Enter: peek, then open the host's device view."""
+        self._selected(d)
+        ip = getattr(d, 'ip', '')
+        if ip:
+            self.monitor_requested.emit(ip)
 
     def set_capture_status(self, mode, running, interface, stats, interval_ms):
         state = ('● LIVE · ' + interface) if running else 'Offline file' if mode == 'offline' else 'Stopped'

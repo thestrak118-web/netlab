@@ -196,6 +196,12 @@ QPushButton#Danger {{
     background: {RED}; border-color: {RED}; color: #ffffff; font-weight: 600;
 }}
 QPushButton#Danger:hover {{ background: #f36a85; }}
+/* Drill-down back button: quiet, no fill, so it reads as navigation. */
+QPushButton#BackButton {{
+    background: transparent; border: none; color: {MUTED};
+    font-weight: 600; padding: 2px 8px;
+}}
+QPushButton#BackButton:hover {{ color: {ACCENT}; background: transparent; }}
 /* These must come after the #Primary/#Danger rules: an id selector wins over
    the plain QPushButton:disabled rule, so disabled accent buttons would
    otherwise still look clickable. */

@@ -116,6 +116,7 @@ def aggregate_sites(snapshot):
 class MonitorPage(QWidget):
     indicator_changed = Signal(str, str)
     open_connection = Signal(object)
+    back_requested = Signal()
 
     def __init__(self, engine, source_provider, capture_running,
                  creds_provider=None):
@@ -137,6 +138,11 @@ class MonitorPage(QWidget):
         self.revisions = 0
         layout = QVBoxLayout(self)
         header = QHBoxLayout()
+        # Drill-down view: a way back to the host list it was opened from.
+        self.back_button = QPushButton('← Hostlar')
+        self.back_button.setObjectName('BackButton')
+        self.back_button.clicked.connect(self.back_requested.emit)
+        header.addWidget(self.back_button)
         self.icon = QLabel()
         header.addWidget(self.icon)
         self.title = QLabel('Selected Device')
@@ -145,7 +151,7 @@ class MonitorPage(QWidget):
         self.status = QLabel('Stopped')
         header.addWidget(self.status)
         layout.addLayout(header)
-        self.identity = QLabel('Devices → select a device → Monitor')
+        self.identity = QLabel('Hostlar → hostga ikki marta bosing')
         self.identity.setWordWrap(True)
         self.identity.setTextFormat(Qt.TextFormat.PlainText)
         layout.addWidget(self.identity)

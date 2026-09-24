@@ -1,3 +1,21 @@
+netlab (2.17.0) unstable; urgency=medium
+
+  * Host-centric GUI, the Intercepter-NG way. The top bar is now three modes
+    instead of five: SKANER, KONSOL, INTERCEPTION.
+  * The host list is the home screen. Double-click a host (or press Enter) to
+    drill into its Selected Device tabs -- Live Activity, Connections, DNS,
+    HTTP, TLS, Passwords, Saytlar -- with a "← Hostlar" button to come back.
+    Everything about one device is behind that one host, not scattered across
+    six top-level pages.
+  * Hosts and Devices were the same list; they are now one page, "Hostlar".
+  * DNS, HTTP and TLS are no longer top-level pages -- they live inside the
+    per-host view (and the host detail's "View" buttons still filter to them).
+  * SKANER: Hostlar, Topologiya, Nmap. KONSOL: Konsol, Jonli traffik,
+    Ulanishlar, Parollar. INTERCEPTION: Interception, Qoidalar, Tiklash.
+  * Capture management (Yozuvlar) and the PCAP viewer moved to the File menu.
+
+ -- Erwin <thestrak118@gmail.com>  Wed, 24 Sep 2026 20:15:00 +0500
+
 netlab (2.16.0) unstable; urgency=medium
 
   * Reliability pass on the interception path.
