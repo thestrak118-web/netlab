@@ -1,3 +1,18 @@
+netlab (2.18.1) unstable; urgency=medium
+
+  * Truncated capture files are now flagged. Opening a file that was cut off
+    in the middle of a packet record read as far as the last complete packet
+    but reported a clean, complete import; it now reads the same complete
+    packets and says the file is truncated, in the PCAP viewer's integrity
+    section and with a warning banner, the way capinfos does. A live capture
+    still being written is not mistaken for one, since only a file on disk is
+    judged at end of file. (2.17.1 GUI QA, BUG-01.)
+  * The other two findings of that QA -- the Domain column not being
+    filterable, and not being able to return to a selected tab from a
+    drill-down page -- were already fixed in 2.18.0.
+
+ -- Erwin <thestrak118@gmail.com>  Thu, 25 Sep 2026 10:30:00 +0500
+
 netlab (2.18.0) unstable; urgency=medium
 
   * Fixes for the six findings of the 2.17.1 external audit.

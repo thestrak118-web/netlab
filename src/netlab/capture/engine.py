@@ -377,7 +377,7 @@ class FileImporter(QObject):
     """Reads an existing pcap/pcapng file into the analysis queue."""
 
     progress = Signal(int, int)        # bytes read, total bytes
-    finished = Signal(int, str)        # packet count, path
+    finished = Signal(int, str, bool)  # packet count, path, truncated
     failed = Signal(str)
 
     def __init__(self, queue, parent=None) -> None:
@@ -446,4 +446,8 @@ class FileImporter(QObject):
         if parser.fmt is None:
             self.failed.emit("%s is empty or not a capture file." % path.name)
             return
-        self.finished.emit(count, str(path))
+        # Bytes left in the parser at end of file are a record the capture was
+        # cut off in the middle of -- the file is truncated. The complete
+        # packets before the cut were still delivered.
+        truncated = parser.pending_bytes() > 0
+        self.finished.emit(count, str(path), truncated)

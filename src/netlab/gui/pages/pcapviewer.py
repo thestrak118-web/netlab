@@ -163,7 +163,8 @@ class PcapViewerPage(QWidget):
         self.banner.set_text(message, "error")
         self.detail.show_lines([message])
 
-    def import_finished(self, packets: int, path: str, stats) -> None:
+    def import_finished(self, packets: int, path: str, stats,
+                        truncated: bool = False) -> None:
         self._path = Path(path)
         self.progress.setVisible(False)
         self.packets_btn.setEnabled(True)
@@ -182,9 +183,10 @@ class PcapViewerPage(QWidget):
         first = history[0][0] if history else None
 
         self.banner.set_text(
-            "Open: %s   ·   %s packets   ·   %s"
-            % (self._path.name, "{:,}".format(packets), human_bytes(size)),
-            "info")
+            "Open: %s   ·   %s packets   ·   %s%s"
+            % (self._path.name, "{:,}".format(packets), human_bytes(size),
+               "   ·   ⚠ truncated file" if truncated else ""),
+            "warn" if truncated else "info")
 
         lines = [
             str(self._path),
@@ -209,8 +211,17 @@ class PcapViewerPage(QWidget):
             kv("Malformed frames", "{:,}".format(stats.malformed)),
             kv("Undecodable link type", "{:,}".format(stats.unsupported_linktype)),
             kv("Dropped before analysis", "{:,}".format(stats.queue_dropped)),
+            kv("File ends mid-packet", "yes — truncated" if truncated else "no"),
         ]
-        if stats.queue_dropped:
+        if truncated:
+            lines += ["", "This file is truncated: it ends in the middle of a "
+                          "packet record, so the last packet was cut off. The "
+                          "%s complete packets before the cut were read; "
+                          "anything after it is lost. capinfos will report the "
+                          "same. (A live capture still being written looks like "
+                          "this too, but this is a file on disk.)"
+                          % "{:,}".format(packets)]
+        elif stats.queue_dropped:
             lines += ["", "Some packets were dropped before analysis, so the "
                           "tables below the packet count are incomplete. The "
                           "file on disk is unaffected."]

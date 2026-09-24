@@ -963,13 +963,16 @@ class MainWindow(QMainWindow):
         self._show_page("pcap")
         self.importer.start(path)
 
-    def _import_finished(self, count: int, path: str) -> None:
+    def _import_finished(self, count: int, path: str,
+                         truncated: bool = False) -> None:
         # Let the analysis thread finish draining before reporting totals.
-        QTimer.singleShot(400, lambda: self._import_report(count, path))
+        QTimer.singleShot(400,
+                          lambda: self._import_report(count, path, truncated))
 
-    def _import_report(self, count: int, path: str) -> None:
+    def _import_report(self, count: int, path: str,
+                       truncated: bool = False) -> None:
         stats = self.analysis.stats()
-        self.pcap_page.import_finished(count, path, stats)
+        self.pcap_page.import_finished(count, path, stats, truncated)
         self.status_source.setText(
             "Opened %s — %s packets" % (Path(path).name,
                                              "{:,}".format(count)))

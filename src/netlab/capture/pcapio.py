@@ -295,6 +295,26 @@ def iter_capture_file(path: str | Path, chunk: int = 1 << 20) -> Iterator[RawPac
             yield from parser.feed(blob)
 
 
+def read_capture_file(path: str | Path, chunk: int = 1 << 20):
+    """Read a whole file, returning ``(packets, truncated)``.
+
+    ``truncated`` is True when the file ends in the middle of a record: bytes
+    are left over that never completed a block. For a live capture that would
+    just mean "more is coming", but a file on disk has no more coming, so it
+    is a genuinely cut-short capture -- the complete packets before the cut are
+    still returned.
+    """
+    parser = StreamingCaptureParser()
+    packets: list[RawPacket] = []
+    with open(path, "rb") as fh:
+        while True:
+            blob = fh.read(chunk)
+            if not blob:
+                break
+            packets.extend(parser.feed(blob))
+    return packets, parser.pending_bytes() > 0
+
+
 def probe_capture_file(path: str | Path) -> dict:
     """Cheap header probe: format + link type, without reading all packets."""
     parser = StreamingCaptureParser()
