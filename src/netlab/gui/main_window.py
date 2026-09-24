@@ -205,12 +205,14 @@ class MainWindow(QMainWindow):
             if name:
                 self.mode_bar.setTabIcon(idx, QIcon(str(icon_dir / (name + ".svg"))))
         self.mode_bar.currentChanged.connect(self._mode_tab_changed)
+        self.mode_bar.tabBarClicked.connect(self._mode_tab_clicked)
 
         self.page_bar = QTabBar()
         self.page_bar.setObjectName("PageBar")
         self.page_bar.setExpanding(False)
         self.page_bar.setDrawBase(False)
         self.page_bar.currentChanged.connect(self._page_tab_changed)
+        self.page_bar.tabBarClicked.connect(self._page_tab_clicked)
 
         right = QVBoxLayout()
         right.setContentsMargins(0, 0, 0, 0)
@@ -523,6 +525,26 @@ class MainWindow(QMainWindow):
 
     def _page_tab_changed(self, index: int) -> None:
         if self._nav_updating or index < 0:
+            return
+        key = self.page_bar.tabData(index)
+        if key:
+            self._activate_page(key)
+
+    def _mode_tab_clicked(self, index: int) -> None:
+        # tabBarClicked fires even for the already-current tab -- which is how
+        # you return from an ungrouped drill-down (PCAP, Settings, Selected
+        # Device) whose stack switch left this mode selected. currentChanged
+        # would not fire then, so bring this mode's selected page back.
+        if index < 0 or index != self.mode_bar.currentIndex():
+            return
+        key = self.page_bar.tabData(self.page_bar.currentIndex())
+        if key:
+            self._activate_page(key)
+        else:
+            self._rebuild_page_bar(self.mode_bar.tabData(index))
+
+    def _page_tab_clicked(self, index: int) -> None:
+        if index < 0 or index != self.page_bar.currentIndex():
             return
         key = self.page_bar.tabData(index)
         if key:
@@ -1051,8 +1073,12 @@ class MainWindow(QMainWindow):
         In live mode this comes from the capture reader, not from analysis:
         dumpcap keeps writing at full speed even when analysis falls behind,
         so the reader's count is the honest figure for what was captured.
+        `idle` is a stopped live capture -- the reader still holds its final
+        count, so it must keep reporting that, not drop to the (smaller)
+        analysed total once the capture ends. Only a loaded file (`offline`),
+        which has no reader, falls back to the analysed total.
         """
-        if self._mode == "live":
+        if self._mode in ("live", "idle"):
             return max(self.capture.packets_read, stats.total_packets)
         return stats.total_packets
 
@@ -1176,14 +1202,22 @@ class MainWindow(QMainWindow):
         QMessageBox.about(
             self, "About NetLab",
             "<h3>NetLab %s</h3>"
-            "<p>Passive network analysis workbench for Kali Linux.</p>"
-            "<p>Capture is performed by <code>dumpcap</code> (libpcap). "
-            "Packet, flow, DNS, HTTP and TLS analysis is performed by NetLab "
-            "itself on the real captured bytes.</p>"
-            "<p><b>NetLab does not decrypt TLS</b> and implements no active "
-            "interception: no ARP poisoning, DNS spoofing, HTTP injection, "
-            "SSL stripping or credential harvesting. Device discovery and Nmap are the "
-            "explicit active features.</p>" % __version__)
+            "<p>Network analysis and interception workbench for Kali Linux, "
+            "with two halves.</p>"
+            "<p><b>Passive:</b> capture by <code>dumpcap</code> (libpcap), then "
+            "packet, flow, DNS, HTTP and TLS analysis and credential/hash "
+            "extraction performed by NetLab on the real captured bytes. This "
+            "half never transmits.</p>"
+            "<p><b>Active (Interception):</b> ARP poisoning, SSL stripping, "
+            "TLS interception with a local CA, DNS spoofing, rogue DHCP, "
+            "traffic rewriting and NTLM relay. None of it runs without an "
+            "engagement you name and confirm; every address is checked against "
+            "that scope in the privileged helper, and the network is restored "
+            "on disarm.</p>"
+            "<p><b>NetLab does not decrypt a TLS session it is not "
+            "terminating</b>, and SSL MITM announces itself to the victim's "
+            "browser with a certificate warning it does not work around.</p>"
+            % __version__)
 
     # ----------------------------------------------------------------- close
 

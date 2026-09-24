@@ -271,6 +271,17 @@ class MonitorPage(QWidget):
         self.buttons['Export Device Traffic'].setEnabled(bool(self.selected_ip) and not self._export_busy)
         self.indicator_changed.emit(self.selected_ip or '', self.state.value)
 
+    def _snapshot_now(self):
+        """The clock the snapshot judges activity against. Offline (a loaded
+        file, no live capture) it is the capture's own last timestamp, so the
+        Selected Device page agrees with the topology instead of calling every
+        old flow inactive against the wall clock; live it is None (wall clock).
+        """
+        if not self.capture_running() and self.source_provider():
+            return max((h.last_ts for h in self.engine.hosts.snapshot()),
+                       default=None)
+        return None
+
     def refresh(self):
         if self.state != MonitorState.MONITORING or self._busy:
             return
@@ -279,9 +290,11 @@ class MonitorPage(QWidget):
         ip = self.selected_id
         previous = self._last_device
         engine, results = self.engine, self._results
+        now = self._snapshot_now()
         def run():
             try:
-                snapshot = snapshot_for_device(engine, ip, previous=previous)
+                snapshot = snapshot_for_device(engine, ip, now=now,
+                                               previous=previous)
                 results.put(('snapshot', generation, snapshot, ''))
             except Exception as exc:
                 results.put(('snapshot', generation, None, str(exc)))

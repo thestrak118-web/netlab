@@ -188,19 +188,57 @@ class PacketModel(NetLabTableModel):
             or self._peer_domain(r) or 'Unknown'
         return label, direction, domain
 
-    def _peer_domain(self, r):
-        """The site behind the remote IP: the name DNS resolved to it, or the
-        TLS SNI seen for it. This is why a bare ACK still shows its domain."""
+    def _peer_names(self, r):
+        """Every name observed for this row's remote peer, best candidate
+        first. A TLS row prefers the SNI, an HTTP row the Host header, others
+        fall back to DNS -- but a name is only ever a candidate for the peer
+        IP, never proof it belongs to this particular flow."""
         if not self.engine:
-            return ''
+            return []
         local = self.devices_by_address
         peer = r.dst if r.src in local else r.src if r.dst in local else r.dst
         host = self.engine.hosts.get(peer)
-        if host:
-            for names in (host.dns_names, host.sni_names, host.http_names):
-                if names:
-                    return sorted(names)[0]
-        return ''
+        if not host:
+            return []
+        app = (r.app or '').upper()
+        if 'TLS' in app or 'HTTPS' in app or (r.dport == 443 or r.sport == 443):
+            order = (host.sni_names, host.http_names, host.dns_names)
+        elif 'HTTP' in app or (r.dport == 80 or r.sport == 80):
+            order = (host.http_names, host.dns_names, host.sni_names)
+        else:
+            order = (host.dns_names, host.sni_names, host.http_names)
+        names, seen = [], set()
+        for group in order:
+            for n in sorted(group or []):
+                if n and n not in seen:
+                    seen.add(n)
+                    names.append(n)
+        return names
+
+    def _peer_domain(self, r):
+        """Display string for the Domain column. One name is shown plainly;
+        several candidates for the same IP show the first with a `+N` marker,
+        so a shared-hosting / CDN address is not presented as one certain
+        site when the flow itself did not name one."""
+        names = self._peer_names(r)
+        if not names:
+            return ''
+        if len(names) == 1:
+            return names[0]
+        return '%s +%d' % (names[0], len(names) - 1)
+
+    def _row_domains(self, r):
+        """All domain strings that describe this row, for filtering and
+        search: the flow's own service, then every candidate peer name."""
+        out = []
+        if self.engine:
+            flow = self.engine.flow_for_packet(r)
+            if flow and flow.service:
+                out.append(flow.service)
+        for n in self._peer_names(r):
+            if n not in out:
+                out.append(n)
+        return out
 
     def cell(self, r, col):
         if col in (0, 1, 5):
@@ -211,12 +249,19 @@ class PacketModel(NetLabTableModel):
                 9: dash(r.sport), 10: dash(r.dport), 11: r.info}.get(col, 'Unknown')
 
     def fields(self, r):
-        return {"src": r.src, "dst": r.dst, "sport": r.sport, "dport": r.dport,
-                "proto": r.proto, "app": r.app, "info": r.info}
+        f = {"src": r.src, "dst": r.dst, "sport": r.sport, "dport": r.dport,
+             "proto": r.proto, "app": r.app, "info": r.info}
+        # The Domain column is filterable: host:/sni:/service: match any name
+        # shown for the row, so a visible domain is never hidden by its filter.
+        domains = " ".join(self._row_domains(r))
+        if domains:
+            f["host"] = f["sni"] = f["service"] = domains
+        return f
 
     def search_text(self, r):
-        return "%s %s %s %s %s %s" % (r.src or "", r.dst or "", r.sport or "",
-                                      r.dport or "", r.proto, r.info)
+        return "%s %s %s %s %s %s %s" % (
+            r.src or "", r.dst or "", r.sport or "", r.dport or "", r.proto,
+            r.info, " ".join(self._row_domains(r)))
 
     def colour(self, r, col):
         if r.malformed:

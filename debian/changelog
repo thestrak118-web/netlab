@@ -1,3 +1,27 @@
+netlab (2.18.0) unstable; urgency=medium
+
+  * Fixes for the six findings of the 2.17.1 external audit.
+  * The captured-packet counter no longer drops to the analysed total when a
+    live capture is stopped -- a stopped capture keeps reporting what the
+    reader actually captured, and only a loaded file uses the analysed count.
+  * Live Traffic's Domain column is now filterable: host:/sni:/service: match
+    the domain shown for a row, so a visible site is never hidden by its own
+    filter.
+  * A remote IP with several observed names is shown as "name +N", not a
+    single certain site, since none of the names is tied to that flow; the
+    per-flow service is still preferred when known, and every candidate name
+    still matches the filter.
+  * Clicking a mode or page tab that is already selected now navigates to it,
+    so returning from a drill-down page (Selected Device, PCAP viewer,
+    Settings) to the host list works in one click.
+  * Offline, the Selected Device page judges "active" against the capture's
+    own last timestamp, like the topology does, instead of the wall clock, so
+    the two pages agree when reading an old pcap.
+  * The About box now describes both halves -- passive analysis and the active
+    interception modules -- instead of claiming there is no active side.
+
+ -- Erwin <thestrak118@gmail.com>  Thu, 25 Sep 2026 09:30:00 +0500
+
 netlab (2.17.1) unstable; urgency=medium
 
   * Packaging fix: drop the cryptography upper bound. The `< 47` cap added in
