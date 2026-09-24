@@ -1,3 +1,12 @@
+netlab (2.17.1) unstable; urgency=medium
+
+  * Packaging fix: drop the cryptography upper bound. The `< 47` cap added in
+    2.16.0 became a hard `python3-cryptography (<< 47)` dependency that a
+    system already carrying cryptography 47 (current Kali) could not satisfy,
+    so the package would not install. Only lower bounds are declared now.
+
+ -- Erwin <thestrak118@gmail.com>  Wed, 24 Sep 2026 20:45:00 +0500
+
 netlab (2.17.0) unstable; urgency=medium
 
   * Host-centric GUI, the Intercepter-NG way. The top bar is now three modes

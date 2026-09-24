@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "netlab"
-version = "2.17.0"
+version = "2.17.1"
 description = "Network analysis and interception workbench for Kali Linux"
 readme = "README.md"
 requires-python = ">=3.11"
@@ -22,9 +22,10 @@ classifiers = [
     "Topic :: System :: Networking :: Monitoring",
     "Topic :: Security",
 ]
-# Upper bounds guard against a future major that could move an API out from
-# under us; the .deb uses the distro's python3-* packages and ignores these.
-dependencies = ["PySide6>=6.4,<7", "cryptography>=41,<47"]
+# Lower bounds only. An upper cap here becomes a hard `<<` Depends in the .deb
+# that fights the distro's own tested python3-cryptography (Kali already ships
+# 47), so it is left off -- the x509 API NetLab uses is stable across majors.
+dependencies = ["PySide6>=6.4", "cryptography>=41"]
 
 [project.urls]
 Homepage = "https://example.invalid/netlab"
