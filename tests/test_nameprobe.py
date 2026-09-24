@@ -91,5 +91,51 @@ class TestResolveNames(unittest.TestCase):
         self.assertEqual(set(out), {"10.0.0.5"})
 
 
+class TestUpnpAndMdnsParsing(unittest.TestCase):
+    def test_server_product_token(self):
+        self.assertEqual(
+            nameprobe._server_product("Linux/3.4 UPnP/1.0 R8000/1.0"), "R8000")
+        self.assertIsNone(nameprobe._server_product("Linux/3.4 UPnP/1.0"))
+
+    def test_http_header_extraction(self):
+        text = "HTTP/1.1 200 OK\r\nLOCATION: http://10.0.0.1/d.xml\r\nSERVER: x\r\n"
+        self.assertEqual(nameprobe._http_header(text, "LOCATION"),
+                         "http://10.0.0.1/d.xml")
+        self.assertEqual(nameprobe._http_header(text, "MISSING"), "")
+
+    def test_upnp_friendly_name_prefers_friendly_over_model(self):
+        xml = (b"<root><device><friendlyName>Living Room TV</friendlyName>"
+               b"<modelName>QN55</modelName></device></root>")
+
+        class FakeResp:
+            def read(self, n=0):
+                return xml
+
+            def __enter__(self):
+                return self
+
+            def __exit__(self, *a):
+                return False
+
+        with patch("urllib.request.urlopen", return_value=FakeResp()):
+            self.assertEqual(
+                nameprobe.upnp_friendly_name("http://10.0.0.1/d.xml"),
+                "Living Room TV")
+
+    def test_upnp_rejects_non_http(self):
+        self.assertIsNone(nameprobe.upnp_friendly_name("ftp://10.0.0.1/d.xml"))
+
+    def test_mdns_hostname_picks_the_device_label(self):
+        # A literal 'MacBook-Pro' label with service/protocol tokens around it.
+        data = struct.pack(">HHHHHH", 0, 0x8400, 0, 1, 0, 0)
+        data += bytes([11]) + b"MacBook-Pro" + bytes([5]) + b"local" + b"\x00"
+        self.assertEqual(nameprobe._mdns_hostname(data), "MacBook-Pro")
+
+    def test_mdns_hostname_none_when_only_service_tokens(self):
+        data = bytes([9]) + b"_services" + bytes([4]) + b"_tcp" + \
+            bytes([5]) + b"local" + b"\x00"
+        self.assertIsNone(nameprobe._mdns_hostname(data))
+
+
 if __name__ == "__main__":
     unittest.main()

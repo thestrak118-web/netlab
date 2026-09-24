@@ -180,25 +180,25 @@ class DiscoveryRunner(QObject):
         for _src, gateway in context.gateways:
             if gateway and gateway not in macs:
                 ips.append(gateway)
-        if not ips:
-            return 0
-        self.progress.emit('Resolving names for %d known hosts by reverse DNS '
-                           'and NBNS (no elevation needed)…' % len(ips))
+        self.progress.emit('Resolving names by reverse DNS, NBNS, UPnP and '
+                           'mDNS (no elevation needed)…')
         ts = time.time()
         named = [0]
+        seen_named = set()
 
-        def emit(ip, name, source):
+        def emit(ip, name, source, field='Hostname'):
             value = clean(name)
-            if not value:
+            if not value or ip in seen_named or not context.on_link(ip):
                 return
+            seen_named.add(ip)
             mac = macs.get(ip, '')
-            # IP (and MAC) evidence promotes the neighbour to a named device;
-            # Hostname is the name itself.
+            # IP (and MAC) evidence promotes the host to a named device;
+            # Hostname/Friendly name is the name itself.
             evidence = [
                 Evidence('IP', ip,
-                         'Active discovery: on-link neighbour on '
+                         'Active discovery: on-link host on '
                          + context.interface, Confidence.OBSERVED, ts),
-                Evidence('Hostname', value, 'Active discovery: ' + source,
+                Evidence(field, value, 'Active discovery: ' + source,
                          Confidence.OBSERVED, ts)]
             if mac:
                 evidence.append(Evidence('MAC', mac,
@@ -208,7 +208,16 @@ class DiscoveryRunner(QObject):
             self.batch.emit(generation, context,
                             (DiscoveredHost(ip, mac, tuple(evidence), ts),))
 
-        nameprobe.resolve_names(ips, on_name=emit, cancel=self._cancel)
+        # Multicast probes first: one packet names every device advertising
+        # itself (a router by UPnP, an Apple/Chromecast/printer by mDNS),
+        # whether or not it is already in the neighbour table.
+        nameprobe.ssdp_discover(
+            on_name=lambda ip, n, s: emit(ip, n, s, 'Friendly name'),
+            cancel=self._cancel)
+        nameprobe.mdns_discover(on_name=emit, cancel=self._cancel)
+        # Then per-host reverse DNS / NBNS for the neighbour table.
+        if ips:
+            nameprobe.resolve_names(ips, on_name=emit, cancel=self._cancel)
         return named[0]
 
     def _run(self, interface, generation, known_context):

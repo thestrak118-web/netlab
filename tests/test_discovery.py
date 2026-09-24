@@ -190,6 +190,11 @@ def test_native_pass_emits_hostname_evidence_without_nmap(engine, app):
 
     with pytest.MonkeyPatch().context() as mp:
         mp.setattr('netlab.analyze.nameprobe.resolve_names', fake_resolve)
+        # Don't touch the real network for the multicast probes.
+        mp.setattr('netlab.analyze.nameprobe.ssdp_discover',
+                   lambda **kw: {})
+        mp.setattr('netlab.analyze.nameprobe.mdns_discover',
+                   lambda **kw: {})
         named = runner._native_names(c, 0)
 
     assert named == 1

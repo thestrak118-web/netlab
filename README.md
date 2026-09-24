@@ -99,7 +99,7 @@ would never crack.
 ## Install
 
 ```sh
-sudo apt install ./netlab_2.19.0_amd64.deb
+sudo apt install ./netlab_2.20.0_amd64.deb
 ```
 
 Then launch **NetLab** from the Applications menu, or run `netlab`.
@@ -124,6 +124,23 @@ socket — happens there.
 
 When the GUI exits, the pipe closes, and that is the helper's signal to
 restore the network and exit. A crashed GUI cannot leave a subnet poisoned.
+
+### Running the whole thing as root
+
+The unprivileged-plus-`pkexec` model above is the default and the safer one.
+But NetLab also runs directly as root, which some operators prefer — capture
+and interception then need no `pkexec` prompt, and host discovery can ARP-sweep
+without one:
+
+```sh
+sudo -E netlab            # -E keeps your DISPLAY/XAUTHORITY so the GUI opens
+```
+
+Run as root, NetLab still keeps its config, captures and engagements in **your**
+home (via `SUDO_UID`), not root's, and gives the files it creates back to you —
+so a later unprivileged `netlab` sees the same settings and captures. The
+privileged helper is launched directly instead of through `pkexec`, and
+`netlab --check` reports "Running as root — capture is available".
 
 ## Running an engagement
 

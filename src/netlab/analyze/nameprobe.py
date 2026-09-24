@@ -18,9 +18,11 @@ and that is reported honestly rather than invented.
 from __future__ import annotations
 
 import ipaddress
+import re
 import socket
 import struct
 import threading
+import urllib.request
 from concurrent.futures import ThreadPoolExecutor
 
 # A NetBIOS node-status request for the wildcard name "*", first-level encoded.
@@ -128,4 +130,181 @@ def resolve_names(ips, timeout: float = 1.0, workers: int = 24,
     if targets:
         with ThreadPoolExecutor(max_workers=min(workers, len(targets))) as pool:
             list(pool.map(one, targets))
+    return found
+
+
+# --------------------------------------------------------------- SSDP / UPnP
+
+_SSDP_ADDR = ("239.255.255.250", 1900)
+_MSEARCH = (
+    "M-SEARCH * HTTP/1.1\r\n"
+    "HOST: 239.255.255.250:1900\r\n"
+    'MAN: "ssdp:discover"\r\n'
+    "MX: 2\r\n"
+    "ST: ssdp:all\r\n\r\n").encode()
+
+
+def _http_header(text: str, name: str) -> str:
+    m = re.search(r"(?im)^%s:\s*(.+)$" % re.escape(name), text)
+    return m.group(1).strip() if m else ""
+
+
+def upnp_friendly_name(location: str, timeout: float = 2.0) -> str | None:
+    """Fetch a UPnP device description and return its friendlyName/modelName."""
+    if not location.lower().startswith("http://"):
+        return None
+    try:
+        with urllib.request.urlopen(location, timeout=timeout) as resp:
+            xml = resp.read(65536).decode("utf-8", "replace")
+    except Exception:
+        return None
+    for tag in ("friendlyName", "modelName"):
+        m = re.search(r"<%s>(.*?)</%s>" % (tag, tag), xml, re.S)
+        if m:
+            value = re.sub(r"\s+", " ", m.group(1)).strip()
+            if value:
+                return value[:120]
+    return None
+
+
+def ssdp_discover(timeout: float = 3.0, on_name=None,
+                  cancel: threading.Event | None = None,
+                  fetch=upnp_friendly_name) -> dict:
+    """Send an SSDP M-SEARCH and name every device that answers.
+
+    Routers, smart TVs, media players and many IoT devices answer, giving a
+    LOCATION whose description carries a friendly name; when there is none, the
+    SERVER string (its product) is used. Returns ``{ip: (name, "UPnP")}``.
+    """
+    found: dict[str, tuple[str, str]] = {}
+    locations: dict[str, str] = {}
+    servers: dict[str, str] = {}
+    sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+    sock.setsockopt(socket.IPPROTO_IP, socket.IP_MULTICAST_TTL, 2)
+    sock.settimeout(0.5)
+    try:
+        sock.sendto(_MSEARCH, _SSDP_ADDR)
+        sock.sendto(_MSEARCH, _SSDP_ADDR)
+        import time as _t
+        deadline = _t.monotonic() + timeout
+        while _t.monotonic() < deadline:
+            if cancel is not None and cancel.is_set():
+                break
+            try:
+                data, addr = sock.recvfrom(4096)
+            except socket.timeout:
+                continue
+            except OSError:
+                break
+            ip = addr[0]
+            text = data.decode("utf-8", "replace")
+            loc = _http_header(text, "LOCATION")
+            if loc and ip not in locations:
+                locations[ip] = loc
+            srv = _http_header(text, "SERVER")
+            if srv and ip not in servers:
+                servers[ip] = srv
+    finally:
+        sock.close()
+    for ip in locations:
+        if not _routable(ip):
+            continue
+        name = fetch(locations[ip]) if fetch else None
+        if not name:
+            name = _server_product(servers.get(ip, ""))
+        if name:
+            found[ip] = (name, "UPnP")
+            if on_name:
+                on_name(ip, name, "UPnP")
+    return found
+
+
+def _server_product(server: str) -> str | None:
+    """Pick the product token out of an SSDP SERVER string, e.g.
+    'Linux/3.4 UPnP/1.0 R8000/1.0' -> 'R8000'."""
+    for token in reversed(server.split()):
+        head = token.split("/")[0].strip()
+        if head and not head.lower().startswith(("upnp", "linux", "unix",
+                                                 "windows")) and len(head) > 2:
+            return head[:120]
+    return None
+
+
+# ------------------------------------------------------------------- mDNS
+
+_MDNS_ADDR = ("224.0.0.251", 5353)
+_MDNS_QUERIES = ("_services._dns-sd._udp.local", "_device-info._tcp.local",
+                 "_workstation._tcp.local", "_googlecast._tcp.local",
+                 "_airplay._tcp.local", "_ipp._tcp.local")
+
+
+def _encode_dns_name(name: str) -> bytes:
+    out = b""
+    for label in name.split("."):
+        out += bytes([len(label)]) + label.encode()
+    return out + b"\x00"
+
+
+def _mdns_hostname(data: bytes) -> str | None:
+    """Best-effort: the `.local` host label in an mDNS answer. Literal labels
+    only -- enough to read a name off a device's own reply."""
+    labels, i = [], 0
+    while i < len(data) - 1:
+        length = data[i]
+        if 1 <= length <= 63 and i + 1 + length <= len(data):
+            frag = data[i + 1:i + 1 + length]
+            if all(32 <= b < 127 for b in frag):
+                labels.append(frag.decode())
+        i += 1
+    # A device's own name is a single label whose service record ends in .local;
+    # prefer a label that is not a service/protocol token.
+    skip = {"_tcp", "_udp", "local", "_services", "_dns-sd", "_device-info"}
+    for label in labels:
+        if label not in skip and not label.startswith("_") and len(label) > 1:
+            return label[:120]
+    return None
+
+
+def mdns_discover(timeout: float = 3.0, on_name=None,
+                  cancel: threading.Event | None = None) -> dict:
+    """Query mDNS for the common device services and name every responder.
+
+    Returns ``{ip: (name, "mDNS")}``. Apple, Chromecast, printers and Linux
+    hosts with Avahi answer; a device that is not advertising stays unnamed.
+    """
+    found: dict[str, tuple[str, str]] = {}
+    sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+    sock.setsockopt(socket.IPPROTO_IP, socket.IP_MULTICAST_TTL, 2)
+    sock.settimeout(0.5)
+    try:
+        for qname in _MDNS_QUERIES:
+            query = struct.pack(">HHHHHH", 0, 0, 1, 0, 0, 0)
+            query += _encode_dns_name(qname) + struct.pack(">HH", 12, 1)
+            try:
+                sock.sendto(query, _MDNS_ADDR)
+            except OSError:
+                break
+        import time as _t
+        deadline = _t.monotonic() + timeout
+        while _t.monotonic() < deadline:
+            if cancel is not None and cancel.is_set():
+                break
+            try:
+                data, addr = sock.recvfrom(9000)
+            except socket.timeout:
+                continue
+            except OSError:
+                break
+            ip = addr[0]
+            if ip in found or not _routable(ip):
+                continue
+            name = _mdns_hostname(data)
+            if name:
+                found[ip] = (name, "mDNS")
+                if on_name:
+                    on_name(ip, name, "mDNS")
+    finally:
+        sock.close()
     return found

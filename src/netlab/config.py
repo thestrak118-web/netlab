@@ -86,9 +86,46 @@ DEFAULTS: dict[str, Any] = {
 }
 
 
+def real_user() -> tuple[int, int, Path]:
+    """The person running NetLab, as (uid, gid, home).
+
+    Under `sudo netlab` the process is root, but its config, captures and
+    engagements belong to the operator, not to root -- so they must land in the
+    operator's home and be owned by them. This resolves that identity from
+    SUDO_UID/PKEXEC_UID; without them it is just the current user.
+    """
+    if os.geteuid() == 0:
+        for var in ("SUDO_UID", "PKEXEC_UID"):
+            value = os.environ.get(var)
+            if value and value.isdigit():
+                try:
+                    import pwd
+                    info = pwd.getpwuid(int(value))
+                    return info.pw_uid, info.pw_gid, Path(info.pw_dir)
+                except (KeyError, OSError):
+                    pass
+    return os.getuid(), os.getgid(), Path.home()
+
+
+def _own(path: Path) -> None:
+    """Give `path` back to the real user when NetLab created it as root, so a
+    later unprivileged run can still read and write it."""
+    if os.geteuid() != 0:
+        return
+    uid, gid, _home = real_user()
+    if uid == 0:
+        return
+    try:
+        os.chown(path, uid, gid)
+    except OSError:
+        pass
+
+
 def xdg(var: str, fallback: str) -> Path:
     v = os.environ.get(var)
-    return Path(v) if v else Path.home() / fallback
+    if v:
+        return Path(v)
+    return real_user()[2] / fallback
 
 
 def config_dir() -> Path:
@@ -133,12 +170,17 @@ class Config:
 
     def save(self) -> tuple[bool, str]:
         try:
-            config_dir().mkdir(parents=True, exist_ok=True)
+            d = config_dir()
+            existed = d.exists()
+            d.mkdir(parents=True, exist_ok=True)
+            if not existed:
+                _own(d)
             with self._lock:
                 payload = json.dumps(self._data, indent=2, sort_keys=True)
             tmp = config_path().with_suffix(".json.tmp")
             tmp.write_text(payload + "\n", encoding="utf-8")
             tmp.replace(config_path())
+            _own(config_path())
             return True, str(config_path())
         except OSError as exc:
             return False, str(exc)
@@ -165,7 +207,11 @@ class Config:
 
     def ensure_capture_dir(self) -> Path:
         d = self.capture_dir()
+        existed = d.exists()
         d.mkdir(parents=True, exist_ok=True)
+        if not existed:
+            _own(d)
+            _own(d.parent)
         return d
 
 

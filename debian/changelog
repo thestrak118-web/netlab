@@ -1,3 +1,38 @@
+netlab (2.20.0) unstable; urgency=medium
+
+  * Runs as root properly. `sudo -E netlab` now keeps config, captures and
+    engagements in the operator's home (resolved from SUDO_UID), not root's,
+    and gives the files it creates back to the operator, so a later
+    unprivileged run sees the same settings. Capture, the interception helper
+    and host discovery already skip the pkexec prompt when root; this closes
+    the last gap, where they landed in /root. `netlab --check` reports the
+    root state.
+  * Native name resolution now also covers UPnP and mDNS, so a scan has the
+    same name reach as the nmap scripts without nmap or a password prompt: an
+    SSDP M-SEARCH names routers, TVs and media players by their advertised
+    friendly name, and an mDNS query names Apple devices, Chromecasts,
+    printers and Avahi hosts, alongside the reverse DNS and NBNS from 2.19.0.
+  * A device that advertises on none of these -- a MAC-randomised phone, a
+    quiet IoT gadget -- still has no name to show and is left as its vendor,
+    not guessed.
+
+ -- Erwin <thestrak118@gmail.com>  Thu, 25 Sep 2026 12:15:00 +0500
+
+netlab (2.20.0) unstable; urgency=medium
+
+  * Native name resolution now covers UPnP and mDNS too, so discovery has the
+    same name reach as the nmap scripts without nmap or a password prompt:
+    an SSDP M-SEARCH names routers, smart TVs and media players by their
+    advertised friendly name, and an mDNS query names Apple devices,
+    Chromecasts, printers and Avahi hosts. Together with the reverse DNS and
+    NBNS from 2.19.0, one Scan resolves everything on the wire that is
+    resolvable, elevation-free.
+  * A device that advertises on none of these -- a phone with MAC
+    randomisation, most quiet IoT -- still has no name to show, and is left as
+    its vendor rather than guessed.
+
+ -- Erwin <thestrak118@gmail.com>  Thu, 25 Sep 2026 11:45:00 +0500
+
 netlab (2.19.0) unstable; urgency=medium
 
   * Native device-name resolution, no nmap and no root. Discovery now names
