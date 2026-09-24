@@ -152,3 +152,49 @@ def test_context_discovery_retains_neighbor_interface(monkeypatch):
     monkeypatch.setattr('netlab.analyze.devices.subprocess.run',run)
     c=NetworkContext.discover('wlan0')
     assert c.neighbors==(('10.0.0.1','00:22:33:44:55:66'),)
+
+
+def test_native_reverse_dns_name_becomes_the_device_name(engine, app):
+    """A reverse-DNS / NBNS hit from the native pass shows up as the name."""
+    c = configured(engine)
+    ts = 1700000001
+    evidence = (Evidence('IP', '10.0.0.21',
+                         'Active discovery: on-link neighbour on eth0',
+                         Confidence.OBSERVED, ts),
+                Evidence('Hostname', 'living-room-tv',
+                         'Active discovery: reverse DNS',
+                         Confidence.OBSERVED, ts))
+    engine.hosts.apply_discovery(
+        c, (DiscoveredHost('10.0.0.21', '02:11:22:33:44:55', evidence, ts),))
+    d = engine.resolve_device('10.0.0.21', ts + 1)
+    assert d.display_name == 'living-room-tv'
+    assert 'Active discovery: reverse DNS' in \
+        ' '.join(e.source for e in d.evidence)
+
+
+def test_native_pass_emits_hostname_evidence_without_nmap(engine, app):
+    """DiscoveryRunner._native_names names the neighbour table over sockets,
+    emitting Hostname evidence through the batch signal -- no nmap, no root."""
+    from netlab.integrations import discovery as disc
+    c = replace(configured(engine),
+                neighbors=(('10.0.0.21', '02:11:22:33:44:55'),),
+                gateways=(('10.0.0.9', '10.0.0.1'),))
+    runner = disc.DiscoveryRunner()
+    seen = []
+    runner.batch.connect(lambda gen, ctx, recs: seen.extend(recs))
+
+    def fake_resolve(ips, on_name=None, cancel=None, **kw):
+        assert '10.0.0.21' in ips and '10.0.0.1' in ips     # neighbour + gw
+        on_name('10.0.0.21', 'DESKTOP-7', 'NBNS')
+        return {'10.0.0.21': ('DESKTOP-7', 'NBNS')}
+
+    with pytest.MonkeyPatch().context() as mp:
+        mp.setattr('netlab.analyze.nameprobe.resolve_names', fake_resolve)
+        named = runner._native_names(c, 0)
+
+    assert named == 1
+    assert len(seen) == 1
+    rec = seen[0]
+    assert rec.ip == '10.0.0.21'
+    assert any(e.field == 'Hostname' and e.value == 'DESKTOP-7'
+               for e in rec.evidence)

@@ -170,11 +170,62 @@ class DiscoveryRunner(QObject):
             raise RuntimeError(clean(stderr.decode(errors='replace')) or 'Nmap discovery failed')
         return stdout
 
+    def _native_names(self, context, generation):
+        """Unprivileged first pass: name the hosts already in the neighbour
+        table with a plain socket -- reverse DNS, then NBNS -- so a name shows
+        up fast, before (or even without) the elevated nmap scan."""
+        from netlab.analyze import nameprobe
+        macs = {ip: mac for ip, mac in context.neighbors}
+        ips = list(macs)
+        for _src, gateway in context.gateways:
+            if gateway and gateway not in macs:
+                ips.append(gateway)
+        if not ips:
+            return 0
+        self.progress.emit('Resolving names for %d known hosts by reverse DNS '
+                           'and NBNS (no elevation needed)…' % len(ips))
+        ts = time.time()
+        named = [0]
+
+        def emit(ip, name, source):
+            value = clean(name)
+            if not value:
+                return
+            mac = macs.get(ip, '')
+            # IP (and MAC) evidence promotes the neighbour to a named device;
+            # Hostname is the name itself.
+            evidence = [
+                Evidence('IP', ip,
+                         'Active discovery: on-link neighbour on '
+                         + context.interface, Confidence.OBSERVED, ts),
+                Evidence('Hostname', value, 'Active discovery: ' + source,
+                         Confidence.OBSERVED, ts)]
+            if mac:
+                evidence.append(Evidence('MAC', mac,
+                                         'Active discovery: neighbour table',
+                                         Confidence.OBSERVED, ts))
+            named[0] += 1
+            self.batch.emit(generation, context,
+                            (DiscoveredHost(ip, mac, tuple(evidence), ts),))
+
+        nameprobe.resolve_names(ips, on_name=emit, cancel=self._cancel)
+        return named[0]
+
     def _run(self, interface, generation, known_context):
         try:
-            nmap = shutil.which('nmap')
-            if not nmap: raise RuntimeError('Nmap is not installed; active discovery is unavailable')
             context = known_context or NetworkContext.discover(interface)
+            # Names first, natively and without a password prompt.
+            self._native_names(context, generation)
+            if self._cancel.is_set():
+                self.finished.emit('Discovery cancelled.')
+                return
+
+            nmap = shutil.which('nmap')
+            if not nmap:
+                self.finished.emit(
+                    'Native name resolution finished. Install nmap for ARP '
+                    'presence sweeps and UPnP/mDNS name discovery.')
+                return
             targets = discovery_targets(context)
             self.report_dir = Path(tempfile.mkdtemp(prefix='netlab-discovery-'))
             self.progress.emit('Finding local devices on ' + ', '.join(targets) + ' — authentication may be required')

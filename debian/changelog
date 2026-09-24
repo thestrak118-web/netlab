@@ -1,3 +1,17 @@
+netlab (2.19.0) unstable; urgency=medium
+
+  * Native device-name resolution, no nmap and no root. Discovery now names
+    the hosts in the neighbour table over a plain socket before (and even
+    without) the elevated nmap scan: reverse DNS first -- which is how the
+    gateway and other DHCP clients get a name -- then a NetBIOS node-status
+    query for Windows, Samba, NAS boxes and printers. Names show up fast and
+    without a password prompt; the nmap pass still follows for UPnP/mDNS.
+  * Honest about the limit: a device that announces nothing -- a MAC-randomised
+    phone, most IoT -- still resolves to no name rather than a guessed one, and
+    falls back to its vendor (from the MAC) as before.
+
+ -- Erwin <thestrak118@gmail.com>  Thu, 25 Sep 2026 11:15:00 +0500
+
 netlab (2.18.1) unstable; urgency=medium
 
   * Truncated capture files are now flagged. Opening a file that was cut off
