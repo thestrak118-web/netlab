@@ -93,6 +93,29 @@ class TestFragmentedHttpFixture(unittest.TestCase):
         blob = repr(txn)
         self.assertNotIn("should-not-be-stored", blob)
 
+    def test_cookie_and_body_are_not_retained_even_when_harvesting(self):
+        """The fixture's request Cookie, response Set-Cookie and both bodies
+        are all the sentinel "should-not-be-stored". Turning harvesting on must
+        still not keep them: the request Cookie is not a session token and the
+        text/plain body is not a form, so nothing here is a credential."""
+        from netlab.analyze import http as httpmod
+        cfg = Config()
+        cfg.set("harvest_credentials", True)
+        try:
+            engine = AnalysisEngine(DropCountingQueue(50000), cfg)
+            engine.ingest_batch(list(iter_capture_file(FIXTURE)))
+            creds = engine.credentials.snapshot()
+            self.assertEqual(creds, [],
+                             "nothing in this capture is a real credential")
+            txn = engine.http_txns.snapshot()[0]
+            # Presence is still reported...
+            self.assertTrue(txn.req_has_cookie)
+            self.assertTrue(txn.resp_has_set_cookie)
+            # ...but the sentinel value appears nowhere it was harvested to.
+            self.assertNotIn("should-not-be-stored", repr(txn) + repr(creds))
+        finally:
+            httpmod.set_retain_sensitive(False)     # reset the module global
+
     def test_flow_and_host_correlation(self):
         flows = self.engine.flows.ordered()
         self.assertEqual(len(flows), 1)
