@@ -1,0 +1,11 @@
+{
+  "started": 1790015340.4684753,
+  "interface": "nltest0",
+  "clients": {},
+  "errors": [],
+  "capture_running": true,
+  "capture_path": "/home/erwin/loyiha/netlab/validation/gateway-test/netlab-nltest0-20260921-232900.pcapng",
+  "total_packets": 117,
+  "updated": 1790016460.6028728,
+  "hotspot_ended": true
+}

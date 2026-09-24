@@ -1,0 +1,73 @@
+Source: netlab
+Section: net
+Priority: optional
+Maintainer: Erwin <thestrak118@gmail.com>
+Build-Depends:
+ debhelper-compat (= 13),
+ dh-python,
+ python3-all,
+ python3-setuptools,
+ pybuild-plugin-pyproject,
+ python3-pytest <!nocheck>,
+ python3-pyside6.qtwidgets <!nocheck>,
+ python3-pyside6.qtsvg <!nocheck>,
+ python3-cryptography <!nocheck>,
+Standards-Version: 4.7.0
+Rules-Requires-Root: no
+Homepage: https://example.invalid/netlab
+
+Package: netlab
+Architecture: any
+Depends:
+ ${python3:Depends},
+ ${misc:Depends},
+ python3-pyside6.qtcore,
+ python3-pyside6.qtgui,
+ python3-pyside6.qtwidgets,
+ python3-pyside6.qtsvg,
+ python3-cryptography,
+ wireshark-common,
+Recommends:
+ nftables,
+ policykit-1 | polkitd,
+ pkexec,
+ nmap,
+Suggests:
+ wireshark,
+ hashcat,
+ john,
+Description: network analysis and interception workbench with a Qt interface
+ NetLab is a GUI-first network tool for Kali Linux, built around the
+ workflow of Intercepter-NG: capture, decode, extract credentials, and --
+ when an engagement authorises it -- stand in the middle of the path.
+ .
+ It has two halves, and the split is deliberate.
+ .
+ The passive half captures with dumpcap (libpcap) into a real pcap/pcapng
+ file that any other tool can read, then decodes those bytes itself:
+ .
+  * live packet list with decoded detail and hex view
+  * connection correlation with per-direction counters and TCP reassembly
+  * host and device discovery, topology, and per-device monitoring
+  * DNS, mDNS and LLMNR extraction; cleartext HTTP; TLS handshake metadata
+  * credential and hash extraction from FTP, Telnet, POP3, IMAP, SMTP,
+    LDAP, SNMP, MSSQL, MySQL, PostgreSQL, VNC, Kerberos, HTTP Basic and
+    Digest, and NTLMSSP wherever it is carried, in the format hashcat and
+    john expect
+  * capture file management, import, export and BPF capture filters
+ .
+ The active half transmits: full-duplex ARP poisoning, SSL stripping, TLS
+ interception with a locally generated CA, DNS spoofing, a rogue DHCP
+ server, an in-flight traffic changer, cookie expiry, file carving and a
+ promiscuous-host probe.
+ .
+ None of it runs without an engagement: a named, on-disk record of the
+ interface, the gateway and the hosts the operator declared in scope,
+ confirmed in a dialog that states what will be transmitted. Every address
+ is checked against that scope, every action is appended to a JSONL audit
+ log, and ARP tables, packet forwarding and firewall rules are restored on
+ disarm, on exit and on crash.
+ .
+ Privileged work runs in netlab-helper, a small separate process started
+ through pkexec. The GUI itself stays unprivileged, and when it exits the
+ helper restores the network.

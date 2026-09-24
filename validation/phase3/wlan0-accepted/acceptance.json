@@ -1,0 +1,1701 @@
+{
+  "version": "1.2.0",
+  "module": "/usr/lib/python3/dist-packages/netlab/__init__.py",
+  "interface": "wlan0",
+  "platform": "wayland",
+  "started": 1789999693.5968714,
+  "checks": {
+    "live_topology": {
+      "initial_revision": 2,
+      "final_revision": 5,
+      "initial_packets": 7,
+      "final_packets": 189,
+      "node_item_reused": true,
+      "capture_running": true
+    },
+    "Traffic": {
+      "rows": 266,
+      "filter": "device:10.0.0.28"
+    },
+    "Connections": {
+      "rows": 21,
+      "filter": "device:10.0.0.28"
+    },
+    "DNS": {
+      "rows": 18,
+      "filter": "device:10.0.0.28"
+    },
+    "HTTP": {
+      "rows": 1,
+      "filter": "device:10.0.0.28"
+    },
+    "TLS": {
+      "rows": 10,
+      "filter": "device:10.0.0.28"
+    },
+    "packet_to_http_connection": true,
+    "offline_no_system_identity": true
+  },
+  "context": {
+    "interface": "wlan0",
+    "addresses": [
+      [
+        "10.0.0.28",
+        "f4:7b:09:70:46:26",
+        24
+      ],
+      [
+        "fe80::9048:8450:680c:5ef9",
+        "f4:7b:09:70:46:26",
+        64
+      ]
+    ],
+    "gateways": [
+      [
+        "10.0.0.28",
+        "10.0.0.1"
+      ]
+    ],
+    "neighbors": [],
+    "hostname": "nitro-acer",
+    "ts": 1789999694.2206254,
+    "errors": []
+  },
+  "traffic_commands": [
+    {
+      "command": [
+        "dig",
+        "-b",
+        "10.0.0.28",
+        "httpforever.com",
+        "A",
+        "+tries=1",
+        "+time=5"
+      ],
+      "returncode": 0,
+      "stdout": "\n; <<>> DiG 9.20.26-1-Debian <<>> -b 10.0.0.28 httpforever.com A +tries=1 +time=5\n;; global options: +cmd\n;; Got answer:\n;; ->>HEADER<<- opcode: QUERY, status: NOERROR, id: 57866\n;; flags: qr rd ra; QUERY: 1, ANSWER: 2, AUTHORITY: 0, ADDITIONAL: 1\n\n;; OPT PSEUDOSECTION:\n; EDNS: version: 0, flags:; udp: 1232\n; COOKIE: 5a1e6200278cf8e5010000006ab13a4f762f9a7d5dce1572 (good)\n;; QUESTION SECTION:\n;httpforever.com.\t\tIN\tA\n\n;; ANSWER SECTION:\nhttpforever.com.\t158\tIN\tA\t104.21.4.210\nhttpforever.com.\t158\tIN\tA\t172.67.132.115\n\n;; Query time: 32 msec\n;; SERVER: 10.0.0.1#53(10.0.0.1) (UDP)\n;; WHEN: Mon Sep 21 19:08:15 +05 2026\n;; MSG SIZE  rcvd: 104\n\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "curl",
+        "--interface",
+        "wlan0",
+        "--noproxy",
+        "*",
+        "--max-time",
+        "20",
+        "-sS",
+        "-o",
+        "/dev/null",
+        "-w",
+        "%{http_code}",
+        "http://httpforever.com/"
+      ],
+      "returncode": 0,
+      "stdout": "200",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "curl",
+        "--interface",
+        "wlan0",
+        "--noproxy",
+        "*",
+        "--max-time",
+        "20",
+        "-sS",
+        "-o",
+        "/dev/null",
+        "-w",
+        "%{http_code}",
+        "https://www.google.com/"
+      ],
+      "returncode": 0,
+      "stdout": "200",
+      "stderr": ""
+    }
+  ],
+  "live_graph": {
+    "devices": [
+      {
+        "ip": "10.0.0.28",
+        "ipv6": "Unknown",
+        "mac": "f4:7b:09:70:46:26",
+        "hostname": "nitro-acer",
+        "manufacturer": "Intel Corporate",
+        "os": "Linux",
+        "device_type": "This Device",
+        "scope": "Local",
+        "status": "Active",
+        "first_seen": 1789999694.2206254,
+        "last_seen": 1789999696.938019,
+        "packets": 187,
+        "upload": 13810,
+        "download": 98825,
+        "active_connections": 13,
+        "packets_sec": 37.4,
+        "bytes_sec": 22527.0,
+        "dns_names": [
+          "chatgpt.com",
+          "httpforever.com",
+          "www.google.com"
+        ],
+        "evidence": [
+          {
+            "field": "IP",
+            "value": "10.0.0.28",
+            "source": "System interface wlan0",
+            "confidence": "OBSERVED",
+            "ts": 1789999694.2206254
+          },
+          {
+            "field": "Device type",
+            "value": "This Device",
+            "source": "System interface wlan0",
+            "confidence": "CONFIRMED",
+            "ts": 1789999694.2206254
+          },
+          {
+            "field": "OS",
+            "value": "Linux",
+            "source": "Local operating system",
+            "confidence": "CONFIRMED",
+            "ts": 1789999694.2206254
+          },
+          {
+            "field": "MAC",
+            "value": "f4:7b:09:70:46:26",
+            "source": "System interface wlan0",
+            "confidence": "OBSERVED",
+            "ts": 1789999694.2206254
+          },
+          {
+            "field": "Manufacturer",
+            "value": "Intel Corporate",
+            "source": "OUI registry: /usr/share/nmap/nmap-mac-prefixes",
+            "confidence": "OBSERVED",
+            "ts": 1789999696.938019
+          },
+          {
+            "field": "Hostname",
+            "value": "nitro-acer",
+            "source": "Local system hostname",
+            "confidence": "CONFIRMED",
+            "ts": 1789999694.2206254
+          },
+          {
+            "field": "IP",
+            "value": "10.0.0.28",
+            "source": "Captured TCP endpoint",
+            "confidence": "OBSERVED",
+            "ts": 1789999696.938019
+          },
+          {
+            "field": "MAC",
+            "value": "f4:7b:09:70:46:26",
+            "source": "Ethernet frame + on-link routing prefix",
+            "confidence": "OBSERVED",
+            "ts": 1789999696.938019
+          },
+          {
+            "field": "IP",
+            "value": "10.0.0.28",
+            "source": "Captured UDP endpoint",
+            "confidence": "OBSERVED",
+            "ts": 1789999696.1216545
+          }
+        ],
+        "recent": [
+          [
+            1789999694,
+            17,
+            3647
+          ],
+          [
+            1789999695,
+            48,
+            17759
+          ],
+          [
+            1789999696,
+            122,
+            91229
+          ]
+        ]
+      },
+      {
+        "ip": "10.0.0.1",
+        "ipv6": "Unknown",
+        "mac": "08:36:c9:e5:22:d2",
+        "hostname": "Unknown",
+        "manufacturer": "Netgear",
+        "os": "Unknown",
+        "device_type": "Gateway",
+        "scope": "Local",
+        "status": "Active",
+        "first_seen": 1789999694.2206254,
+        "last_seen": 1789999696.423981,
+        "packets": 12,
+        "upload": 1011,
+        "download": 438,
+        "active_connections": 7,
+        "packets_sec": 2.4,
+        "bytes_sec": 289.8,
+        "dns_names": [],
+        "evidence": [
+          {
+            "field": "Device type",
+            "value": "Gateway",
+            "source": "Routing table",
+            "confidence": "CONFIRMED",
+            "ts": 1789999694.2206254
+          },
+          {
+            "field": "IP",
+            "value": "10.0.0.1",
+            "source": "Routing table",
+            "confidence": "CONFIRMED",
+            "ts": 1789999694.2206254
+          },
+          {
+            "field": "IP",
+            "value": "10.0.0.1",
+            "source": "Captured UDP endpoint",
+            "confidence": "OBSERVED",
+            "ts": 1789999696.1216545
+          },
+          {
+            "field": "MAC",
+            "value": "08:36:c9:e5:22:d2",
+            "source": "Ethernet frame + on-link routing prefix",
+            "confidence": "OBSERVED",
+            "ts": 1789999696.1216545
+          },
+          {
+            "field": "Manufacturer",
+            "value": "Netgear",
+            "source": "OUI registry: /usr/share/nmap/nmap-mac-prefixes",
+            "confidence": "OBSERVED",
+            "ts": 1789999696.1216545
+          },
+          {
+            "field": "IP",
+            "value": "10.0.0.1",
+            "source": "Captured ARP endpoint",
+            "confidence": "OBSERVED",
+            "ts": 1789999696.423981
+          }
+        ],
+        "recent": [
+          [
+            1789999694,
+            1,
+            127
+          ],
+          [
+            1789999695,
+            6,
+            632
+          ],
+          [
+            1789999696,
+            5,
+            690
+          ]
+        ]
+      },
+      {
+        "ip": "fe80::9048:8450:680c:5ef9",
+        "ipv6": "fe80::9048:8450:680c:5ef9",
+        "mac": "f4:7b:09:70:46:26",
+        "hostname": "nitro-acer",
+        "manufacturer": "Intel Corporate",
+        "os": "Linux",
+        "device_type": "This Device",
+        "scope": "Local",
+        "status": "System known",
+        "first_seen": 1789999694.2206254,
+        "last_seen": 1789999694.2206254,
+        "packets": 0,
+        "upload": 0,
+        "download": 0,
+        "active_connections": 0,
+        "packets_sec": 0.0,
+        "bytes_sec": 0.0,
+        "dns_names": [],
+        "evidence": [
+          {
+            "field": "IP",
+            "value": "fe80::9048:8450:680c:5ef9",
+            "source": "System interface wlan0",
+            "confidence": "OBSERVED",
+            "ts": 1789999694.2206254
+          },
+          {
+            "field": "Device type",
+            "value": "This Device",
+            "source": "System interface wlan0",
+            "confidence": "CONFIRMED",
+            "ts": 1789999694.2206254
+          },
+          {
+            "field": "OS",
+            "value": "Linux",
+            "source": "Local operating system",
+            "confidence": "CONFIRMED",
+            "ts": 1789999694.2206254
+          },
+          {
+            "field": "MAC",
+            "value": "f4:7b:09:70:46:26",
+            "source": "System interface wlan0",
+            "confidence": "OBSERVED",
+            "ts": 1789999694.2206254
+          },
+          {
+            "field": "Manufacturer",
+            "value": "Intel Corporate",
+            "source": "OUI registry: /usr/share/nmap/nmap-mac-prefixes",
+            "confidence": "OBSERVED",
+            "ts": 1789999694.2206254
+          },
+          {
+            "field": "Hostname",
+            "value": "nitro-acer",
+            "source": "Local system hostname",
+            "confidence": "CONFIRMED",
+            "ts": 1789999694.2206254
+          }
+        ],
+        "recent": []
+      },
+      {
+        "ip": "142.251.157.119",
+        "ipv6": "Unknown",
+        "mac": "Unknown",
+        "hostname": "www.google.com",
+        "manufacturer": "Unknown",
+        "os": "Unknown",
+        "device_type": "Unknown",
+        "scope": "Remote",
+        "status": "Active",
+        "first_seen": 1789999696.1216545,
+        "last_seen": 1789999696.938019,
+        "packets": 86,
+        "upload": 65884,
+        "download": 4961,
+        "active_connections": 1,
+        "packets_sec": 17.2,
+        "bytes_sec": 14169.0,
+        "dns_names": [],
+        "evidence": [
+          {
+            "field": "Hostname",
+            "value": "www.google.com",
+            "source": "DNS answer",
+            "confidence": "OBSERVED",
+            "ts": 1789999696.1216545
+          },
+          {
+            "field": "IP",
+            "value": "142.251.157.119",
+            "source": "Captured TCP endpoint",
+            "confidence": "OBSERVED",
+            "ts": 1789999696.938019
+          },
+          {
+            "field": "TLS SNI",
+            "value": "www.google.com",
+            "source": "TLS ClientHello",
+            "confidence": "OBSERVED",
+            "ts": 1789999696.938005
+          }
+        ],
+        "recent": [
+          [
+            1789999696,
+            86,
+            70845
+          ]
+        ]
+      },
+      {
+        "ip": "104.18.32.47",
+        "ipv6": "Unknown",
+        "mac": "Unknown",
+        "hostname": "Unknown",
+        "manufacturer": "Unknown",
+        "os": "Unknown",
+        "device_type": "Unknown",
+        "scope": "Remote",
+        "status": "Active",
+        "first_seen": 1789999694.4703708,
+        "last_seen": 1789999696.1906874,
+        "packets": 40,
+        "upload": 14110,
+        "download": 5427,
+        "active_connections": 1,
+        "packets_sec": 8.0,
+        "bytes_sec": 3907.4,
+        "dns_names": [],
+        "evidence": [
+          {
+            "field": "IP",
+            "value": "104.18.32.47",
+            "source": "Captured TCP endpoint",
+            "confidence": "OBSERVED",
+            "ts": 1789999696.1906874
+          },
+          {
+            "field": "TLS SNI",
+            "value": "chatgpt.com",
+            "source": "TLS ClientHello",
+            "confidence": "OBSERVED",
+            "ts": 1789999696.120024
+          }
+        ],
+        "recent": [
+          [
+            1789999694,
+            1,
+            74
+          ],
+          [
+            1789999695,
+            30,
+            15955
+          ],
+          [
+            1789999696,
+            9,
+            3508
+          ]
+        ]
+      },
+      {
+        "ip": "172.67.132.115",
+        "ipv6": "Unknown",
+        "mac": "Unknown",
+        "hostname": "httpforever.com",
+        "manufacturer": "Unknown",
+        "os": "Unknown",
+        "device_type": "Unknown",
+        "scope": "Remote",
+        "status": "Active",
+        "first_seen": 1789999695.1997051,
+        "last_seen": 1789999696.1713989,
+        "packets": 28,
+        "upload": 15444,
+        "download": 1209,
+        "active_connections": 0,
+        "packets_sec": 5.6,
+        "bytes_sec": 3330.6,
+        "dns_names": [],
+        "evidence": [
+          {
+            "field": "Hostname",
+            "value": "httpforever.com",
+            "source": "DNS answer",
+            "confidence": "OBSERVED",
+            "ts": 1789999695.2143972
+          },
+          {
+            "field": "IP",
+            "value": "172.67.132.115",
+            "source": "Captured TCP endpoint",
+            "confidence": "OBSERVED",
+            "ts": 1789999696.1713989
+          },
+          {
+            "field": "HTTP Host",
+            "value": "httpforever.com",
+            "source": "HTTP request Host",
+            "confidence": "OBSERVED",
+            "ts": 1789999695.290493
+          }
+        ],
+        "recent": [
+          [
+            1789999695,
+            5,
+            425
+          ],
+          [
+            1789999696,
+            23,
+            16228
+          ]
+        ]
+      },
+      {
+        "ip": "13.69.68.64",
+        "ipv6": "Unknown",
+        "mac": "Unknown",
+        "hostname": "Unknown",
+        "manufacturer": "Unknown",
+        "os": "Unknown",
+        "device_type": "Unknown",
+        "scope": "Remote",
+        "status": "Active",
+        "first_seen": 1789999694.4576895,
+        "last_seen": 1789999694.8477921,
+        "packets": 6,
+        "upload": 1276,
+        "download": 968,
+        "active_connections": 1,
+        "packets_sec": 1.2,
+        "bytes_sec": 448.8,
+        "dns_names": [],
+        "evidence": [
+          {
+            "field": "IP",
+            "value": "13.69.68.64",
+            "source": "Captured TCP endpoint",
+            "confidence": "OBSERVED",
+            "ts": 1789999694.8477921
+          }
+        ],
+        "recent": [
+          [
+            1789999694,
+            6,
+            2244
+          ]
+        ]
+      },
+      {
+        "ip": "149.154.167.41",
+        "ipv6": "Unknown",
+        "mac": "Unknown",
+        "hostname": "Unknown",
+        "manufacturer": "Unknown",
+        "os": "Unknown",
+        "device_type": "Unknown",
+        "scope": "Remote",
+        "status": "Active",
+        "first_seen": 1789999694.5485802,
+        "last_seen": 1789999695.2144437,
+        "packets": 10,
+        "upload": 814,
+        "download": 555,
+        "active_connections": 2,
+        "packets_sec": 2.0,
+        "bytes_sec": 273.8,
+        "dns_names": [],
+        "evidence": [
+          {
+            "field": "IP",
+            "value": "149.154.167.41",
+            "source": "Captured TCP endpoint",
+            "confidence": "OBSERVED",
+            "ts": 1789999695.2144437
+          }
+        ],
+        "recent": [
+          [
+            1789999694,
+            8,
+            1104
+          ],
+          [
+            1789999695,
+            2,
+            265
+          ]
+        ]
+      },
+      {
+        "ip": "94.124.200.1",
+        "ipv6": "Unknown",
+        "mac": "Unknown",
+        "hostname": "Unknown",
+        "manufacturer": "Unknown",
+        "os": "Unknown",
+        "device_type": "Unknown",
+        "scope": "Remote",
+        "status": "Active",
+        "first_seen": 1789999695.1682768,
+        "last_seen": 1789999695.2475724,
+        "packets": 3,
+        "upload": 192,
+        "download": 130,
+        "active_connections": 1,
+        "packets_sec": 0.6,
+        "bytes_sec": 64.4,
+        "dns_names": [],
+        "evidence": [
+          {
+            "field": "IP",
+            "value": "94.124.200.1",
+            "source": "Captured TCP endpoint",
+            "confidence": "OBSERVED",
+            "ts": 1789999695.2475724
+          }
+        ],
+        "recent": [
+          [
+            1789999695,
+            3,
+            322
+          ]
+        ]
+      },
+      {
+        "ip": "160.79.104.10",
+        "ipv6": "Unknown",
+        "mac": "Unknown",
+        "hostname": "Unknown",
+        "manufacturer": "Unknown",
+        "os": "Unknown",
+        "device_type": "Unknown",
+        "scope": "Remote",
+        "status": "Active",
+        "first_seen": 1789999694.3722904,
+        "last_seen": 1789999695.2144163,
+        "packets": 3,
+        "upload": 94,
+        "download": 164,
+        "active_connections": 1,
+        "packets_sec": 0.6,
+        "bytes_sec": 51.6,
+        "dns_names": [],
+        "evidence": [
+          {
+            "field": "IP",
+            "value": "160.79.104.10",
+            "source": "Captured TCP endpoint",
+            "confidence": "OBSERVED",
+            "ts": 1789999695.2144163
+          }
+        ],
+        "recent": [
+          [
+            1789999694,
+            1,
+            98
+          ],
+          [
+            1789999695,
+            2,
+            160
+          ]
+        ]
+      },
+      {
+        "ip": "10.0.0.12",
+        "ipv6": "Unknown",
+        "mac": "4e:01:17:16:3e:ff",
+        "hostname": "Unknown",
+        "manufacturer": "Unknown",
+        "os": "Unknown",
+        "device_type": "Unknown",
+        "scope": "Local",
+        "status": "Active",
+        "first_seen": 1789999696.423981,
+        "last_seen": 1789999696.8185093,
+        "packets": 3,
+        "upload": 84,
+        "download": 42,
+        "active_connections": 2,
+        "packets_sec": 0.6,
+        "bytes_sec": 25.2,
+        "dns_names": [],
+        "evidence": [
+          {
+            "field": "IP",
+            "value": "10.0.0.12",
+            "source": "Captured ARP endpoint",
+            "confidence": "OBSERVED",
+            "ts": 1789999696.8185093
+          },
+          {
+            "field": "MAC",
+            "value": "4e:01:17:16:3e:ff",
+            "source": "ARP address binding",
+            "confidence": "OBSERVED",
+            "ts": 1789999696.8185093
+          }
+        ],
+        "recent": [
+          [
+            1789999696,
+            3,
+            126
+          ]
+        ]
+      },
+      {
+        "ip": "2606:4700:4408::ac40:9bd1",
+        "ipv6": "2606:4700:4408::ac40:9bd1",
+        "mac": "Unknown",
+        "hostname": "chatgpt.com",
+        "manufacturer": "Unknown",
+        "os": "Unknown",
+        "device_type": "Unknown",
+        "scope": "Remote",
+        "status": "Referenced only",
+        "first_seen": 1789999694.4700723,
+        "last_seen": 1789999694.4700723,
+        "packets": 0,
+        "upload": 0,
+        "download": 0,
+        "active_connections": 0,
+        "packets_sec": 0.0,
+        "bytes_sec": 0.0,
+        "dns_names": [],
+        "evidence": [
+          {
+            "field": "Hostname",
+            "value": "chatgpt.com",
+            "source": "DNS answer",
+            "confidence": "OBSERVED",
+            "ts": 1789999694.4700723
+          }
+        ],
+        "recent": []
+      },
+      {
+        "ip": "2a06:98c1:3101::6812:202f",
+        "ipv6": "2a06:98c1:3101::6812:202f",
+        "mac": "Unknown",
+        "hostname": "chatgpt.com",
+        "manufacturer": "Unknown",
+        "os": "Unknown",
+        "device_type": "Unknown",
+        "scope": "Remote",
+        "status": "Referenced only",
+        "first_seen": 1789999694.4700723,
+        "last_seen": 1789999694.4700723,
+        "packets": 0,
+        "upload": 0,
+        "download": 0,
+        "active_connections": 0,
+        "packets_sec": 0.0,
+        "bytes_sec": 0.0,
+        "dns_names": [],
+        "evidence": [
+          {
+            "field": "Hostname",
+            "value": "chatgpt.com",
+            "source": "DNS answer",
+            "confidence": "OBSERVED",
+            "ts": 1789999694.4700723
+          }
+        ],
+        "recent": []
+      },
+      {
+        "ip": "104.21.4.210",
+        "ipv6": "Unknown",
+        "mac": "Unknown",
+        "hostname": "httpforever.com",
+        "manufacturer": "Unknown",
+        "os": "Unknown",
+        "device_type": "Unknown",
+        "scope": "Remote",
+        "status": "Referenced only",
+        "first_seen": 1789999695.1997051,
+        "last_seen": 1789999695.2143972,
+        "packets": 0,
+        "upload": 0,
+        "download": 0,
+        "active_connections": 0,
+        "packets_sec": 0.0,
+        "bytes_sec": 0.0,
+        "dns_names": [],
+        "evidence": [
+          {
+            "field": "Hostname",
+            "value": "httpforever.com",
+            "source": "DNS answer",
+            "confidence": "OBSERVED",
+            "ts": 1789999695.2143972
+          }
+        ],
+        "recent": []
+      },
+      {
+        "ip": "2606:4700:3031::6815:4d2",
+        "ipv6": "2606:4700:3031::6815:4d2",
+        "mac": "Unknown",
+        "hostname": "httpforever.com",
+        "manufacturer": "Unknown",
+        "os": "Unknown",
+        "device_type": "Unknown",
+        "scope": "Remote",
+        "status": "Referenced only",
+        "first_seen": 1789999695.2144387,
+        "last_seen": 1789999695.2144387,
+        "packets": 0,
+        "upload": 0,
+        "download": 0,
+        "active_connections": 0,
+        "packets_sec": 0.0,
+        "bytes_sec": 0.0,
+        "dns_names": [],
+        "evidence": [
+          {
+            "field": "Hostname",
+            "value": "httpforever.com",
+            "source": "DNS answer",
+            "confidence": "OBSERVED",
+            "ts": 1789999695.2144387
+          }
+        ],
+        "recent": []
+      },
+      {
+        "ip": "2606:4700:3036::ac43:8473",
+        "ipv6": "2606:4700:3036::ac43:8473",
+        "mac": "Unknown",
+        "hostname": "httpforever.com",
+        "manufacturer": "Unknown",
+        "os": "Unknown",
+        "device_type": "Unknown",
+        "scope": "Remote",
+        "status": "Referenced only",
+        "first_seen": 1789999695.2144387,
+        "last_seen": 1789999695.2144387,
+        "packets": 0,
+        "upload": 0,
+        "download": 0,
+        "active_connections": 0,
+        "packets_sec": 0.0,
+        "bytes_sec": 0.0,
+        "dns_names": [],
+        "evidence": [
+          {
+            "field": "Hostname",
+            "value": "httpforever.com",
+            "source": "DNS answer",
+            "confidence": "OBSERVED",
+            "ts": 1789999695.2144387
+          }
+        ],
+        "recent": []
+      },
+      {
+        "ip": "2001:4860:4826:7700::",
+        "ipv6": "2001:4860:4826:7700::",
+        "mac": "Unknown",
+        "hostname": "www.google.com",
+        "manufacturer": "Unknown",
+        "os": "Unknown",
+        "device_type": "Unknown",
+        "scope": "Remote",
+        "status": "Referenced only",
+        "first_seen": 1789999696.1216447,
+        "last_seen": 1789999696.1216447,
+        "packets": 0,
+        "upload": 0,
+        "download": 0,
+        "active_connections": 0,
+        "packets_sec": 0.0,
+        "bytes_sec": 0.0,
+        "dns_names": [],
+        "evidence": [
+          {
+            "field": "Hostname",
+            "value": "www.google.com",
+            "source": "DNS answer",
+            "confidence": "OBSERVED",
+            "ts": 1789999696.1216447
+          }
+        ],
+        "recent": []
+      },
+      {
+        "ip": "2001:4860:482c:7700::",
+        "ipv6": "2001:4860:482c:7700::",
+        "mac": "Unknown",
+        "hostname": "www.google.com",
+        "manufacturer": "Unknown",
+        "os": "Unknown",
+        "device_type": "Unknown",
+        "scope": "Remote",
+        "status": "Referenced only",
+        "first_seen": 1789999696.1216447,
+        "last_seen": 1789999696.1216447,
+        "packets": 0,
+        "upload": 0,
+        "download": 0,
+        "active_connections": 0,
+        "packets_sec": 0.0,
+        "bytes_sec": 0.0,
+        "dns_names": [],
+        "evidence": [
+          {
+            "field": "Hostname",
+            "value": "www.google.com",
+            "source": "DNS answer",
+            "confidence": "OBSERVED",
+            "ts": 1789999696.1216447
+          }
+        ],
+        "recent": []
+      },
+      {
+        "ip": "2001:4860:4827:7700::",
+        "ipv6": "2001:4860:4827:7700::",
+        "mac": "Unknown",
+        "hostname": "www.google.com",
+        "manufacturer": "Unknown",
+        "os": "Unknown",
+        "device_type": "Unknown",
+        "scope": "Remote",
+        "status": "Referenced only",
+        "first_seen": 1789999696.1216447,
+        "last_seen": 1789999696.1216447,
+        "packets": 0,
+        "upload": 0,
+        "download": 0,
+        "active_connections": 0,
+        "packets_sec": 0.0,
+        "bytes_sec": 0.0,
+        "dns_names": [],
+        "evidence": [
+          {
+            "field": "Hostname",
+            "value": "www.google.com",
+            "source": "DNS answer",
+            "confidence": "OBSERVED",
+            "ts": 1789999696.1216447
+          }
+        ],
+        "recent": []
+      },
+      {
+        "ip": "2001:4860:482b:7700::",
+        "ipv6": "2001:4860:482b:7700::",
+        "mac": "Unknown",
+        "hostname": "www.google.com",
+        "manufacturer": "Unknown",
+        "os": "Unknown",
+        "device_type": "Unknown",
+        "scope": "Remote",
+        "status": "Referenced only",
+        "first_seen": 1789999696.1216447,
+        "last_seen": 1789999696.1216447,
+        "packets": 0,
+        "upload": 0,
+        "download": 0,
+        "active_connections": 0,
+        "packets_sec": 0.0,
+        "bytes_sec": 0.0,
+        "dns_names": [],
+        "evidence": [
+          {
+            "field": "Hostname",
+            "value": "www.google.com",
+            "source": "DNS answer",
+            "confidence": "OBSERVED",
+            "ts": 1789999696.1216447
+          }
+        ],
+        "recent": []
+      },
+      {
+        "ip": "2001:4860:482a:7700::",
+        "ipv6": "2001:4860:482a:7700::",
+        "mac": "Unknown",
+        "hostname": "www.google.com",
+        "manufacturer": "Unknown",
+        "os": "Unknown",
+        "device_type": "Unknown",
+        "scope": "Remote",
+        "status": "Referenced only",
+        "first_seen": 1789999696.1216447,
+        "last_seen": 1789999696.1216447,
+        "packets": 0,
+        "upload": 0,
+        "download": 0,
+        "active_connections": 0,
+        "packets_sec": 0.0,
+        "bytes_sec": 0.0,
+        "dns_names": [],
+        "evidence": [
+          {
+            "field": "Hostname",
+            "value": "www.google.com",
+            "source": "DNS answer",
+            "confidence": "OBSERVED",
+            "ts": 1789999696.1216447
+          }
+        ],
+        "recent": []
+      },
+      {
+        "ip": "2001:4860:4828:7700::",
+        "ipv6": "2001:4860:4828:7700::",
+        "mac": "Unknown",
+        "hostname": "www.google.com",
+        "manufacturer": "Unknown",
+        "os": "Unknown",
+        "device_type": "Unknown",
+        "scope": "Remote",
+        "status": "Referenced only",
+        "first_seen": 1789999696.1216447,
+        "last_seen": 1789999696.1216447,
+        "packets": 0,
+        "upload": 0,
+        "download": 0,
+        "active_connections": 0,
+        "packets_sec": 0.0,
+        "bytes_sec": 0.0,
+        "dns_names": [],
+        "evidence": [
+          {
+            "field": "Hostname",
+            "value": "www.google.com",
+            "source": "DNS answer",
+            "confidence": "OBSERVED",
+            "ts": 1789999696.1216447
+          }
+        ],
+        "recent": []
+      },
+      {
+        "ip": "2001:4860:4829:7700::",
+        "ipv6": "2001:4860:4829:7700::",
+        "mac": "Unknown",
+        "hostname": "www.google.com",
+        "manufacturer": "Unknown",
+        "os": "Unknown",
+        "device_type": "Unknown",
+        "scope": "Remote",
+        "status": "Referenced only",
+        "first_seen": 1789999696.1216447,
+        "last_seen": 1789999696.1216447,
+        "packets": 0,
+        "upload": 0,
+        "download": 0,
+        "active_connections": 0,
+        "packets_sec": 0.0,
+        "bytes_sec": 0.0,
+        "dns_names": [],
+        "evidence": [
+          {
+            "field": "Hostname",
+            "value": "www.google.com",
+            "source": "DNS answer",
+            "confidence": "OBSERVED",
+            "ts": 1789999696.1216447
+          }
+        ],
+        "recent": []
+      },
+      {
+        "ip": "2001:4860:482d:7700::",
+        "ipv6": "2001:4860:482d:7700::",
+        "mac": "Unknown",
+        "hostname": "www.google.com",
+        "manufacturer": "Unknown",
+        "os": "Unknown",
+        "device_type": "Unknown",
+        "scope": "Remote",
+        "status": "Referenced only",
+        "first_seen": 1789999696.1216447,
+        "last_seen": 1789999696.1216447,
+        "packets": 0,
+        "upload": 0,
+        "download": 0,
+        "active_connections": 0,
+        "packets_sec": 0.0,
+        "bytes_sec": 0.0,
+        "dns_names": [],
+        "evidence": [
+          {
+            "field": "Hostname",
+            "value": "www.google.com",
+            "source": "DNS answer",
+            "confidence": "OBSERVED",
+            "ts": 1789999696.1216447
+          }
+        ],
+        "recent": []
+      },
+      {
+        "ip": "142.251.151.119",
+        "ipv6": "Unknown",
+        "mac": "Unknown",
+        "hostname": "www.google.com",
+        "manufacturer": "Unknown",
+        "os": "Unknown",
+        "device_type": "Unknown",
+        "scope": "Remote",
+        "status": "Referenced only",
+        "first_seen": 1789999696.1216545,
+        "last_seen": 1789999696.1216545,
+        "packets": 0,
+        "upload": 0,
+        "download": 0,
+        "active_connections": 0,
+        "packets_sec": 0.0,
+        "bytes_sec": 0.0,
+        "dns_names": [],
+        "evidence": [
+          {
+            "field": "Hostname",
+            "value": "www.google.com",
+            "source": "DNS answer",
+            "confidence": "OBSERVED",
+            "ts": 1789999696.1216545
+          }
+        ],
+        "recent": []
+      },
+      {
+        "ip": "142.251.153.119",
+        "ipv6": "Unknown",
+        "mac": "Unknown",
+        "hostname": "www.google.com",
+        "manufacturer": "Unknown",
+        "os": "Unknown",
+        "device_type": "Unknown",
+        "scope": "Remote",
+        "status": "Referenced only",
+        "first_seen": 1789999696.1216545,
+        "last_seen": 1789999696.1216545,
+        "packets": 0,
+        "upload": 0,
+        "download": 0,
+        "active_connections": 0,
+        "packets_sec": 0.0,
+        "bytes_sec": 0.0,
+        "dns_names": [],
+        "evidence": [
+          {
+            "field": "Hostname",
+            "value": "www.google.com",
+            "source": "DNS answer",
+            "confidence": "OBSERVED",
+            "ts": 1789999696.1216545
+          }
+        ],
+        "recent": []
+      },
+      {
+        "ip": "142.251.150.119",
+        "ipv6": "Unknown",
+        "mac": "Unknown",
+        "hostname": "www.google.com",
+        "manufacturer": "Unknown",
+        "os": "Unknown",
+        "device_type": "Unknown",
+        "scope": "Remote",
+        "status": "Referenced only",
+        "first_seen": 1789999696.1216545,
+        "last_seen": 1789999696.1216545,
+        "packets": 0,
+        "upload": 0,
+        "download": 0,
+        "active_connections": 0,
+        "packets_sec": 0.0,
+        "bytes_sec": 0.0,
+        "dns_names": [],
+        "evidence": [
+          {
+            "field": "Hostname",
+            "value": "www.google.com",
+            "source": "DNS answer",
+            "confidence": "OBSERVED",
+            "ts": 1789999696.1216545
+          }
+        ],
+        "recent": []
+      },
+      {
+        "ip": "142.251.152.119",
+        "ipv6": "Unknown",
+        "mac": "Unknown",
+        "hostname": "www.google.com",
+        "manufacturer": "Unknown",
+        "os": "Unknown",
+        "device_type": "Unknown",
+        "scope": "Remote",
+        "status": "Referenced only",
+        "first_seen": 1789999696.1216545,
+        "last_seen": 1789999696.1216545,
+        "packets": 0,
+        "upload": 0,
+        "download": 0,
+        "active_connections": 0,
+        "packets_sec": 0.0,
+        "bytes_sec": 0.0,
+        "dns_names": [],
+        "evidence": [
+          {
+            "field": "Hostname",
+            "value": "www.google.com",
+            "source": "DNS answer",
+            "confidence": "OBSERVED",
+            "ts": 1789999696.1216545
+          }
+        ],
+        "recent": []
+      },
+      {
+        "ip": "142.251.156.119",
+        "ipv6": "Unknown",
+        "mac": "Unknown",
+        "hostname": "www.google.com",
+        "manufacturer": "Unknown",
+        "os": "Unknown",
+        "device_type": "Unknown",
+        "scope": "Remote",
+        "status": "Referenced only",
+        "first_seen": 1789999696.1216545,
+        "last_seen": 1789999696.1216545,
+        "packets": 0,
+        "upload": 0,
+        "download": 0,
+        "active_connections": 0,
+        "packets_sec": 0.0,
+        "bytes_sec": 0.0,
+        "dns_names": [],
+        "evidence": [
+          {
+            "field": "Hostname",
+            "value": "www.google.com",
+            "source": "DNS answer",
+            "confidence": "OBSERVED",
+            "ts": 1789999696.1216545
+          }
+        ],
+        "recent": []
+      },
+      {
+        "ip": "142.251.154.119",
+        "ipv6": "Unknown",
+        "mac": "Unknown",
+        "hostname": "www.google.com",
+        "manufacturer": "Unknown",
+        "os": "Unknown",
+        "device_type": "Unknown",
+        "scope": "Remote",
+        "status": "Referenced only",
+        "first_seen": 1789999696.1216545,
+        "last_seen": 1789999696.1216545,
+        "packets": 0,
+        "upload": 0,
+        "download": 0,
+        "active_connections": 0,
+        "packets_sec": 0.0,
+        "bytes_sec": 0.0,
+        "dns_names": [],
+        "evidence": [
+          {
+            "field": "Hostname",
+            "value": "www.google.com",
+            "source": "DNS answer",
+            "confidence": "OBSERVED",
+            "ts": 1789999696.1216545
+          }
+        ],
+        "recent": []
+      },
+      {
+        "ip": "142.251.155.119",
+        "ipv6": "Unknown",
+        "mac": "Unknown",
+        "hostname": "www.google.com",
+        "manufacturer": "Unknown",
+        "os": "Unknown",
+        "device_type": "Unknown",
+        "scope": "Remote",
+        "status": "Referenced only",
+        "first_seen": 1789999696.1216545,
+        "last_seen": 1789999696.1216545,
+        "packets": 0,
+        "upload": 0,
+        "download": 0,
+        "active_connections": 0,
+        "packets_sec": 0.0,
+        "bytes_sec": 0.0,
+        "dns_names": [],
+        "evidence": [
+          {
+            "field": "Hostname",
+            "value": "www.google.com",
+            "source": "DNS answer",
+            "confidence": "OBSERVED",
+            "ts": 1789999696.1216545
+          }
+        ],
+        "recent": []
+      }
+    ],
+    "edges": [
+      {
+        "source": "10.0.0.28",
+        "destination": "10.0.0.1",
+        "kind": "route",
+        "bytes": 0,
+        "packets": 0,
+        "last_seen": 0,
+        "evidence": "Routing table: default gateway"
+      },
+      {
+        "source": "142.251.157.119",
+        "destination": "10.0.0.28",
+        "kind": "traffic",
+        "bytes": 65884,
+        "packets": 43,
+        "last_seen": 1789999696.938019,
+        "evidence": "Observed IP traffic"
+      },
+      {
+        "source": "172.67.132.115",
+        "destination": "10.0.0.28",
+        "kind": "traffic",
+        "bytes": 15444,
+        "packets": 13,
+        "last_seen": 1789999696.1713989,
+        "evidence": "Observed IP traffic"
+      },
+      {
+        "source": "104.18.32.47",
+        "destination": "10.0.0.28",
+        "kind": "traffic",
+        "bytes": 14110,
+        "packets": 20,
+        "last_seen": 1789999696.1906874,
+        "evidence": "Observed IP traffic"
+      },
+      {
+        "source": "10.0.0.28",
+        "destination": "104.18.32.47",
+        "kind": "traffic",
+        "bytes": 5427,
+        "packets": 20,
+        "last_seen": 1789999696.1906874,
+        "evidence": "Observed IP traffic"
+      },
+      {
+        "source": "10.0.0.28",
+        "destination": "142.251.157.119",
+        "kind": "traffic",
+        "bytes": 4961,
+        "packets": 43,
+        "last_seen": 1789999696.938019,
+        "evidence": "Observed IP traffic"
+      },
+      {
+        "source": "13.69.68.64",
+        "destination": "10.0.0.28",
+        "kind": "traffic",
+        "bytes": 1276,
+        "packets": 4,
+        "last_seen": 1789999694.8477921,
+        "evidence": "Observed IP traffic"
+      },
+      {
+        "source": "10.0.0.28",
+        "destination": "172.67.132.115",
+        "kind": "traffic",
+        "bytes": 1209,
+        "packets": 15,
+        "last_seen": 1789999696.1713989,
+        "evidence": "Observed IP traffic"
+      },
+      {
+        "source": "10.0.0.1",
+        "destination": "10.0.0.28",
+        "kind": "traffic",
+        "bytes": 1011,
+        "packets": 6,
+        "last_seen": 1789999696.1216545,
+        "evidence": "Observed IP traffic"
+      },
+      {
+        "source": "10.0.0.28",
+        "destination": "13.69.68.64",
+        "kind": "traffic",
+        "bytes": 968,
+        "packets": 2,
+        "last_seen": 1789999694.8477921,
+        "evidence": "Observed IP traffic"
+      },
+      {
+        "source": "149.154.167.41",
+        "destination": "10.0.0.28",
+        "kind": "traffic",
+        "bytes": 814,
+        "packets": 5,
+        "last_seen": 1789999695.2144437,
+        "evidence": "Observed IP traffic"
+      },
+      {
+        "source": "10.0.0.28",
+        "destination": "149.154.167.41",
+        "kind": "traffic",
+        "bytes": 555,
+        "packets": 5,
+        "last_seen": 1789999695.2144437,
+        "evidence": "Observed IP traffic"
+      },
+      {
+        "source": "10.0.0.28",
+        "destination": "10.0.0.1",
+        "kind": "traffic",
+        "bytes": 396,
+        "packets": 5,
+        "last_seen": 1789999696.1216545,
+        "evidence": "Observed IP traffic"
+      },
+      {
+        "source": "94.124.200.1",
+        "destination": "10.0.0.28",
+        "kind": "traffic",
+        "bytes": 192,
+        "packets": 2,
+        "last_seen": 1789999695.2475724,
+        "evidence": "Observed IP traffic"
+      },
+      {
+        "source": "10.0.0.28",
+        "destination": "160.79.104.10",
+        "kind": "traffic",
+        "bytes": 164,
+        "packets": 2,
+        "last_seen": 1789999695.2144163,
+        "evidence": "Observed IP traffic"
+      },
+      {
+        "source": "10.0.0.28",
+        "destination": "94.124.200.1",
+        "kind": "traffic",
+        "bytes": 130,
+        "packets": 1,
+        "last_seen": 1789999695.2475724,
+        "evidence": "Observed IP traffic"
+      },
+      {
+        "source": "160.79.104.10",
+        "destination": "10.0.0.28",
+        "kind": "traffic",
+        "bytes": 94,
+        "packets": 1,
+        "last_seen": 1789999695.2144163,
+        "evidence": "Observed IP traffic"
+      }
+    ],
+    "total_devices": 31,
+    "omitted_nodes": 0,
+    "omitted_edges": 0,
+    "ts": 1789999697.1017811
+  },
+  "local_device": {
+    "ip": "10.0.0.28",
+    "ipv6": "Unknown",
+    "mac": "f4:7b:09:70:46:26",
+    "hostname": "nitro-acer",
+    "manufacturer": "Intel Corporate",
+    "os": "Linux",
+    "device_type": "This Device",
+    "scope": "Local",
+    "status": "Active",
+    "first_seen": 1789999694.2206254,
+    "last_seen": 1789999697.1593804,
+    "packets": 229,
+    "upload": 15422,
+    "download": 128262,
+    "active_connections": 15,
+    "packets_sec": 45.8,
+    "bytes_sec": 28736.8,
+    "dns_names": [
+      "api.telegram.org",
+      "chatgpt.com",
+      "httpforever.com",
+      "www.google.com"
+    ],
+    "evidence": [
+      {
+        "field": "IP",
+        "value": "10.0.0.28",
+        "source": "System interface wlan0",
+        "confidence": "OBSERVED",
+        "ts": 1789999694.2206254
+      },
+      {
+        "field": "Device type",
+        "value": "This Device",
+        "source": "System interface wlan0",
+        "confidence": "CONFIRMED",
+        "ts": 1789999694.2206254
+      },
+      {
+        "field": "OS",
+        "value": "Linux",
+        "source": "Local operating system",
+        "confidence": "CONFIRMED",
+        "ts": 1789999694.2206254
+      },
+      {
+        "field": "MAC",
+        "value": "f4:7b:09:70:46:26",
+        "source": "System interface wlan0",
+        "confidence": "OBSERVED",
+        "ts": 1789999694.2206254
+      },
+      {
+        "field": "Manufacturer",
+        "value": "Intel Corporate",
+        "source": "OUI registry: /usr/share/nmap/nmap-mac-prefixes",
+        "confidence": "OBSERVED",
+        "ts": 1789999697.1593804
+      },
+      {
+        "field": "Hostname",
+        "value": "nitro-acer",
+        "source": "Local system hostname",
+        "confidence": "CONFIRMED",
+        "ts": 1789999694.2206254
+      },
+      {
+        "field": "IP",
+        "value": "10.0.0.28",
+        "source": "Captured TCP endpoint",
+        "confidence": "OBSERVED",
+        "ts": 1789999697.1593804
+      },
+      {
+        "field": "MAC",
+        "value": "f4:7b:09:70:46:26",
+        "source": "Ethernet frame + on-link routing prefix",
+        "confidence": "OBSERVED",
+        "ts": 1789999697.1593804
+      },
+      {
+        "field": "IP",
+        "value": "10.0.0.28",
+        "source": "Captured UDP endpoint",
+        "confidence": "OBSERVED",
+        "ts": 1789999697.1587994
+      }
+    ],
+    "recent": [
+      [
+        1789999694,
+        17,
+        3647
+      ],
+      [
+        1789999695,
+        48,
+        17759
+      ],
+      [
+        1789999696,
+        142,
+        111897
+      ],
+      [
+        1789999697,
+        22,
+        10381
+      ]
+    ]
+  },
+  "source_pcap": "/home/erwin/loyiha/netlab/validation/phase3/wlan0-accepted/netlab-wlan0-20260921-190814.pcapng",
+  "source_counts": {
+    "netlab": 440,
+    "capinfos": 440,
+    "tshark": 440
+  },
+  "stats": {
+    "total_packets": 440,
+    "total_bytes": 254959,
+    "packets_per_sec": 16.14366189258774,
+    "bytes_per_sec": 2999.872230510863,
+    "peak_pps": 126.36297698402961,
+    "flows": 33,
+    "active_flows": 25,
+    "hosts": 37,
+    "dns_events": 27,
+    "http_transactions": 1,
+    "tls_sessions": 11,
+    "malformed": 0,
+    "queue_dropped": 0,
+    "queue_depth": 0,
+    "flows_evicted": 0,
+    "hosts_evicted": 0,
+    "unsupported_linktype": 0,
+    "history": [
+      [
+        1789999695.2113976,
+        17.848491650732175,
+        3713.4778462217773
+      ],
+      [
+        1789999696.2185218,
+        47.660496600646056,
+        19015.545216645263
+      ],
+      [
+        1789999697.2314744,
+        126.36297698402961,
+        97292.581802399
+      ],
+      [
+        1789999698.3121555,
+        68.47533302813142,
+        32444.35306259924
+      ],
+      [
+        1789999699.4509134,
+        12.294122309475005,
+        3951.6821709026804
+      ],
+      [
+        1789999700.5122364,
+        68.78189388744329,
+        41613.98801962767
+      ],
+      [
+        1789999701.680872,
+        58.18773030412145,
+        39895.39044072139
+      ],
+      [
+        1789999702.7339149,
+        16.14366189258774,
+        2999.872230510863
+      ]
+    ],
+    "streams": 11,
+    "streams_created": 18,
+    "streams_expired": 7,
+    "streams_evicted": 0,
+    "reassembled_bytes": 216221,
+    "reassembly_segments": 194,
+    "retransmissions": 12,
+    "out_of_order": 44,
+    "stream_gaps": 0,
+    "stream_gap_bytes": 0,
+    "reasm_buffered_bytes": 0,
+    "reasm_peak_buffered": 6328,
+    "http_messages": 2,
+    "http_resyncs": 0,
+    "tls_handshakes": 5
+  },
+  "exported_counts": {
+    "netlab": 440,
+    "capinfos": 440,
+    "tshark": 440
+  },
+  "device_export_counts": {
+    "netlab": 437,
+    "capinfos": 437,
+    "tshark": 437
+  },
+  "reopened_packets": 440,
+  "gui_heartbeat": {
+    "samples": 185,
+    "max_gap_seconds": 0.59727562199987
+  },
+  "completed": 1789999704.916471,
+  "passed": true
+}

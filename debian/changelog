@@ -1,0 +1,315 @@
+netlab (2.16.0) unstable; urgency=medium
+
+  * Reliability pass on the interception path.
+  * Helper: a session lock closes an arm/disarm race. Commands each run on
+    their own thread, so two arms (or an arm racing a disarm) could corrupt
+    the single session; the slot is now claimed under a lock before arming,
+    so a second arm is refused rather than starting a parallel poisoning.
+  * Arm: a wide scope resolved each target's MAC one blocking request at a
+    time -- up to a second per host, minutes for a /24. It is now one batched
+    ARP sweep (arp.resolve_many) that returns as soon as every host answers.
+  * Frame-level proof of the flagship: the poisoner is tested against a fake
+    socket for the exact forged frames in both directions and the healing
+    frames on restore, so the poison logic is covered without a live datapath.
+    validation/DATAPATH-VERIFICATION.md records what is and is not automatable
+    here and the one command that proves the full path on real hardware.
+  * Tooling: pytest-cov wired into the test extra (70% of testable logic);
+    a GitHub Actions CI workflow runs the suite offscreen on every push.
+
+ -- Erwin <thestrak118@gmail.com>  Wed, 24 Sep 2026 19:30:00 +0500
+
+netlab (2.15.0) unstable; urgency=medium
+
+  * New KONSOL page (MITM mode), like Intercepter-NG's console log: one
+    scrolling monospace feed that narrates the whole session instead of a
+    table per fact. Capture start, the gateway and its MAC, a
+    "Starting poisoning <ip> : [<mac>]" line per target as the engagement
+    arms, then credentials and module hits streaming underneath. HTTP
+    credentials render as an "HTTP Authorization intercepted" block with the
+    host, username and password.
+  * It is a view, not a source: every line is a formatted real event -- the
+    same events the tables already consume, routed to the console as well --
+    so a field that was not observed prints what was, never a guess.
+  * Save the console feed to a .log from the page.
+
+ -- Erwin <thestrak118@gmail.com>  Wed, 24 Sep 2026 18:45:00 +0500
+
+netlab (2.14.0) unstable; urgency=medium
+
+  * Icon mode tabs, like Intercepter-NG: each top mode carries a glyph — a
+    magnifier for SKANER, a waveform for TRAFFIK, a key for PAROLLAR, a
+    document for FAYLLAR and a mask for MITM.
+  * The TTL value used to guess a host's OS is now recorded in the evidence
+    source (e.g. "TCP/IP TTL=64"), so the device detail shows the basis.
+
+ -- Erwin <thestrak118@gmail.com>  Wed, 24 Sep 2026 17:00:00 +0500
+
+netlab (2.13.0) unstable; urgency=medium
+
+  * Multi-target selection, like Intercepter-NG's per-host checkboxes: select
+    several hosts in the list (Ctrl/Shift-click) and "Send to Interception"
+    adds all of them to the engagement scope at once.
+
+ -- Erwin <thestrak118@gmail.com>  Wed, 24 Sep 2026 16:30:00 +0500
+
+netlab (2.12.0) unstable; urgency=medium
+
+  * Show which site, not just an IP. The Live Traffic "Domain" column now
+    falls back to the name DNS resolved to the peer IP, or the TLS SNI seen
+    for it, so a bare ACK to a server still shows its domain.
+  * New "Saytlar" (Sites) tab on the Selected Device page: one clean list of
+    every domain the device visited — from DNS, TLS SNI and HTTP Host —
+    labelled HTTP / HTTPS / DNS with a visit count, no IPs and no packet
+    numbers.
+
+ -- Erwin <thestrak118@gmail.com>  Wed, 24 Sep 2026 16:00:00 +0500
+
+netlab (2.11.0) unstable; urgency=medium
+
+  * Host list now identifies a device's OS the way Intercepter-NG does: a
+    passive TCP/IP TTL fingerprint labels every local host that sends a packet
+    as Unix, Windows or a network device, even when it never DHCPs or browses.
+    A precise OS from DHCP/User-Agent/hostname still wins over the coarse guess.
+  * OS icons in the host list: a penguin for Unix/Linux, the Windows mark for
+    Windows, the Android robot and the Apple mark, so the list reads at a glance.
+
+ -- Erwin <thestrak118@gmail.com>  Wed, 24 Sep 2026 15:00:00 +0500
+
+netlab (2.10.0) unstable; urgency=medium
+
+  * Navigation reduced to five modes: SKANER, TRAFFIK, PAROLLAR, FAYLLAR and
+    MITM. DNS/HTTP/TLS moved under TRAFFIK; Captures/PCAP under FAYLLAR;
+    Settings and Interfaces moved to the File menu.
+  * Device operating system is detected and shown in the host list (Windows,
+    Android, iOS, macOS, Linux, …): from the DHCP vendor-class (option 60) and
+    hostname when a device joins, and from the HTTP User-Agent when it browses.
+    Learned by MAC so it survives a DHCP DISCOVER that has no IP yet.
+
+ -- Erwin <thestrak118@gmail.com>  Wed, 24 Sep 2026 14:00:00 +0500
+
+netlab (2.9.0) unstable; urgency=medium
+
+  * Decluttered interface. The per-page description paragraphs are moved to a
+    tooltip on each page title, so pages show content, not prose. The Selected
+    Device page drops its packet/byte/rate counter line, its footnote and its
+    per-field evidence line (the full evidence stays in the title tooltip).
+    The device list's status line is now one short line, and its long capture
+    caveat moved to a tooltip.
+
+ -- Erwin <thestrak118@gmail.com>  Wed, 24 Sep 2026 13:20:00 +0500
+
+netlab (2.8.0) unstable; urgency=medium
+
+  * Selected Device now has a Passwords tab beside Live Activity, Connections,
+    DNS, HTTP and TLS. It shows the credentials that belong to the selected
+    device — the login and password read from its cleartext HTTP, and any
+    hashes — as content, not packet counts. It draws from both passive harvest
+    and active MiTM and is filtered to the device's own addresses.
+
+ -- Erwin <thestrak118@gmail.com>  Wed, 24 Sep 2026 12:40:00 +0500
+
+netlab (2.7.0) unstable; urgency=medium
+
+  * Passive device-name discovery. NetLab already learned names from mDNS/DNS
+    A-records; it now also reads a device's own name from DHCP (option 12 /
+    FQDN option 81) and NetBIOS name-service (UDP 137). A DHCP DISCOVER has no
+    client IP yet, so the name is bound to the hardware address and applied to
+    the host once its IP is known.
+  * A device with no discoverable name now falls back to showing its
+    manufacturer (from the MAC OUI) rather than "Unknown", like Intercepter-NG.
+
+ -- Erwin <thestrak118@gmail.com>  Wed, 24 Sep 2026 12:00:00 +0500
+
+netlab (2.6.0) unstable; urgency=medium
+
+  * Interface reworked to an Intercepter-NG-style layout: the left sidebar is
+    gone. Navigation is now horizontal mode tabs across the top (SKANER,
+    TRAFFIK, PROTOKOLLAR, PAROLLAR, FAYLLAR, MITM, XOM, SOZLAMALAR) with a
+    thin second row for the pages inside the chosen mode, which hides itself
+    when a mode has a single page. Removing the sidebar gives the tables the
+    full window width, so columns no longer truncate.
+
+ -- Erwin <thestrak118@gmail.com>  Wed, 24 Sep 2026 11:00:00 +0500
+
+netlab (2.5.0) unstable; urgency=medium
+
+  * NTLM relay over SMB2. A captured SMB/NTLM authentication is relayed live
+    to an in-scope server instead of being cracked offline, so the target
+    authenticates the operator to that server. Implemented from the wire up
+    (NetBIOS, SMB2 NEGOTIATE/SESSION_SETUP, SPNEGO/NTLMSSP ferry) with no
+    runtime dependency on impacket; the codec and a full end-to-end relay are
+    tested against a real impacket SMB server and client over loopback.
+  * New "NTLM relay" module on the Interception page with a "Relay target"
+    field; the relay listens on redirected tcp/445 and is gated on the
+    engagement scope (the relay target must be in scope) and audited.
+  * NetLab does not defeat SMB signing, MIC or channel binding: a hardened
+    server simply rejects the relayed authentication, and that is reported.
+
+ -- Erwin <thestrak118@gmail.com>  Wed, 24 Sep 2026 10:00:00 +0500
+
+netlab (2.4.0) unstable; urgency=medium
+
+  * Sidebar sections are now collapsible: click a section header to fold or
+    unfold it, with a ▾/▸ indicator, and the folded state is remembered
+    between runs. Navigating to a page in a folded section unfolds it.
+  * Sidebar section headers are now in Uzbek: SKANER, TRAFFIK, PROTOKOLLAR,
+    PAROLLAR, FAYLLAR, MITM, XOM, SOZLAMALAR, and the page names under them
+    are localised too.
+
+ -- Erwin <thestrak118@gmail.com>  Tue, 23 Sep 2026 14:20:00 +0500
+
+netlab (2.3.0) unstable; urgency=medium
+
+  * Intercepter-NG-style quick controls in the top toolbar: a "Scan" button
+    (LAN host discovery) and a "MITM" toggle that arms or disarms
+    interception. The toggle still routes through the engagement gate — it
+    opens the Interception page and its confirmation dialog and never starts
+    poisoning silently — and it tracks the real armed state.
+
+ -- Erwin <thestrak118@gmail.com>  Tue, 23 Sep 2026 13:45:00 +0500
+
+netlab (2.2.0) unstable; urgency=medium
+
+  * GUI reorganised into Intercepter-NG-style modes. The flat nineteen-item
+    sidebar is now grouped: SCAN, SNIFF, PROTOCOLS, PASSWORDS, FILES, MITM,
+    RAW and SETUP, so the workflow reads top to bottom.
+  * "Send to Interception" on the Hosts/Devices pages (Intercepter-NG's "add
+    to NAT"): a scanned host is added to the engagement scope as a MiTM
+    target and the Interception page opens. The gateway and duplicates are
+    refused.
+
+ -- Erwin <thestrak118@gmail.com>  Tue, 23 Sep 2026 13:15:00 +0500
+
+netlab (2.1.0) unstable; urgency=medium
+
+  * Credential parity with Intercepter-NG's Passwords tab: added CVS pserver
+    (the scrambled password is descrambled with the CVS scramble table),
+    DC++/NMDC ($MyPass, with the nick from $ValidateNick), IRC-bouncer (BNC)
+    logins carrying user:password in the PASS line, and RADIUS. RADIUS CHAP is
+    emitted as a hashcat -m 4800 line; RADIUS PAP is decrypted when the shared
+    secret is configured, otherwise the username is recorded and the password
+    is marked encrypted.
+  * New "RADIUS shared secret" setting drives PAP decryption.
+  * HTTP injection: the traffic changer now has an "inject" mode that inserts
+    content into HTML responses before an anchor tag (default </body>), added
+    to the Rules page beside find/replace. Scope-gated and audited like every
+    other active module.
+
+ -- Erwin <thestrak118@gmail.com>  Tue, 23 Sep 2026 12:30:00 +0500
+
+netlab (2.0.0) unstable; urgency=medium
+
+  * Intercepter mode: NetLab is no longer passive-only.
+  * New Passwords page. Credentials and hashes are extracted from FTP,
+    Telnet, POP3, IMAP, SMTP (SASL PLAIN/LOGIN), NNTP, IRC, Redis, SOCKS5,
+    rlogin, LDAP simple bind, SNMP communities, MSSQL TDS7, MySQL,
+    PostgreSQL, VNC, Kerberos AS-REQ pre-auth, HTTP Basic/Digest/Bearer and
+    NTLMSSP in every carrier it appears in. Hashes are emitted in hashcat
+    and john formats with the mode attached, and can be exported.
+  * New Interception page: engagement scope, module selection, arming with
+    an explicit confirmation, live status and an event log.
+  * Active modules: full-duplex ARP poisoning with guaranteed restore,
+    SSL strip, TLS interception with a locally generated CA, DNS spoofing
+    with real forwarding for everything unmatched, rogue DHCP, traffic
+    changer, cookie killer, file carving and a promiscuous-host probe.
+  * New Files page carves readable response bodies to the engagement
+    directory, hashed and typed as the server declared them.
+  * New Rules page edits traffic-changer and DNS-spoof rules live.
+  * New privileged helper, netlab-helper, started through pkexec over a
+    pipe. Everything needing CAP_NET_RAW or CAP_NET_ADMIN happens there and
+    nowhere else; the GUI stays unprivileged. The helper restores ARP,
+    forwarding and nftables on disarm, on signal, on stdin EOF and at exit.
+  * Every active action is gated on an on-disk engagement and written to a
+    JSONL audit log.
+  * HTTP credential headers are retained only while harvesting is enabled;
+    the passive default still records presence and discards the value.
+  * Added an opt-in body-data hook to the HTTP stream parser. Bodies are
+    still counted and discarded unless a caller asks for them.
+
+ -- Erwin <thestrak118@gmail.com>  Wed, 23 Sep 2026 11:20:00 +0500
+
+netlab (1.5.1) unstable; urgency=medium
+
+  * Retry unanswered identity protocols once, with bounded runtime.
+  * Exclude unobserved ARP targets from remote topology nodes.
+  * Show advertised local device names in the topology.
+
+ -- Erwin <thestrak118@gmail.com>  Mon, 21 Sep 2026 22:40:00 +0500
+
+netlab (1.5.0) unstable; urgency=medium
+
+  * Add explicit local device discovery with bounded ARP and name queries.
+  * Display advertised names/models and evidence-backed device icons.
+  * Separate active identity evidence from passive traffic and OS estimates.
+  * Preserve offline isolation, interface scope and MAC change boundaries.
+
+ -- Erwin <thestrak118@gmail.com>  Mon, 21 Sep 2026 22:30:00 +0500
+
+netlab (1.4.1) unstable; urgency=medium
+
+  * Make live capture status, rates and multi-address identity visible in Hosts/Devices.
+  * Automatically display full evidence, preserve identity selection during updates.
+  * Keep unknown device types explicit; render supported evidenced type icons.
+
+ -- Erwin <thestrak118@gmail.com>  Mon, 21 Sep 2026 22:00:00 +0500
+
+netlab (1.4.0) unstable; urgency=medium
+
+  * Separate evidenced local device identities from Internet endpoints.
+  * Merge interface and unambiguous on-link MAC address identities.
+  * Restrict monitoring to local devices, retain remote traffic navigation.
+  * Separate topology groups and add local identity regression coverage.
+
+ -- Erwin <thestrak118@gmail.com>  Mon, 21 Sep 2026 21:00:00 +0500
+
+netlab (1.3.0) unstable; urgency=medium
+
+  * Phase 4: passive selected-device live monitor and bounded subscriptions.
+  * Device activity, session correlation, pause/resume and device PCAP export.
+  * Off-thread snapshot collection, identity regression and real GUI acceptance.
+
+ -- Erwin <thestrak118@gmail.com>  Mon, 21 Sep 2026 20:00:00 +0500
+
+netlab (1.2.0) unstable; urgency=medium
+
+  * Phase 3: evidence-backed Devices and Hosts, SVG icons and Device Details.
+  * Incremental logical topology, live routing context and exact device filters.
+  * Device PCAP export, attribution regressions and installed GUI acceptance.
+
+ -- Erwin <thestrak118@gmail.com>  Mon, 21 Sep 2026 19:00:00 +0500
+
+netlab (1.1.0) unstable; urgency=medium
+
+  * Phase 2: TCP stream reassembly and session correlation.
+  * Bounded bidirectional TCP reassembly: tracks SYN/SYN-ACK/FIN/RST,
+    retransmissions, out-of-order and overlapping segments, and reports
+    missing bytes as explicit gaps instead of ever reconstructing them.
+  * Memory is bounded per direction, per stream and globally; exceeding a
+    cap forces a reported gap rather than growth. Idle streams expire.
+  * HTTP is now parsed from reassembled streams: headers and bodies split
+    across any number of segments, chunked transfer metadata, Content-Length
+    and request/response correlation. Credential header values are still
+    never stored - only their presence.
+  * TLS handshakes are reassembled too, so a ClientHello split across
+    segments now yields SNI, version, cipher and ALPN.
+  * Connection detail view shows both directions, TCP state, reassembly
+    statistics and the related HTTP, TLS and DNS records.
+  * Host table separates names a resolver answered with from names clients
+    asked for over TLS, and never merges unrelated names for one address.
+  * New metrics reported separately: captured, analysed, dropped from
+    analysis, reassembled, HTTP messages parsed, TLS handshakes parsed.
+
+ -- Erwin <thestrak118@gmail.com>  Mon, 21 Sep 2026 17:41:15 +0500
+
+netlab (1.0.0) unstable; urgency=medium
+
+  * Initial release: Phase 1.
+  * GUI shell with dashboard, interfaces, live traffic, connections, hosts,
+    DNS, HTTP, TLS, captures, PCAP viewer, Nmap and settings pages.
+  * Real packet capture through dumpcap/libpcap, written to pcap or pcapng.
+  * Asynchronous capture and analysis with bounded queues and tables.
+  * BPF capture filters validated against libpcap before a capture starts.
+  * PCAP/PCAPNG import, export and capture file retention.
+  * Passive only: no TLS decryption and no active interception.
+
+ -- Erwin <thestrak118@gmail.com>  Mon, 21 Sep 2026 17:10:46 +0500

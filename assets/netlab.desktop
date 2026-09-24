@@ -1,0 +1,14 @@
+[Desktop Entry]
+Type=Application
+Version=1.0
+Name=NetLab
+GenericName=Network Analyser and Interception Tool
+Comment=Packet capture, credential extraction and authorised man-in-the-middle
+Exec=netlab
+TryExec=netlab
+Icon=netlab
+Terminal=false
+Categories=Network;Monitor;Security;
+Keywords=network;packet;capture;pcap;sniffer;analysis;dns;http;tls;traffic;mitm;arp;pentest;credentials;
+StartupNotify=true
+StartupWMClass=netlab

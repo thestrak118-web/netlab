@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 128 128">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#1b2230"/>
+      <stop offset="1" stop-color="#0f1319"/>
+    </linearGradient>
+    <linearGradient id="wave" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#4f8cff"/>
+      <stop offset="0.55" stop-color="#3fd2d8"/>
+      <stop offset="1" stop-color="#32d296"/>
+    </linearGradient>
+  </defs>
+  <rect x="4" y="4" width="120" height="120" rx="26" fill="url(#bg)"/>
+  <rect x="4.5" y="4.5" width="119" height="119" rx="25.5" fill="none"
+        stroke="#2a313c" stroke-width="1"/>
+  <path d="M16 72 L34 72 L42 48 L54 94 L66 38 L78 80 L86 62 L112 62"
+        fill="none" stroke="url(#wave)" stroke-width="6"
+        stroke-linecap="round" stroke-linejoin="round"/>
+  <circle cx="34" cy="72" r="6.5" fill="#12151a" stroke="#4f8cff" stroke-width="4"/>
+  <circle cx="86" cy="62" r="6.5" fill="#12151a" stroke="#32d296" stroke-width="4"/>
+  <circle cx="64" cy="26" r="4" fill="#4f8cff" opacity="0.65"/>
+  <circle cx="24" cy="102" r="4" fill="#3fd2d8" opacity="0.65"/>
+  <circle cx="104" cy="100" r="4" fill="#32d296" opacity="0.65"/>
+</svg>

@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE nmaprun>
+<?xml-stylesheet href="file:///usr/share/nmap/nmap.xsl" type="text/xsl"?>
+<!-- Nmap 7.99 scan initiated Mon Sep 21 21:45:28 2026 as: /usr/lib/nmap/nmap -sU -n -e wlan0 -p 137,1900,5353 -&#45;script nbstat,upnp-info,dns-service-discovery -&#45;script-timeout 12s -&#45;max-retries 1 -&#45;host-timeout 45s -oX - 10.0.0.1 10.0.0.12 10.0.0.13 -->
+<nmaprun scanner="nmap" args="/usr/lib/nmap/nmap -sU -n -e wlan0 -p 137,1900,5353 -&#45;script nbstat,upnp-info,dns-service-discovery -&#45;script-timeout 12s -&#45;max-retries 1 -&#45;host-timeout 45s -oX - 10.0.0.1 10.0.0.12 10.0.0.13" start="1790009128" startstr="Mon Sep 21 21:45:28 2026" version="7.99" xmloutputversion="1.05">
+<scaninfo type="udp" protocol="udp" numservices="3" services="137,1900,5353"/>
+<verbose level="0"/>
+<debugging level="0"/>
+<hosthint><status state="up" reason="arp-response" reason_ttl="0"/>
+<address addr="10.0.0.1" addrtype="ipv4"/>
+<address addr="08:36:C9:E5:22:D2" addrtype="mac" vendor="Netgear"/>
+<hostnames>
+</hostnames>
+</hosthint>
+<hosthint><status state="up" reason="arp-response" reason_ttl="0"/>
+<address addr="10.0.0.13" addrtype="ipv4"/>
+<address addr="86:FE:D7:88:54:76" addrtype="mac"/>
+<hostnames>
+</hostnames>
+</hosthint>
+<hosthint><status state="up" reason="arp-response" reason_ttl="0"/>
+<address addr="10.0.0.12" addrtype="ipv4"/>
+<address addr="4E:01:17:16:3E:FF" addrtype="mac"/>
+<hostnames>
+</hostnames>
+</hosthint>
+<host starttime="1790009128" endtime="1790009135"><status state="up" reason="arp-response" reason_ttl="0"/>
+<address addr="10.0.0.1" addrtype="ipv4"/>
+<address addr="08:36:C9:E5:22:D2" addrtype="mac" vendor="Netgear"/>
+<hostnames>
+</hostnames>
+<ports><port protocol="udp" portid="137"><state state="closed" reason="port-unreach" reason_ttl="64"/><service name="netbios-ns" method="table" conf="3"/></port>
+<port protocol="udp" portid="1900"><state state="open" reason="udp-response" reason_ttl="64"/><service name="upnp" method="table" conf="3"/><script id="upnp-info" output="&#xa;  usn: uuid:d9cfbed0-8565-8c34-3090-06ce0b722328&#xa;  location: http://10.0.0.1:5000/Public_UPNP_gatedesc.xml&#xa;  server: Linux/2.6.12, UPnP/1.0, NETGEAR-UPNP/1.0&#xa;  webserver: Linux/2.6.12 UPnP/1.0 NETGEAR-UPNP/1.0&#xa;  deviceType: urn:schemas-upnp-org:device:InternetGatewayDevice:1&#xa;  friendlyName: R8000 (Gateway)&#xa;  manufacturer: NETGEAR, Inc.&#xa;  modelDescription: NETGEAR R8000 802.11ac Wireless Router&#xa;  modelNumber: R8000&#xa;  modelName: R8000&#xa;  services: &#xa;    urn:schemas-upnp-org:service:Layer3Forwarding:1&#xa;  devices: &#xa;    uuid:d9cfbed0-8765-8c34-3090-06ce0b722328: &#xa;      deviceType: urn:schemas-upnp-org:device:WANConnectionDevice:1&#xa;      friendlyName: WAN Connection Device&#xa;      manufacturer: NETGEAR, Inc.&#xa;      modelDescription: NETGEAR R8000 802.11ac Wireless Router&#xa;      modelNumber: R8000&#xa;      modelName: R8000&#xa;      services: &#xa;        urn:schemas-upnp-org:service:WANEthernetLinkConfig:1&#xa;        urn:schemas-upnp-org:service:WANIPConnection:1&#xa;        urn:schemas-upnp-org:service:WANPPPConnection:1&#xa;    uuid:d9cfbed0-8665-8c34-3090-06ce0b722328: &#xa;      deviceType: urn:schemas-upnp-org:device:WANDevice:1&#xa;      friendlyName: WAN Device&#xa;      manufacturer: NETGEAR, Inc.&#xa;      modelDescription: NETGEAR R8000 802.11ac Wireless Router&#xa;      modelNumber: R8000&#xa;      modelName: R8000&#xa;      services: &#xa;        urn:schemas-upnp-org:service:WANCommonInterfaceConfig:1"><elem key="usn">uuid:d9cfbed0-8565-8c34-3090-06ce0b722328</elem>
+<elem key="location">http://10.0.0.1:5000/Public_UPNP_gatedesc.xml</elem>
+<elem key="server">Linux/2.6.12, UPnP/1.0, NETGEAR-UPNP/1.0</elem>
+<elem key="webserver">Linux/2.6.12 UPnP/1.0 NETGEAR-UPNP/1.0</elem>
+<elem key="deviceType">urn:schemas-upnp-org:device:InternetGatewayDevice:1</elem>
+<elem key="friendlyName">R8000 (Gateway)</elem>
+<elem key="manufacturer">NETGEAR, Inc.</elem>
+<elem key="modelDescription">NETGEAR R8000 802.11ac Wireless Router</elem>
+<elem key="modelNumber">R8000</elem>
+<elem key="modelName">R8000</elem>
+<table key="services">
+<elem>urn:schemas-upnp-org:service:Layer3Forwarding:1</elem>
+</table>
+<table key="devices">
+<table key="uuid:d9cfbed0-8765-8c34-3090-06ce0b722328">
+<elem key="deviceType">urn:schemas-upnp-org:device:WANConnectionDevice:1</elem>
+<elem key="friendlyName">WAN Connection Device</elem>
+<elem key="manufacturer">NETGEAR, Inc.</elem>
+<elem key="modelDescription">NETGEAR R8000 802.11ac Wireless Router</elem>
+<elem key="modelNumber">R8000</elem>
+<elem key="modelName">R8000</elem>
+<table key="services">
+<elem>urn:schemas-upnp-org:service:WANEthernetLinkConfig:1</elem>
+<elem>urn:schemas-upnp-org:service:WANIPConnection:1</elem>
+<elem>urn:schemas-upnp-org:service:WANPPPConnection:1</elem>
+</table>
+</table>
+<table key="uuid:d9cfbed0-8665-8c34-3090-06ce0b722328">
+<elem key="deviceType">urn:schemas-upnp-org:device:WANDevice:1</elem>
+<elem key="friendlyName">WAN Device</elem>
+<elem key="manufacturer">NETGEAR, Inc.</elem>
+<elem key="modelDescription">NETGEAR R8000 802.11ac Wireless Router</elem>
+<elem key="modelNumber">R8000</elem>
+<elem key="modelName">R8000</elem>
+<table key="services">
+<elem>urn:schemas-upnp-org:service:WANCommonInterfaceConfig:1</elem>
+</table>
+</table>
+</table>
+</script></port>
+<port protocol="udp" portid="5353"><state state="open|filtered" reason="no-response" reason_ttl="0"/><service name="zeroconf" method="table" conf="3"/></port>
+</ports>
+<times srtt="7546" rttvar="5748" to="100000"/>
+</host>
+<host starttime="1790009128" endtime="1790009135"><status state="up" reason="arp-response" reason_ttl="0"/>
+<address addr="10.0.0.12" addrtype="ipv4"/>
+<address addr="4E:01:17:16:3E:FF" addrtype="mac"/>
+<hostnames>
+</hostnames>
+<ports><port protocol="udp" portid="137"><state state="closed" reason="port-unreach" reason_ttl="64"/><service name="netbios-ns" method="table" conf="3"/></port>
+<port protocol="udp" portid="1900"><state state="closed" reason="port-unreach" reason_ttl="64"/><service name="upnp" method="table" conf="3"/></port>
+<port protocol="udp" portid="5353"><state state="open|filtered" reason="no-response" reason_ttl="0"/><service name="zeroconf" method="table" conf="3"/></port>
+</ports>
+<times srtt="303829" rttvar="340921" to="1667513"/>
+</host>
+<host starttime="1790009128" endtime="1790009133"><status state="up" reason="arp-response" reason_ttl="0"/>
+<address addr="10.0.0.13" addrtype="ipv4"/>
+<address addr="86:FE:D7:88:54:76" addrtype="mac"/>
+<hostnames>
+</hostnames>
+<ports><port protocol="udp" portid="137"><state state="closed" reason="port-unreach" reason_ttl="64"/><service name="netbios-ns" method="table" conf="3"/></port>
+<port protocol="udp" portid="1900"><state state="closed" reason="port-unreach" reason_ttl="64"/><service name="upnp" method="table" conf="3"/></port>
+<port protocol="udp" portid="5353"><state state="closed" reason="port-unreach" reason_ttl="64"/><service name="zeroconf" method="table" conf="3"/></port>
+</ports>
+<times srtt="340426" rttvar="208217" to="1173294"/>
+</host>
+<runstats><finished time="1790009135" timestr="Mon Sep 21 21:45:35 2026" summary="Nmap done at Mon Sep 21 21:45:35 2026; 3 IP addresses (3 hosts up) scanned in 7.21 seconds" elapsed="7.21" exit="success"/><hosts up="3" down="0" total="3"/>
+</runstats>
+</nmaprun>

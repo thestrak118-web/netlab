@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE nmaprun>
+<?xml-stylesheet href="file:///usr/share/nmap/nmap.xsl" type="text/xsl"?>
+<!-- Nmap 7.99 scan initiated Mon Sep 21 21:15:43 2026 as: /usr/lib/nmap/nmap -sn -PR -n -e wlan0 -&#45;max-retries 1 -&#45;host-timeout 8s -oX - 10.0.0.0/24 -->
+<nmaprun scanner="nmap" args="/usr/lib/nmap/nmap -sn -PR -n -e wlan0 -&#45;max-retries 1 -&#45;host-timeout 8s -oX - 10.0.0.0/24" start="1790007343" startstr="Mon Sep 21 21:15:43 2026" version="7.99" xmloutputversion="1.05">
+<verbose level="0"/>
+<debugging level="0"/>
+<host><status state="up" reason="arp-response" reason_ttl="0"/>
+<address addr="10.0.0.1" addrtype="ipv4"/>
+<address addr="08:36:C9:E5:22:D2" addrtype="mac" vendor="Netgear"/>
+<hostnames>
+</hostnames>
+<times srtt="4310" rttvar="5000" to="100000"/>
+</host>
+<host><status state="up" reason="arp-response" reason_ttl="0"/>
+<address addr="10.0.0.4" addrtype="ipv4"/>
+<address addr="A0:CE:C8:6A:9E:EF" addrtype="mac" vendor="CE Link Limited"/>
+<hostnames>
+</hostnames>
+<times srtt="4181" rttvar="5000" to="100000"/>
+</host>
+<host><status state="up" reason="arp-response" reason_ttl="0"/>
+<address addr="10.0.0.12" addrtype="ipv4"/>
+<address addr="4E:01:17:16:3E:FF" addrtype="mac"/>
+<hostnames>
+</hostnames>
+<times srtt="124763" rttvar="88801" to="479967"/>
+</host>
+<host><status state="up" reason="arp-response" reason_ttl="0"/>
+<address addr="10.0.0.13" addrtype="ipv4"/>
+<address addr="86:FE:D7:88:54:76" addrtype="mac"/>
+<hostnames>
+</hostnames>
+<times srtt="107453" rttvar="107453" to="537265"/>
+</host>
+<host><status state="up" reason="arp-response" reason_ttl="0"/>
+<address addr="10.0.0.15" addrtype="ipv4"/>
+<address addr="92:29:00:64:9C:61" addrtype="mac"/>
+<hostnames>
+</hostnames>
+<times srtt="126911" rttvar="126911" to="634555"/>
+</host>
+<host><status state="up" reason="arp-response" reason_ttl="0"/>
+<address addr="10.0.0.21" addrtype="ipv4"/>
+<address addr="3A:EA:F9:39:AF:B0" addrtype="mac"/>
+<hostnames>
+</hostnames>
+<times srtt="82006" rttvar="84396" to="419590"/>
+</host>
+<runstats><finished time="1790007349" timestr="Mon Sep 21 21:15:49 2026" summary="Nmap done at Mon Sep 21 21:15:49 2026; 256 IP addresses (6 hosts up) scanned in 6.13 seconds" elapsed="6.13" exit="success"/><hosts up="6" down="250" total="256"/>
+</runstats>
+</nmaprun>

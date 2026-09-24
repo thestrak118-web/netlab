@@ -1,0 +1,265 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE nmaprun>
+<?xml-stylesheet href="file:///usr/share/nmap/nmap.xsl" type="text/xsl"?>
+<!-- Nmap 7.99 scan initiated Mon Sep 21 21:18:15 2026 as: /usr/lib/nmap/nmap -sU -n -e wlan0 -p 137,1900,5353 -&#45;script nbstat,upnp-info,dns-service-discovery -&#45;script-timeout 12s -&#45;max-retries 1 -&#45;host-timeout 45s -oX - 10.0.0.1 10.0.0.4 10.0.0.12 10.0.0.13 10.0.0.21 -->
+<nmaprun scanner="nmap" args="/usr/lib/nmap/nmap -sU -n -e wlan0 -p 137,1900,5353 -&#45;script nbstat,upnp-info,dns-service-discovery -&#45;script-timeout 12s -&#45;max-retries 1 -&#45;host-timeout 45s -oX - 10.0.0.1 10.0.0.4 10.0.0.12 10.0.0.13 10.0.0.21" start="1790007495" startstr="Mon Sep 21 21:18:15 2026" version="7.99" xmloutputversion="1.05">
+<scaninfo type="udp" protocol="udp" numservices="3" services="137,1900,5353"/>
+<verbose level="0"/>
+<debugging level="0"/>
+<hosthint><status state="up" reason="arp-response" reason_ttl="0"/>
+<address addr="10.0.0.4" addrtype="ipv4"/>
+<address addr="A0:CE:C8:6A:9E:EF" addrtype="mac" vendor="CE Link Limited"/>
+<hostnames>
+</hostnames>
+</hosthint>
+<hosthint><status state="up" reason="arp-response" reason_ttl="0"/>
+<address addr="10.0.0.1" addrtype="ipv4"/>
+<address addr="08:36:C9:E5:22:D2" addrtype="mac" vendor="Netgear"/>
+<hostnames>
+</hostnames>
+</hosthint>
+<hosthint><status state="up" reason="arp-response" reason_ttl="0"/>
+<address addr="10.0.0.13" addrtype="ipv4"/>
+<address addr="86:FE:D7:88:54:76" addrtype="mac"/>
+<hostnames>
+</hostnames>
+</hosthint>
+<hosthint><status state="up" reason="arp-response" reason_ttl="0"/>
+<address addr="10.0.0.12" addrtype="ipv4"/>
+<address addr="4E:01:17:16:3E:FF" addrtype="mac"/>
+<hostnames>
+</hostnames>
+</hosthint>
+<hosthint><status state="up" reason="arp-response" reason_ttl="0"/>
+<address addr="10.0.0.21" addrtype="ipv4"/>
+<address addr="3A:EA:F9:39:AF:B0" addrtype="mac"/>
+<hostnames>
+</hostnames>
+</hosthint>
+<host starttime="1790007495" endtime="1790007500"><status state="up" reason="arp-response" reason_ttl="0"/>
+<address addr="10.0.0.1" addrtype="ipv4"/>
+<address addr="08:36:C9:E5:22:D2" addrtype="mac" vendor="Netgear"/>
+<hostnames>
+</hostnames>
+<ports><port protocol="udp" portid="137"><state state="closed" reason="port-unreach" reason_ttl="64"/><service name="netbios-ns" method="table" conf="3"/></port>
+<port protocol="udp" portid="1900"><state state="open" reason="udp-response" reason_ttl="64"/><service name="upnp" method="table" conf="3"/><script id="upnp-info" output="&#xa;  usn: uuid:d9cfbed0-8565-8c34-3090-06ce0b722328&#xa;  location: http://10.0.0.1:5000/Public_UPNP_gatedesc.xml&#xa;  server: Linux/2.6.12, UPnP/1.0, NETGEAR-UPNP/1.0&#xa;  webserver: Linux/2.6.12 UPnP/1.0 NETGEAR-UPNP/1.0&#xa;  deviceType: urn:schemas-upnp-org:device:InternetGatewayDevice:1&#xa;  friendlyName: R8000 (Gateway)&#xa;  manufacturer: NETGEAR, Inc.&#xa;  modelDescription: NETGEAR R8000 802.11ac Wireless Router&#xa;  modelNumber: R8000&#xa;  modelName: R8000&#xa;  services: &#xa;    urn:schemas-upnp-org:service:Layer3Forwarding:1&#xa;  devices: &#xa;    uuid:d9cfbed0-8765-8c34-3090-06ce0b722328: &#xa;      deviceType: urn:schemas-upnp-org:device:WANConnectionDevice:1&#xa;      friendlyName: WAN Connection Device&#xa;      manufacturer: NETGEAR, Inc.&#xa;      modelDescription: NETGEAR R8000 802.11ac Wireless Router&#xa;      modelNumber: R8000&#xa;      modelName: R8000&#xa;      services: &#xa;        urn:schemas-upnp-org:service:WANEthernetLinkConfig:1&#xa;        urn:schemas-upnp-org:service:WANIPConnection:1&#xa;        urn:schemas-upnp-org:service:WANPPPConnection:1&#xa;    uuid:d9cfbed0-8665-8c34-3090-06ce0b722328: &#xa;      deviceType: urn:schemas-upnp-org:device:WANDevice:1&#xa;      friendlyName: WAN Device&#xa;      manufacturer: NETGEAR, Inc.&#xa;      modelDescription: NETGEAR R8000 802.11ac Wireless Router&#xa;      modelNumber: R8000&#xa;      modelName: R8000&#xa;      services: &#xa;        urn:schemas-upnp-org:service:WANCommonInterfaceConfig:1"><elem key="usn">uuid:d9cfbed0-8565-8c34-3090-06ce0b722328</elem>
+<elem key="location">http://10.0.0.1:5000/Public_UPNP_gatedesc.xml</elem>
+<elem key="server">Linux/2.6.12, UPnP/1.0, NETGEAR-UPNP/1.0</elem>
+<elem key="webserver">Linux/2.6.12 UPnP/1.0 NETGEAR-UPNP/1.0</elem>
+<elem key="deviceType">urn:schemas-upnp-org:device:InternetGatewayDevice:1</elem>
+<elem key="friendlyName">R8000 (Gateway)</elem>
+<elem key="manufacturer">NETGEAR, Inc.</elem>
+<elem key="modelDescription">NETGEAR R8000 802.11ac Wireless Router</elem>
+<elem key="modelNumber">R8000</elem>
+<elem key="modelName">R8000</elem>
+<table key="services">
+<elem>urn:schemas-upnp-org:service:Layer3Forwarding:1</elem>
+</table>
+<table key="devices">
+<table key="uuid:d9cfbed0-8765-8c34-3090-06ce0b722328">
+<elem key="deviceType">urn:schemas-upnp-org:device:WANConnectionDevice:1</elem>
+<elem key="friendlyName">WAN Connection Device</elem>
+<elem key="manufacturer">NETGEAR, Inc.</elem>
+<elem key="modelDescription">NETGEAR R8000 802.11ac Wireless Router</elem>
+<elem key="modelNumber">R8000</elem>
+<elem key="modelName">R8000</elem>
+<table key="services">
+<elem>urn:schemas-upnp-org:service:WANEthernetLinkConfig:1</elem>
+<elem>urn:schemas-upnp-org:service:WANIPConnection:1</elem>
+<elem>urn:schemas-upnp-org:service:WANPPPConnection:1</elem>
+</table>
+</table>
+<table key="uuid:d9cfbed0-8665-8c34-3090-06ce0b722328">
+<elem key="deviceType">urn:schemas-upnp-org:device:WANDevice:1</elem>
+<elem key="friendlyName">WAN Device</elem>
+<elem key="manufacturer">NETGEAR, Inc.</elem>
+<elem key="modelDescription">NETGEAR R8000 802.11ac Wireless Router</elem>
+<elem key="modelNumber">R8000</elem>
+<elem key="modelName">R8000</elem>
+<table key="services">
+<elem>urn:schemas-upnp-org:service:WANCommonInterfaceConfig:1</elem>
+</table>
+</table>
+</table>
+</script></port>
+<port protocol="udp" portid="5353"><state state="open|filtered" reason="no-response" reason_ttl="0"/><service name="zeroconf" method="table" conf="3"/></port>
+</ports>
+<times srtt="5704" rttvar="6160" to="100000"/>
+</host>
+<host starttime="1790007495" endtime="1790007498"><status state="up" reason="arp-response" reason_ttl="0"/>
+<address addr="10.0.0.4" addrtype="ipv4"/>
+<address addr="A0:CE:C8:6A:9E:EF" addrtype="mac" vendor="CE Link Limited"/>
+<hostnames>
+</hostnames>
+<ports><port protocol="udp" portid="137"><state state="open" reason="udp-response" reason_ttl="64"/><service name="netbios-ns" method="table" conf="3"/></port>
+<port protocol="udp" portid="1900"><state state="closed" reason="port-unreach" reason_ttl="64"/><service name="upnp" method="table" conf="3"/></port>
+<port protocol="udp" portid="5353"><state state="open" reason="udp-response" reason_ttl="255"/><service name="zeroconf" method="table" conf="3"/><script id="dns-service-discovery" output="&#xa;  7000/tcp airplay: &#xa;    ipv4: 10.0.0.4&#xa;    ipv6: fe80::4a9:4229:f371:e387&#xa;    name: MacBook Pro\xC2\xA0\xE2\x80\x94 MacBook&#xa;    hostname: MacBook-Pro-MacBook&#xa;    TXT: &#xa;      act=2&#xa;      acl=0&#xa;      deviceid=56:1D:C7:32:69:83&#xa;      fex=1c9/St5PFzg2IYxA&#xa;      features=0x4A7FCFD5,0x38174FDE&#xa;      rsf=0x8&#xa;      flags=0x204&#xa;      gid=336A954F-3159-420A-891D-91C929E64CFF&#xa;      igl=0&#xa;      gcgl=0&#xa;      model=Mac15,6&#xa;      at=4&#xa;      protovers=1.1&#xa;      pi=aec5d340-29a6-4e42-94f1-8f310eb3db88&#xa;      psi=541DC732-6983-4D2C-B04C-5BA300294E16&#xa;      pk=d04daa75813a5b279acc549f2843b9d6d1d60d19ccbb917b5933832a8a6211f0&#xa;      srcvers=980.77.5&#xa;      model=Mac15,6&#xa;      osxvers=26&#xa;      icolor=9&#xa;  7000/tcp raop: &#xa;    ipv4: 10.0.0.4&#xa;    ipv6: fe80::4a9:4229:f371:e387&#xa;    name: 561DC7326983@MacBook Pro\xC2\xA0\xE2\x80\x94 MacBook&#xa;    hostname: MacBook-Pro-MacBook&#xa;    TXT: &#xa;      cn=0,1,2,3&#xa;      da=true&#xa;      et=0,3,5&#xa;      ft=0x4A7FCFD5,0x38174FDE&#xa;      sf=0x204&#xa;      md=0,1,2&#xa;      am=Mac15,6&#xa;      pk=d04daa75813a5b279acc549f2843b9d6d1d60d19ccbb917b5933832a8a6211f0&#xa;      tp=UDP&#xa;      vn=65537&#xa;      vs=980.77.5&#xa;      vv=0&#xa;  49152/tcp companion-link: &#xa;    ipv4: 10.0.0.4&#xa;    ipv6: fe80::4a9:4229:f371:e387&#xa;    name: MacBook Pro\xC2\xA0\xE2\x80\x94 MacBook&#xa;    hostname: MacBook-Pro-MacBook&#xa;    TXT: &#xa;      rpBA=CB:00:02:7A:C6:91&#xa;      rpAD=a836ef826e46&#xa;      rpFl=0x20000&#xa;      rpHN=3471e79999b0&#xa;      rpMac=0&#xa;      rpVr=715.2&#xa;      model=Mac15,6&#xa;      osxvers=26&#xa;      icolor=9"><table key="7000/tcp airplay">
+<elem key="ipv4">10.0.0.4</elem>
+<elem key="ipv6">fe80::4a9:4229:f371:e387</elem>
+<elem key="name">MacBook Pro\xC2\xA0\xE2\x80\x94 MacBook</elem>
+<elem key="hostname">MacBook-Pro-MacBook</elem>
+<table key="TXT">
+<elem>act=2</elem>
+<elem>acl=0</elem>
+<elem>deviceid=56:1D:C7:32:69:83</elem>
+<elem>fex=1c9/St5PFzg2IYxA</elem>
+<elem>features=0x4A7FCFD5,0x38174FDE</elem>
+<elem>rsf=0x8</elem>
+<elem>flags=0x204</elem>
+<elem>gid=336A954F-3159-420A-891D-91C929E64CFF</elem>
+<elem>igl=0</elem>
+<elem>gcgl=0</elem>
+<elem>model=Mac15,6</elem>
+<elem>at=4</elem>
+<elem>protovers=1.1</elem>
+<elem>pi=aec5d340-29a6-4e42-94f1-8f310eb3db88</elem>
+<elem>psi=541DC732-6983-4D2C-B04C-5BA300294E16</elem>
+<elem>pk=d04daa75813a5b279acc549f2843b9d6d1d60d19ccbb917b5933832a8a6211f0</elem>
+<elem>srcvers=980.77.5</elem>
+<elem>model=Mac15,6</elem>
+<elem>osxvers=26</elem>
+<elem>icolor=9</elem>
+</table>
+</table>
+<table key="7000/tcp raop">
+<elem key="ipv4">10.0.0.4</elem>
+<elem key="ipv6">fe80::4a9:4229:f371:e387</elem>
+<elem key="name">561DC7326983@MacBook Pro\xC2\xA0\xE2\x80\x94 MacBook</elem>
+<elem key="hostname">MacBook-Pro-MacBook</elem>
+<table key="TXT">
+<elem>cn=0,1,2,3</elem>
+<elem>da=true</elem>
+<elem>et=0,3,5</elem>
+<elem>ft=0x4A7FCFD5,0x38174FDE</elem>
+<elem>sf=0x204</elem>
+<elem>md=0,1,2</elem>
+<elem>am=Mac15,6</elem>
+<elem>pk=d04daa75813a5b279acc549f2843b9d6d1d60d19ccbb917b5933832a8a6211f0</elem>
+<elem>tp=UDP</elem>
+<elem>vn=65537</elem>
+<elem>vs=980.77.5</elem>
+<elem>vv=0</elem>
+</table>
+</table>
+<table key="49152/tcp companion-link">
+<elem key="ipv4">10.0.0.4</elem>
+<elem key="ipv6">fe80::4a9:4229:f371:e387</elem>
+<elem key="name">MacBook Pro\xC2\xA0\xE2\x80\x94 MacBook</elem>
+<elem key="hostname">MacBook-Pro-MacBook</elem>
+<table key="TXT">
+<elem>rpBA=CB:00:02:7A:C6:91</elem>
+<elem>rpAD=a836ef826e46</elem>
+<elem>rpFl=0x20000</elem>
+<elem>rpHN=3471e79999b0</elem>
+<elem>rpMac=0</elem>
+<elem>rpVr=715.2</elem>
+<elem>model=Mac15,6</elem>
+<elem>osxvers=26</elem>
+<elem>icolor=9</elem>
+</table>
+</table>
+</script></port>
+</ports>
+<hostscript><script id="nbstat" output="NetBIOS name: MAC-39B52F, NetBIOS user: &lt;unknown&gt;, NetBIOS MAC: a0:ce:c8:6a:9e:ef (CE Link Limited)&#xa;Names:&#xa;  MAC-39B52F&lt;00&gt;       Flags: &lt;unique&gt;&lt;active&gt;"/></hostscript><times srtt="5472" rttvar="4653" to="100000"/>
+</host>
+<host starttime="1790007495" endtime="1790007499"><status state="up" reason="arp-response" reason_ttl="0"/>
+<address addr="10.0.0.12" addrtype="ipv4"/>
+<address addr="4E:01:17:16:3E:FF" addrtype="mac"/>
+<hostnames>
+</hostnames>
+<ports><port protocol="udp" portid="137"><state state="closed" reason="port-unreach" reason_ttl="64"/><service name="netbios-ns" method="table" conf="3"/></port>
+<port protocol="udp" portid="1900"><state state="closed" reason="port-unreach" reason_ttl="64"/><service name="upnp" method="table" conf="3"/></port>
+<port protocol="udp" portid="5353"><state state="open|filtered" reason="no-response" reason_ttl="0"/><service name="zeroconf" method="table" conf="3"/></port>
+</ports>
+<times srtt="185334" rttvar="125735" to="688274"/>
+</host>
+<host starttime="1790007495" endtime="1790007497"><status state="up" reason="arp-response" reason_ttl="0"/>
+<address addr="10.0.0.13" addrtype="ipv4"/>
+<address addr="86:FE:D7:88:54:76" addrtype="mac"/>
+<hostnames>
+</hostnames>
+<ports><port protocol="udp" portid="137"><state state="closed" reason="port-unreach" reason_ttl="64"/><service name="netbios-ns" method="table" conf="3"/></port>
+<port protocol="udp" portid="1900"><state state="closed" reason="port-unreach" reason_ttl="64"/><service name="upnp" method="table" conf="3"/></port>
+<port protocol="udp" portid="5353"><state state="closed" reason="port-unreach" reason_ttl="64"/><service name="zeroconf" method="table" conf="3"/></port>
+</ports>
+<times srtt="192663" rttvar="108260" to="625703"/>
+</host>
+<host starttime="1790007495" endtime="1790007498"><status state="up" reason="arp-response" reason_ttl="0"/>
+<address addr="10.0.0.21" addrtype="ipv4"/>
+<address addr="3A:EA:F9:39:AF:B0" addrtype="mac"/>
+<hostnames>
+</hostnames>
+<ports><port protocol="udp" portid="137"><state state="open" reason="udp-response" reason_ttl="64"/><service name="netbios-ns" method="table" conf="3"/></port>
+<port protocol="udp" portid="1900"><state state="closed" reason="port-unreach" reason_ttl="64"/><service name="upnp" method="table" conf="3"/></port>
+<port protocol="udp" portid="5353"><state state="open" reason="udp-response" reason_ttl="255"/><service name="zeroconf" method="table" conf="3"/><script id="dns-service-discovery" output="&#xa;  7000/tcp airplay: &#xa;    ipv4: 10.0.0.21&#xa;    ipv6: fe80::818:d1b5:102a:f714&#xa;    name: MacBook Pro\xC2\xA0\xE2\x80\x94 MacBook&#xa;    hostname: MacBook-Pro-MacBook&#xa;    TXT: &#xa;      act=2&#xa;      acl=0&#xa;      deviceid=56:1D:C7:32:69:83&#xa;      fex=1c9/St5PFzg2IYxA&#xa;      features=0x4A7FCFD5,0x38174FDE&#xa;      rsf=0x8&#xa;      flags=0x204&#xa;      gid=336A954F-3159-420A-891D-91C929E64CFF&#xa;      igl=0&#xa;      gcgl=0&#xa;      model=Mac15,6&#xa;      at=4&#xa;      protovers=1.1&#xa;      pi=aec5d340-29a6-4e42-94f1-8f310eb3db88&#xa;      psi=541DC732-6983-4D2C-B04C-5BA300294E16&#xa;      pk=d04daa75813a5b279acc549f2843b9d6d1d60d19ccbb917b5933832a8a6211f0&#xa;      srcvers=980.77.5&#xa;      model=Mac15,6&#xa;      osxvers=26&#xa;      icolor=9&#xa;  7000/tcp raop: &#xa;    ipv4: 10.0.0.21&#xa;    ipv6: fe80::818:d1b5:102a:f714&#xa;    name: 561DC7326983@MacBook Pro\xC2\xA0\xE2\x80\x94 MacBook&#xa;    hostname: MacBook-Pro-MacBook&#xa;    TXT: &#xa;      cn=0,1,2,3&#xa;      da=true&#xa;      et=0,3,5&#xa;      ft=0x4A7FCFD5,0x38174FDE&#xa;      sf=0x204&#xa;      md=0,1,2&#xa;      am=Mac15,6&#xa;      pk=d04daa75813a5b279acc549f2843b9d6d1d60d19ccbb917b5933832a8a6211f0&#xa;      tp=UDP&#xa;      vn=65537&#xa;      vs=980.77.5&#xa;      vv=0&#xa;  49152/tcp companion-link: &#xa;    ipv4: 10.0.0.21&#xa;    ipv6: fe80::818:d1b5:102a:f714&#xa;    name: MacBook Pro\xC2\xA0\xE2\x80\x94 MacBook&#xa;    hostname: MacBook-Pro-MacBook&#xa;    TXT: &#xa;      rpBA=CB:00:02:7A:C6:91&#xa;      rpAD=a836ef826e46&#xa;      rpFl=0x20000&#xa;      rpHN=3471e79999b0&#xa;      rpMac=0&#xa;      rpVr=715.2&#xa;      model=Mac15,6&#xa;      osxvers=26&#xa;      icolor=9"><table key="7000/tcp airplay">
+<elem key="ipv4">10.0.0.21</elem>
+<elem key="ipv6">fe80::818:d1b5:102a:f714</elem>
+<elem key="name">MacBook Pro\xC2\xA0\xE2\x80\x94 MacBook</elem>
+<elem key="hostname">MacBook-Pro-MacBook</elem>
+<table key="TXT">
+<elem>act=2</elem>
+<elem>acl=0</elem>
+<elem>deviceid=56:1D:C7:32:69:83</elem>
+<elem>fex=1c9/St5PFzg2IYxA</elem>
+<elem>features=0x4A7FCFD5,0x38174FDE</elem>
+<elem>rsf=0x8</elem>
+<elem>flags=0x204</elem>
+<elem>gid=336A954F-3159-420A-891D-91C929E64CFF</elem>
+<elem>igl=0</elem>
+<elem>gcgl=0</elem>
+<elem>model=Mac15,6</elem>
+<elem>at=4</elem>
+<elem>protovers=1.1</elem>
+<elem>pi=aec5d340-29a6-4e42-94f1-8f310eb3db88</elem>
+<elem>psi=541DC732-6983-4D2C-B04C-5BA300294E16</elem>
+<elem>pk=d04daa75813a5b279acc549f2843b9d6d1d60d19ccbb917b5933832a8a6211f0</elem>
+<elem>srcvers=980.77.5</elem>
+<elem>model=Mac15,6</elem>
+<elem>osxvers=26</elem>
+<elem>icolor=9</elem>
+</table>
+</table>
+<table key="7000/tcp raop">
+<elem key="ipv4">10.0.0.21</elem>
+<elem key="ipv6">fe80::818:d1b5:102a:f714</elem>
+<elem key="name">561DC7326983@MacBook Pro\xC2\xA0\xE2\x80\x94 MacBook</elem>
+<elem key="hostname">MacBook-Pro-MacBook</elem>
+<table key="TXT">
+<elem>cn=0,1,2,3</elem>
+<elem>da=true</elem>
+<elem>et=0,3,5</elem>
+<elem>ft=0x4A7FCFD5,0x38174FDE</elem>
+<elem>sf=0x204</elem>
+<elem>md=0,1,2</elem>
+<elem>am=Mac15,6</elem>
+<elem>pk=d04daa75813a5b279acc549f2843b9d6d1d60d19ccbb917b5933832a8a6211f0</elem>
+<elem>tp=UDP</elem>
+<elem>vn=65537</elem>
+<elem>vs=980.77.5</elem>
+<elem>vv=0</elem>
+</table>
+</table>
+<table key="49152/tcp companion-link">
+<elem key="ipv4">10.0.0.21</elem>
+<elem key="ipv6">fe80::818:d1b5:102a:f714</elem>
+<elem key="name">MacBook Pro\xC2\xA0\xE2\x80\x94 MacBook</elem>
+<elem key="hostname">MacBook-Pro-MacBook</elem>
+<table key="TXT">
+<elem>rpBA=CB:00:02:7A:C6:91</elem>
+<elem>rpAD=a836ef826e46</elem>
+<elem>rpFl=0x20000</elem>
+<elem>rpHN=3471e79999b0</elem>
+<elem>rpMac=0</elem>
+<elem>rpVr=715.2</elem>
+<elem>model=Mac15,6</elem>
+<elem>osxvers=26</elem>
+<elem>icolor=9</elem>
+</table>
+</table>
+</script></port>
+</ports>
+<hostscript><script id="nbstat" output="NetBIOS name: MAC-39B52F, NetBIOS user: &lt;unknown&gt;, NetBIOS MAC: a0:ce:c8:6a:9e:ef (CE Link Limited)&#xa;Names:&#xa;  MAC-39B52F&lt;00&gt;       Flags: &lt;unique&gt;&lt;active&gt;"/></hostscript><times srtt="158360" rttvar="174327" to="855668"/>
+</host>
+<runstats><finished time="1790007500" timestr="Mon Sep 21 21:18:20 2026" summary="Nmap done at Mon Sep 21 21:18:20 2026; 5 IP addresses (5 hosts up) scanned in 5.16 seconds" elapsed="5.16" exit="success"/><hosts up="5" down="0" total="5"/>
+</runstats>
+</nmaprun>

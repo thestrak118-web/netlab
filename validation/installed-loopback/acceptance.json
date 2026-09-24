@@ -1,0 +1,89 @@
+{
+  "version": "1.1.0",
+  "module": "/usr/lib/python3/dist-packages/netlab/__init__.py",
+  "interface": "lo",
+  "gui_platform": "wayland",
+  "pcap": "/home/erwin/loyiha/netlab/validation/installed-loopback/netlab-lo-20260921-183029.pcapng",
+  "packets": 72,
+  "capinfos_count": 72,
+  "tshark_count": 72,
+  "reopened_packets": 72,
+  "traffic_response_bytes": [
+    118,
+    118
+  ],
+  "stats": {
+    "total_packets": 72,
+    "total_bytes": 5128,
+    "packets_per_sec": 0.0,
+    "bytes_per_sec": 0.0,
+    "peak_pps": 61.51080212340327,
+    "flows": 2,
+    "active_flows": 0,
+    "hosts": 1,
+    "dns_events": 0,
+    "http_transactions": 2,
+    "tls_sessions": 0,
+    "malformed": 0,
+    "queue_dropped": 0,
+    "queue_depth": 0,
+    "flows_evicted": 0,
+    "hosts_evicted": 0,
+    "unsupported_linktype": 0,
+    "history": [
+      [
+        1789997430.8425107,
+        0.9889783221870012,
+        73.1843958418381
+      ],
+      [
+        1789997431.996769,
+        61.51080212340327,
+        4378.529491995495
+      ],
+      [
+        1789997432.9974155,
+        0.0,
+        0.0
+      ],
+      [
+        1789997433.9979458,
+        0.0,
+        0.0
+      ]
+    ],
+    "streams": 0,
+    "streams_created": 2,
+    "streams_expired": 2,
+    "streams_evicted": 0,
+    "reassembled_bytes": 344,
+    "reassembly_segments": 30,
+    "retransmissions": 0,
+    "out_of_order": 0,
+    "stream_gaps": 0,
+    "stream_gap_bytes": 0,
+    "reasm_buffered_bytes": 0,
+    "reasm_peak_buffered": 0,
+    "http_messages": 4,
+    "http_resyncs": 0,
+    "tls_handshakes": 0
+  },
+  "http": [
+    {
+      "method": "GET",
+      "status": 200,
+      "body_bytes": 11,
+      "body_complete": true,
+      "transfer": "chunked"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "body_bytes": 11,
+      "body_complete": true,
+      "transfer": "chunked"
+    }
+  ],
+  "packet_flow_correlation": true,
+  "file_offset_seek": true
+}

@@ -1,0 +1,2 @@
+
+PASS: /usr/bin/netlab -r launched and remained running for 4 seconds.

@@ -1,0 +1,89 @@
+{
+  "version": "1.1.0",
+  "module": "/home/erwin/loyiha/netlab/src/netlab/__init__.py",
+  "interface": "wlan0",
+  "gui_platform": "wayland",
+  "pcap": "/home/erwin/loyiha/netlab/validation/wlan0-final/netlab-wlan0-20260921-182428.pcapng",
+  "packets": 74,
+  "capinfos_count": 74,
+  "tshark_count": 74,
+  "reopened_packets": 74,
+  "traffic_response_bytes": [
+    12980,
+    12980
+  ],
+  "stats": {
+    "total_packets": 74,
+    "total_bytes": 38320,
+    "packets_per_sec": 0.0,
+    "bytes_per_sec": 0.0,
+    "peak_pps": 35.83695400798907,
+    "flows": 2,
+    "active_flows": 0,
+    "hosts": 2,
+    "dns_events": 0,
+    "http_transactions": 2,
+    "tls_sessions": 0,
+    "malformed": 0,
+    "queue_dropped": 0,
+    "queue_depth": 0,
+    "flows_evicted": 0,
+    "hosts_evicted": 0,
+    "unsupported_linktype": 0,
+    "history": [
+      [
+        1789997069.0121508,
+        0.9942930423041781,
+        73.57768513050918
+      ],
+      [
+        1789997070.0166934,
+        35.83695400798907,
+        16871.241570205522
+      ],
+      [
+        1789997071.1691267,
+        32.106123337120025,
+        18480.97877929682
+      ],
+      [
+        1789997072.169884,
+        0.0,
+        0.0
+      ]
+    ],
+    "streams": 0,
+    "streams_created": 2,
+    "streams_expired": 2,
+    "streams_evicted": 0,
+    "reassembled_bytes": 26080,
+    "reassembly_segments": 32,
+    "retransmissions": 3,
+    "out_of_order": 12,
+    "stream_gaps": 0,
+    "stream_gap_bytes": 0,
+    "reasm_buffered_bytes": 0,
+    "reasm_peak_buffered": 8708,
+    "http_messages": 4,
+    "http_resyncs": 0,
+    "tls_handshakes": 0
+  },
+  "http": [
+    {
+      "method": "GET",
+      "status": 200,
+      "body_bytes": 11513,
+      "body_complete": true,
+      "transfer": "chunked"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "body_bytes": 11513,
+      "body_complete": true,
+      "transfer": "chunked"
+    }
+  ],
+  "packet_flow_correlation": true,
+  "file_offset_seek": true
+}

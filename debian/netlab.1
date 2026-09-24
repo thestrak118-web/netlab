@@ -1,0 +1,172 @@
+.TH NETLAB 1 "2026-09-23" "netlab 2.0.0" "User Commands"
+.SH NAME
+netlab \- network analysis and interception workbench for Kali Linux
+.SH SYNOPSIS
+.B netlab
+.RI [ options ]
+.SH DESCRIPTION
+.B NetLab
+is a GUI-first network analyser and interception tool. It captures packets
+with
+.BR dumpcap (1)
+into a real pcap or pcapng file and then decodes those bytes itself to show
+live traffic, connections, hosts, DNS, cleartext HTTP and TLS handshake
+metadata.
+.PP
+NetLab has two halves. The
+.B passive
+half never puts a frame on the wire: it observes, decodes and, when
+credential extraction is enabled, recovers the passwords and authentication
+hashes that readable protocols hand to anyone on the path.
+.PP
+The
+.B active
+half transmits: full\-duplex ARP poisoning, SSL stripping, TLS interception
+with a locally generated certificate authority, DNS spoofing, a rogue DHCP
+server, an in\-flight traffic changer, cookie expiry and a promiscuous\-host
+probe.
+.PP
+Nothing in the active half runs without an
+.IR engagement :
+a named, on\-disk record of the interface, the gateway and the hosts the
+operator declared to be in scope, confirmed in a dialog that states what is
+about to be transmitted. Every address is checked against that engagement in
+the privileged helper, and every action is appended to a JSONL audit log.
+Active interception is for networks you have been authorised to test.
+.PP
+Protocol fields that were not observed on the wire are shown as absent rather
+than guessed.
+.SH OPTIONS
+.TP
+.BR \-h ", " \-\-help
+Show a help message and exit.
+.TP
+.B \-\-version
+Print the version and exit.
+.TP
+.BR \-i ", " \-\-interface " \fIIFACE\fR"
+Preselect this capture interface.
+.TP
+.BR \-f ", " \-\-filter " \fIBPF\fR"
+Preload a libpcap capture filter expression.
+.TP
+.BR \-r ", " \-\-read " \fIFILE\fR"
+Open a pcap or pcapng file on startup instead of capturing.
+.TP
+.B \-\-start
+Begin capturing immediately on the selected interface.
+.TP
+.B \-\-check
+Report capture privileges and available interfaces on stdout, then exit.
+This works without a graphical display.
+.SH PRIVILEGES
+NetLab is intended to run as an ordinary desktop user. Capture privileges
+live in
+.BR dumpcap (1),
+which on Debian and Kali carries
+.B cap_net_raw
+and
+.B cap_net_admin
+and is executable by the
+.B wireshark
+group. To grant a user capture rights:
+.PP
+.RS
+.nf
+sudo dpkg\-reconfigure wireshark\-common
+sudo usermod \-aG wireshark $USER
+.fi
+.RE
+.PP
+The group change takes effect at the next login. Run
+.B netlab \-\-check
+to confirm. Running the whole GUI as root works but is not recommended.
+.SH FILES
+.TP
+.I /etc/netlab/netlab.conf
+System-wide default settings, in JSON.
+.TP
+.I ~/.config/netlab/config.json
+Per-user settings, overriding the system defaults.
+.TP
+.I ~/.local/share/netlab/captures
+Default directory for capture files.
+.SH DISPLAY FILTERS
+Each table has a filter box that narrows the rows already captured without
+affecting the capture itself. Terms are combined with AND, a leading
+.B \-
+negates, and
+.B |
+separates alternatives:
+.PP
+.RS
+.nf
+ip:10.0.0.5      port:443       proto:tls|http
+host:example.com \-proto:arp
+.fi
+.RE
+.PP
+To change what is captured in the first place, use the BPF capture filter in
+the toolbar; see
+.BR pcap-filter (7).
+.SH PRIVILEGES
+NetLab itself runs unprivileged. Capture rights live in
+.BR dumpcap (1);
+see
+.B \-\-check.
+.PP
+Interception needs
+.B CAP_NET_RAW
+and
+.BR CAP_NET_ADMIN ,
+which live in a separate process,
+.BR netlab-helper (1).
+The GUI starts it through
+.BR pkexec (1)
+the first time an engagement is armed and drives it over a pipe. When the GUI
+exits the pipe closes, and the helper restores ARP tables, packet forwarding
+and its nftables table before exiting, so a crashed GUI cannot leave a subnet
+poisoned.
+.PP
+Run
+.B netlab-helper \-\-check
+as root to report whether the interception prerequisites are present.
+.SH ENGAGEMENT FILES
+.TP
+.I ~/.local/share/netlab/engagements/<date>-<name>/engagement.json
+The declared scope: interface, gateway, targets and the operator's
+confirmation.
+.TP
+.I ~/.local/share/netlab/engagements/<date>-<name>/audit.jsonl
+Every active action, one JSON object per line.
+.TP
+.I ~/.local/share/netlab/engagements/<date>-<name>/files/
+Response bodies carved while file capture was enabled.
+.TP
+.I ~/.local/share/netlab/ca/
+The interception certificate authority and the per\-name leaves minted from
+it. Install
+.I ca.crt
+on the device under test to intercept its TLS without a warning, and remove
+it when the engagement ends.
+.SH EXIT STATUS
+.TP
+.B 0
+Normal termination.
+.TP
+.B 1
+.B \-\-check
+found that capture is not currently possible.
+.TP
+.B 2
+No graphical display was available.
+.SH SEE ALSO
+.BR dumpcap (1),
+.BR tshark (1),
+.BR wireshark (1),
+.BR capinfos (1),
+.BR pcap-filter (7),
+.BR nmap (1),
+.BR nft (8),
+.BR pkexec (1),
+.BR hashcat (1)

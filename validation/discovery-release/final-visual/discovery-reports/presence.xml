@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE nmaprun>
+<?xml-stylesheet href="file:///usr/share/nmap/nmap.xsl" type="text/xsl"?>
+<!-- Nmap 7.99 scan initiated Mon Sep 21 21:51:11 2026 as: /usr/lib/nmap/nmap -sn -PR -n -e wlan0 -&#45;max-retries 1 -&#45;host-timeout 8s -oX - 10.0.0.0/24 -->
+<nmaprun scanner="nmap" args="/usr/lib/nmap/nmap -sn -PR -n -e wlan0 -&#45;max-retries 1 -&#45;host-timeout 8s -oX - 10.0.0.0/24" start="1790009471" startstr="Mon Sep 21 21:51:11 2026" version="7.99" xmloutputversion="1.05">
+<verbose level="0"/>
+<debugging level="0"/>
+<host><status state="up" reason="arp-response" reason_ttl="0"/>
+<address addr="10.0.0.1" addrtype="ipv4"/>
+<address addr="08:36:C9:E5:22:D2" addrtype="mac" vendor="Netgear"/>
+<hostnames>
+</hostnames>
+<times srtt="4546" rttvar="4319" to="100000"/>
+</host>
+<host><status state="up" reason="arp-response" reason_ttl="0"/>
+<address addr="10.0.0.12" addrtype="ipv4"/>
+<address addr="4E:01:17:16:3E:FF" addrtype="mac"/>
+<hostnames>
+</hostnames>
+<times srtt="345744" rttvar="163341" to="999108"/>
+</host>
+<host><status state="up" reason="arp-response" reason_ttl="0"/>
+<address addr="10.0.0.13" addrtype="ipv4"/>
+<address addr="86:FE:D7:88:54:76" addrtype="mac"/>
+<hostnames>
+</hostnames>
+<times srtt="516030" rttvar="516030" to="2580150"/>
+</host>
+<runstats><finished time="1790009477" timestr="Mon Sep 21 21:51:17 2026" summary="Nmap done at Mon Sep 21 21:51:17 2026; 256 IP addresses (3 hosts up) scanned in 5.75 seconds" elapsed="5.75" exit="success"/><hosts up="3" down="253" total="256"/>
+</runstats>
+</nmaprun>

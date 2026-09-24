@@ -1,0 +1,89 @@
+Reading package lists...
+Building dependency tree...
+Reading state information...
+Solving dependencies...
+The following packages were automatically installed and are no longer required:
+  distrobuilder distrobuilder-images gstreamer1.0-plugins-base:i386
+  libabsl20260526:i386 libassuan9:i386 libavahi-client3:i386
+  libavahi-common-data:i386 libavahi-common3:i386 libavif16:i386 libcap2:i386
+  libcapi20-3t64:i386 libcdparanoia0:i386 libchm1 libcom-err2:i386
+  libcurl3t64-gnutls:i386 libcurl4-gnutls:i386 libcurl4t64:i386
+  libdb5.3t64:i386 libde265-0:i386 libdeflate0:i386 libexif12:i386
+  libgav1-2:i386 libgd3:i386 libgdbm-compat4t64:i386 libgdbm6t64:i386
+  libglu1-mesa:i386 libgmp10:i386 libgnutls30t64:i386 libgpgme45:i386
+  libgpgmepp7:i386 libgphoto2-6t64:i386 libgphoto2-port12t64:i386 libgpm2:i386
+  libgsoap-2.8.139 libgssapi-krb5-2:i386 libgstreamer-plugins-base1.0-0:i386
+  libgstreamer1.0-0:i386 libheif-plugin-aomenc:i386 libheif-plugin-dav1d:i386
+  libheif-plugin-libde265:i386 libheif-plugin-x265:i386 libheif1:i386
+  libhogweed6t64:i386 libieee1284-3t64:i386 libimagequant0:i386 libjbig0:i386
+  libjpeg62-turbo:i386 libjson-c5:i386 libk5crypto3:i386 libkeyutils1:i386
+  libkf6archive-data libkf6archive6 libkrb5-3:i386 libkrb5support0:i386
+  libldap2:i386 liblerc4:i386 libltdl7:i386 liblxc-common liblxc1t64
+  libncurses6:i386 libnettle8t64:i386 libnghttp2-14:i386 libnghttp3-9:i386
+  libngtcp2-16:i386 libngtcp2-crypto-gnutls8:i386 libngtcp2-crypto-ossl0:i386
+  libnl-3-200:i386 libnl-route-3-200:i386 libnspr4:i386 libnss3:i386
+  liborc-0.4-0t64:i386 libp11-kit0:i386 libpam-cgfs libpcap0.8t64:i386
+  libpci3:i386 libperl5.40:i386 libpoppler-glib8t64:i386 libpoppler156:i386
+  libpsl5t64:i386 libpython3.13-dev libqt6quickcontrols2-6 libqt6quickshapes6
+  libqt6quicktemplates2-6 libqt6spatialaudio6 libqt6webchannelquick6
+  libqt6webenginequick6 libsane1:i386 libsasl2-2:i386 libsasl2-modules:i386
+  libsasl2-modules-db:i386 libsnmp45:i386 libsqlite3-0:i386 libssh2-1t64:i386
+  libssl3t64:i386 libsubid5 libtasn1-6:i386 libtiff6:i386 libusb-1.0-0:i386
+  libv4l-0t64:i386 libv4lconvert0t64:i386 libvisual-0.4-0:i386
+  libwayland-egl1:i386 libwrap0:i386 libxcomposite1:i386 libxcursor1:i386
+  libxi6:i386 libxkbregistry0:i386 libxpm4:i386 libxrandr2:i386
+  libxslt1.1:i386 libyuv0:i386 lxc lxcfs python3-apsw python3-bcj
+  python3-brotlicffi python3-chm python3-css-parser python3-html5-parser
+  python3-ifaddr python3-inflate64 python3-jaconv python3-lxml-html-clean
+  python3-multivolumefile python3-py7zr python3-pykakasi python3-pyppmd
+  python3-pyqt6.qtmultimedia python3-pyqt6.qtqml python3-pyqt6.qtquick
+  python3-pyqt6.qtsvg python3-pyqt6.qttexttospeech python3-pyqt6.qtwebchannel
+  python3-pyqt6.qtwebengine python3-pystache python3-zeroconf python3.13-dev
+  python3.13-tk qml6-module-qt-labs-folderlistmodel
+  qml6-module-qt-labs-qmlmodels qml6-module-qtqml qml6-module-qtqml-models
+  qml6-module-qtqml-workerscript qml6-module-qtquick
+  qml6-module-qtquick-controls qml6-module-qtquick-dialogs
+  qml6-module-qtquick-layouts qml6-module-qtquick-shapes
+  qml6-module-qtquick-templates qml6-module-qtquick-window
+  qml6-module-qtwebchannel qml6-module-qtwebengine
+  qml6-module-qtwebengine-controlsdelegates qt6-speech-flite-plugin uidmap
+  webp wine-stable wine-stable-amd64 wine-stable-i386:i386
+Use 'apt autoremove' to remove them.
+The following packages will be upgraded:
+  netlab
+1 upgraded, 0 newly installed, 0 to remove and 1609 not upgraded.
+Need to get 0 B/122 kB of archives.
+After this operation, 21.5 kB of additional disk space will be used.
+Get:1 /home/erwin/loyiha/netlab_1.3.0_amd64.deb netlab amd64 1.3.0 [122 kB]
+debconf: unable to initialize frontend: Dialog
+debconf: (Dialog frontend will not work on a dumb terminal, an emacs shell buffer, or without a controlling terminal.)
+debconf: falling back to frontend: Readline
+debconf: unable to initialize frontend: Readline
+debconf: (This frontend requires a controlling tty.)
+debconf: falling back to frontend: Teletype
+debconf: unable to initialize frontend: Teletype
+debconf: (This frontend requires a controlling tty.)
+debconf: falling back to frontend: Noninteractive
+(Reading database ... (Reading database ... 5%(Reading database ... 10%(Reading database ... 15%(Reading database ... 20%(Reading database ... 25%(Reading database ... 30%(Reading database ... 35%(Reading database ... 40%(Reading database ... 45%(Reading database ... 50%(Reading database ... 55%(Reading database ... 60%(Reading database ... 65%(Reading database ... 70%(Reading database ... 75%(Reading database ... 80%(Reading database ... 85%(Reading database ... 90%(Reading database ... 95%(Reading database ... 100%(Reading database ... 854928 files and directories currently installed.)
+Preparing to unpack .../loyiha/netlab_1.3.0_amd64.deb ...
+Unpacking netlab (1.3.0) over (1.2.0) ...
+Setting up netlab (1.3.0) ...
+Processing triggers for kali-menu (2026.3.2) ...
+Processing triggers for desktop-file-utils (0.28-1) ...
+Processing triggers for hicolor-icon-theme (0.18-2) ...
+Processing triggers for gnome-menus (3.38.1-3) ...
+Processing triggers for man-db (2.13.1-1) ...
+Processing triggers for mailcap (3.77) ...
+
+Running kernel seems to be up-to-date.
+
+The processor microcode seems to be up-to-date.
+
+No services need to be restarted.
+
+No containers need to be restarted.
+
+User sessions running outdated binaries:
+ erwin @ user service: org.gnome.Shell@user.service[4240]
+
+No VM guests are running outdated hypervisor (qemu) binaries on this host.

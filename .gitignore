@@ -1,0 +1,36 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.eggs/
+*.egg
+
+# Test / coverage
+.pytest_cache/
+.coverage
+htmlcov/
+validation/coverage/
+
+# Debian / build artifacts
+build/
+.pybuild/
+debian/netlab/
+debian/.debhelper/
+debian/files
+debian/*.substvars
+debian/*.debhelper
+debian/*.debhelper.log
+debian/debhelper-build-stamp
+*.deb
+*.buildinfo
+*.changes
+
+# Editors / OS
+*.swp
+.DS_Store
+
+# Validation evidence: keep the written reports (.md/.json/.txt/.log),
+# not the large capture/screenshot binaries they were derived from.
+validation/**/*.pcapng
+validation/**/*.png
+validation/**/*.pcap

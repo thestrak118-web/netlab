@@ -1,0 +1,12 @@
+{
+  "package": "/home/erwin/loyiha/netlab_1.4.0_amd64.deb",
+  "sha256": "62a49f5a99b05c07d12e5bcc67ee75c9c2ab437c7dd56e37d5aa7770bef6d7dd",
+  "installed_version": "1.4.0",
+  "dpkg_verify_clean": true,
+  "matched_installed_files": 59,
+  "mismatches": [],
+  "full_pcap_tshark": 2419,
+  "full_pcap_capinfos": 2419,
+  "additional_local_peer": "940\t10.0.0.15\t224.0.0.251\t92:29:00:64:9c:61",
+  "full_pcap_reopened_netlab": 2419
+}

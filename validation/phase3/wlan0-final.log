@@ -1,0 +1,189 @@
+{
+  "version": "1.2.0",
+  "module": "/usr/lib/python3/dist-packages/netlab/__init__.py",
+  "interface": "wlan0",
+  "platform": "wayland",
+  "started": 1790000218.2279122,
+  "checks": {
+    "live_topology": {
+      "initial_revision": 2,
+      "final_revision": 3,
+      "initial_packets": 1,
+      "final_packets": 183,
+      "node_item_reused": true,
+      "capture_running": true
+    },
+    "Traffic": {
+      "rows": 234,
+      "filter": "device:10.0.0.28"
+    },
+    "Connections": {
+      "rows": 24,
+      "filter": "device:10.0.0.28"
+    },
+    "DNS": {
+      "rows": 22,
+      "filter": "device:10.0.0.28"
+    },
+    "HTTP": {
+      "rows": 1,
+      "filter": "device:10.0.0.28"
+    },
+    "TLS": {
+      "rows": 8,
+      "filter": "device:10.0.0.28"
+    },
+    "packet_to_http_connection": true,
+    "offline_no_system_identity": true
+  },
+  "traffic_commands": [
+    {
+      "command": [
+        "dig",
+        "-b",
+        "10.0.0.28",
+        "httpforever.com",
+        "A",
+        "+tries=1",
+        "+time=5"
+      ],
+      "returncode": 0,
+      "stdout": "\n; <<>> DiG 9.20.26-1-Debian <<>> -b 10.0.0.28 httpforever.com A +tries=1 +time=5\n;; global options: +cmd\n;; Got answer:\n;; ->>HEADER<<- opcode: QUERY, status: NOERROR, id: 44306\n;; flags: qr rd ra; QUERY: 1, ANSWER: 2, AUTHORITY: 0, ADDITIONAL: 1\n\n;; OPT PSEUDOSECTION:\n; EDNS: version: 0, flags:; udp: 1232\n; COOKIE: 192c899b8459ae7e010000006ab13c5ba0e33cc26cb5ced1 (good)\n;; QUESTION SECTION:\n;httpforever.com.\t\tIN\tA\n\n;; ANSWER SECTION:\nhttpforever.com.\t300\tIN\tA\t104.21.4.210\nhttpforever.com.\t300\tIN\tA\t172.67.132.115\n\n;; Query time: 104 msec\n;; SERVER: 10.0.0.1#53(10.0.0.1) (UDP)\n;; WHEN: Mon Sep 21 19:16:59 +05 2026\n;; MSG SIZE  rcvd: 104\n\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "curl",
+        "--interface",
+        "wlan0",
+        "--noproxy",
+        "*",
+        "--max-time",
+        "20",
+        "-sS",
+        "-o",
+        "/dev/null",
+        "-w",
+        "%{http_code}",
+        "http://httpforever.com/"
+      ],
+      "returncode": 0,
+      "stdout": "200",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "curl",
+        "--interface",
+        "wlan0",
+        "--noproxy",
+        "*",
+        "--max-time",
+        "20",
+        "-sS",
+        "-o",
+        "/dev/null",
+        "-w",
+        "%{http_code}",
+        "https://www.google.com/"
+      ],
+      "returncode": 0,
+      "stdout": "200",
+      "stderr": ""
+    }
+  ],
+  "source_pcap": "/home/erwin/loyiha/netlab/validation/phase3/wlan0-final/netlab-wlan0-20260921-191658.pcapng",
+  "source_counts": {
+    "netlab": 311,
+    "capinfos": 311,
+    "tshark": 311
+  },
+  "stats": {
+    "total_packets": 311,
+    "total_bytes": 180718,
+    "packets_per_sec": 0.0,
+    "bytes_per_sec": 0.0,
+    "peak_pps": 152.38602648445547,
+    "flows": 33,
+    "active_flows": 28,
+    "hosts": 38,
+    "dns_events": 22,
+    "http_transactions": 1,
+    "tls_sessions": 9,
+    "malformed": 0,
+    "queue_dropped": 0,
+    "queue_depth": 0,
+    "flows_evicted": 0,
+    "hosts_evicted": 0,
+    "unsupported_linktype": 0,
+    "history": [
+      [
+        1790000219.845654,
+        30.589381359252865,
+        10803.972145240632
+      ],
+      [
+        1790000220.862803,
+        152.38602648445547,
+        116893.84621274368
+      ],
+      [
+        1790000221.9360745,
+        44.72293461382617,
+        29872.125138622516
+      ],
+      [
+        1790000223.0590415,
+        50.7585305832946,
+        15552.591870828775
+      ],
+      [
+        1790000224.180321,
+        6.242869828843703,
+        412.0294087036844
+      ],
+      [
+        1790000225.336767,
+        11.241302272596247,
+        762.6791234176839
+      ],
+      [
+        1790000226.3374605,
+        0.0,
+        0.0
+      ]
+    ],
+    "streams": 18,
+    "streams_created": 22,
+    "streams_expired": 4,
+    "streams_evicted": 0,
+    "reassembled_bytes": 157375,
+    "reassembly_segments": 125,
+    "retransmissions": 1,
+    "out_of_order": 23,
+    "stream_gaps": 0,
+    "stream_gap_bytes": 0,
+    "reasm_buffered_bytes": 0,
+    "reasm_peak_buffered": 5865,
+    "http_messages": 2,
+    "http_resyncs": 0,
+    "tls_handshakes": 3
+  },
+  "exported_counts": {
+    "netlab": 311,
+    "capinfos": 311,
+    "tshark": 311
+  },
+  "device_export_counts": {
+    "netlab": 311,
+    "capinfos": 311,
+    "tshark": 311
+  },
+  "reopened_packets": 311,
+  "gui_heartbeat": {
+    "samples": 163,
+    "max_gap_seconds": 0.5899294400005601
+  },
+  "completed": 1790000228.5714834,
+  "passed": true
+}

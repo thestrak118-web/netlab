@@ -1,0 +1,58 @@
+[build-system]
+requires = ["setuptools>=64"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "netlab"
+version = "2.16.0"
+description = "Network analysis and interception workbench for Kali Linux"
+readme = "README.md"
+requires-python = ">=3.11"
+license = { text = "MIT" }
+authors = [{ name = "Erwin", email = "thestrak118@gmail.com" }]
+keywords = ["network", "packet", "capture", "pcap", "dns", "http", "tls",
+            "security", "analysis", "mitm", "arp", "pentest"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Environment :: X11 Applications :: Qt",
+    "Intended Audience :: System Administrators",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: POSIX :: Linux",
+    "Programming Language :: Python :: 3",
+    "Topic :: System :: Networking :: Monitoring",
+    "Topic :: Security",
+]
+# Upper bounds guard against a future major that could move an API out from
+# under us; the .deb uses the distro's python3-* packages and ignores these.
+dependencies = ["PySide6>=6.4,<7", "cryptography>=41,<47"]
+
+[project.urls]
+Homepage = "https://example.invalid/netlab"
+
+[project.scripts]
+netlab = "netlab.app:main"
+netlab-helper = "netlab.priv.helper:main"
+
+[project.optional-dependencies]
+test = ["pytest>=7", "pytest-cov>=4"]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+include = ["netlab*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src", "."]
+
+[tool.coverage.run]
+source = ["netlab"]
+# Entry-point wiring that only runs under a real display/root; excluded so the
+# headline number reflects the logic that is actually unit-testable.
+omit = ["*/netlab/__main__.py", "*/netlab/app.py"]
+
+[tool.coverage.report]
+show_missing = true
+skip_covered = false
+
+[tool.setuptools.package-data]
+"netlab.gui" = ["icons/*.svg"]

@@ -1,0 +1,1000 @@
+{
+  "version": "1.2.0",
+  "module": "/usr/lib/python3/dist-packages/netlab/__init__.py",
+  "interface": "wlan0",
+  "platform": "wayland",
+  "started": 1790000218.2279122,
+  "checks": {
+    "live_topology": {
+      "initial_revision": 2,
+      "final_revision": 3,
+      "initial_packets": 1,
+      "final_packets": 183,
+      "node_item_reused": true,
+      "capture_running": true
+    },
+    "Traffic": {
+      "rows": 234,
+      "filter": "device:10.0.0.28"
+    },
+    "Connections": {
+      "rows": 24,
+      "filter": "device:10.0.0.28"
+    },
+    "DNS": {
+      "rows": 22,
+      "filter": "device:10.0.0.28"
+    },
+    "HTTP": {
+      "rows": 1,
+      "filter": "device:10.0.0.28"
+    },
+    "TLS": {
+      "rows": 8,
+      "filter": "device:10.0.0.28"
+    },
+    "packet_to_http_connection": true,
+    "offline_no_system_identity": true
+  },
+  "context": {
+    "interface": "wlan0",
+    "addresses": [
+      [
+        "10.0.0.28",
+        "f4:7b:09:70:46:26",
+        24
+      ],
+      [
+        "fe80::9048:8450:680c:5ef9",
+        "f4:7b:09:70:46:26",
+        64
+      ]
+    ],
+    "gateways": [
+      [
+        "10.0.0.28",
+        "10.0.0.1"
+      ]
+    ],
+    "neighbors": [],
+    "hostname": "nitro-acer",
+    "ts": 1790000218.8684297,
+    "errors": []
+  },
+  "traffic_commands": [
+    {
+      "command": [
+        "dig",
+        "-b",
+        "10.0.0.28",
+        "httpforever.com",
+        "A",
+        "+tries=1",
+        "+time=5"
+      ],
+      "returncode": 0,
+      "stdout": "\n; <<>> DiG 9.20.26-1-Debian <<>> -b 10.0.0.28 httpforever.com A +tries=1 +time=5\n;; global options: +cmd\n;; Got answer:\n;; ->>HEADER<<- opcode: QUERY, status: NOERROR, id: 44306\n;; flags: qr rd ra; QUERY: 1, ANSWER: 2, AUTHORITY: 0, ADDITIONAL: 1\n\n;; OPT PSEUDOSECTION:\n; EDNS: version: 0, flags:; udp: 1232\n; COOKIE: 192c899b8459ae7e010000006ab13c5ba0e33cc26cb5ced1 (good)\n;; QUESTION SECTION:\n;httpforever.com.\t\tIN\tA\n\n;; ANSWER SECTION:\nhttpforever.com.\t300\tIN\tA\t104.21.4.210\nhttpforever.com.\t300\tIN\tA\t172.67.132.115\n\n;; Query time: 104 msec\n;; SERVER: 10.0.0.1#53(10.0.0.1) (UDP)\n;; WHEN: Mon Sep 21 19:16:59 +05 2026\n;; MSG SIZE  rcvd: 104\n\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "curl",
+        "--interface",
+        "wlan0",
+        "--noproxy",
+        "*",
+        "--max-time",
+        "20",
+        "-sS",
+        "-o",
+        "/dev/null",
+        "-w",
+        "%{http_code}",
+        "http://httpforever.com/"
+      ],
+      "returncode": 0,
+      "stdout": "200",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "curl",
+        "--interface",
+        "wlan0",
+        "--noproxy",
+        "*",
+        "--max-time",
+        "20",
+        "-sS",
+        "-o",
+        "/dev/null",
+        "-w",
+        "%{http_code}",
+        "https://www.google.com/"
+      ],
+      "returncode": 0,
+      "stdout": "200",
+      "stderr": ""
+    }
+  ],
+  "live_graph": {
+    "devices": [
+      {
+        "ip": "10.0.0.28",
+        "ipv6": "Unknown",
+        "mac": "f4:7b:09:70:46:26",
+        "hostname": "nitro-acer",
+        "manufacturer": "Intel Corporate",
+        "os": "Linux",
+        "device_type": "This Device",
+        "scope": "Local",
+        "status": "Active",
+        "first_seen": 1790000218.8684297,
+        "last_seen": 1790000220.004069,
+        "packets": 72,
+        "upload": 25933,
+        "download": 11907,
+        "active_connections": 11,
+        "packets_sec": 14.4,
+        "bytes_sec": 7568.0,
+        "dns_names": [
+          "api.telegram.org",
+          "chatgpt.com",
+          "httpforever.com"
+        ],
+        "evidence": [
+          {
+            "field": "IP",
+            "value": "10.0.0.28",
+            "source": "System interface wlan0",
+            "confidence": "OBSERVED",
+            "ts": 1790000218.8684297
+          },
+          {
+            "field": "Device type",
+            "value": "This Device",
+            "source": "System interface wlan0",
+            "confidence": "CONFIRMED",
+            "ts": 1790000218.8684297
+          },
+          {
+            "field": "OS",
+            "value": "Linux",
+            "source": "Local operating system",
+            "confidence": "CONFIRMED",
+            "ts": 1790000218.8684297
+          },
+          {
+            "field": "MAC",
+            "value": "f4:7b:09:70:46:26",
+            "source": "System interface wlan0",
+            "confidence": "OBSERVED",
+            "ts": 1790000218.8684297
+          },
+          {
+            "field": "Manufacturer",
+            "value": "Intel Corporate",
+            "source": "OUI registry: /usr/share/nmap/nmap-mac-prefixes",
+            "confidence": "OBSERVED",
+            "ts": 1790000220.004069
+          },
+          {
+            "field": "Hostname",
+            "value": "nitro-acer",
+            "source": "Local system hostname",
+            "confidence": "CONFIRMED",
+            "ts": 1790000218.8684297
+          },
+          {
+            "field": "IP",
+            "value": "10.0.0.28",
+            "source": "Captured TCP endpoint",
+            "confidence": "OBSERVED",
+            "ts": 1790000220.004069
+          },
+          {
+            "field": "MAC",
+            "value": "f4:7b:09:70:46:26",
+            "source": "Ethernet frame + on-link routing prefix",
+            "confidence": "OBSERVED",
+            "ts": 1790000220.004069
+          },
+          {
+            "field": "IP",
+            "value": "10.0.0.28",
+            "source": "Captured UDP endpoint",
+            "confidence": "OBSERVED",
+            "ts": 1790000219.633787
+          }
+        ],
+        "recent": [
+          [
+            1790000218,
+            6,
+            872
+          ],
+          [
+            1790000219,
+            65,
+            36902
+          ],
+          [
+            1790000220,
+            1,
+            66
+          ]
+        ]
+      },
+      {
+        "ip": "10.0.0.1",
+        "ipv6": "Unknown",
+        "mac": "08:36:c9:e5:22:d2",
+        "hostname": "Unknown",
+        "manufacturer": "Netgear",
+        "os": "Unknown",
+        "device_type": "Gateway",
+        "scope": "Local",
+        "status": "Active",
+        "first_seen": 1790000218.8684297,
+        "last_seen": 1790000219.633787,
+        "packets": 14,
+        "upload": 815,
+        "download": 542,
+        "active_connections": 7,
+        "packets_sec": 2.8,
+        "bytes_sec": 271.4,
+        "dns_names": [],
+        "evidence": [
+          {
+            "field": "Device type",
+            "value": "Gateway",
+            "source": "Routing table",
+            "confidence": "CONFIRMED",
+            "ts": 1790000218.8684297
+          },
+          {
+            "field": "IP",
+            "value": "10.0.0.1",
+            "source": "Routing table",
+            "confidence": "CONFIRMED",
+            "ts": 1790000218.8684297
+          },
+          {
+            "field": "IP",
+            "value": "10.0.0.1",
+            "source": "Captured UDP endpoint",
+            "confidence": "OBSERVED",
+            "ts": 1790000219.633787
+          },
+          {
+            "field": "MAC",
+            "value": "08:36:c9:e5:22:d2",
+            "source": "Ethernet frame + on-link routing prefix",
+            "confidence": "OBSERVED",
+            "ts": 1790000219.633787
+          },
+          {
+            "field": "Manufacturer",
+            "value": "Netgear",
+            "source": "OUI registry: /usr/share/nmap/nmap-mac-prefixes",
+            "confidence": "OBSERVED",
+            "ts": 1790000219.633787
+          }
+        ],
+        "recent": [
+          [
+            1790000218,
+            2,
+            152
+          ],
+          [
+            1790000219,
+            12,
+            1205
+          ]
+        ]
+      },
+      {
+        "ip": "fe80::9048:8450:680c:5ef9",
+        "ipv6": "fe80::9048:8450:680c:5ef9",
+        "mac": "f4:7b:09:70:46:26",
+        "hostname": "nitro-acer",
+        "manufacturer": "Intel Corporate",
+        "os": "Linux",
+        "device_type": "This Device",
+        "scope": "Local",
+        "status": "System known",
+        "first_seen": 1790000218.8684297,
+        "last_seen": 1790000218.8684297,
+        "packets": 0,
+        "upload": 0,
+        "download": 0,
+        "active_connections": 0,
+        "packets_sec": 0.0,
+        "bytes_sec": 0.0,
+        "dns_names": [],
+        "evidence": [
+          {
+            "field": "IP",
+            "value": "fe80::9048:8450:680c:5ef9",
+            "source": "System interface wlan0",
+            "confidence": "OBSERVED",
+            "ts": 1790000218.8684297
+          },
+          {
+            "field": "Device type",
+            "value": "This Device",
+            "source": "System interface wlan0",
+            "confidence": "CONFIRMED",
+            "ts": 1790000218.8684297
+          },
+          {
+            "field": "OS",
+            "value": "Linux",
+            "source": "Local operating system",
+            "confidence": "CONFIRMED",
+            "ts": 1790000218.8684297
+          },
+          {
+            "field": "MAC",
+            "value": "f4:7b:09:70:46:26",
+            "source": "System interface wlan0",
+            "confidence": "OBSERVED",
+            "ts": 1790000218.8684297
+          },
+          {
+            "field": "Manufacturer",
+            "value": "Intel Corporate",
+            "source": "OUI registry: /usr/share/nmap/nmap-mac-prefixes",
+            "confidence": "OBSERVED",
+            "ts": 1790000218.8684297
+          },
+          {
+            "field": "Hostname",
+            "value": "nitro-acer",
+            "source": "Local system hostname",
+            "confidence": "CONFIRMED",
+            "ts": 1790000218.8684297
+          }
+        ],
+        "recent": []
+      },
+      {
+        "ip": "172.64.155.209",
+        "ipv6": "Unknown",
+        "mac": "Unknown",
+        "hostname": "chatgpt.com",
+        "manufacturer": "Unknown",
+        "os": "Unknown",
+        "device_type": "Unknown",
+        "scope": "Remote",
+        "status": "Active",
+        "first_seen": 1790000219.6050894,
+        "last_seen": 1790000220.004069,
+        "packets": 31,
+        "upload": 3580,
+        "download": 22378,
+        "active_connections": 1,
+        "packets_sec": 6.2,
+        "bytes_sec": 5191.6,
+        "dns_names": [],
+        "evidence": [
+          {
+            "field": "IP",
+            "value": "172.64.155.209",
+            "source": "Captured TCP endpoint",
+            "confidence": "OBSERVED",
+            "ts": 1790000220.004069
+          },
+          {
+            "field": "Hostname",
+            "value": "chatgpt.com",
+            "source": "DNS answer",
+            "confidence": "OBSERVED",
+            "ts": 1790000219.6337397
+          }
+        ],
+        "recent": [
+          [
+            1790000219,
+            30,
+            25892
+          ],
+          [
+            1790000220,
+            1,
+            66
+          ]
+        ]
+      },
+      {
+        "ip": "149.154.166.110",
+        "ipv6": "Unknown",
+        "mac": "Unknown",
+        "hostname": "api.telegram.org",
+        "manufacturer": "Unknown",
+        "os": "Unknown",
+        "device_type": "Unknown",
+        "scope": "Remote",
+        "status": "Active",
+        "first_seen": 1790000218.9986393,
+        "last_seen": 1790000219.3303595,
+        "packets": 21,
+        "upload": 7306,
+        "download": 2728,
+        "active_connections": 1,
+        "packets_sec": 4.2,
+        "bytes_sec": 2006.8,
+        "dns_names": [],
+        "evidence": [
+          {
+            "field": "IP",
+            "value": "149.154.166.110",
+            "source": "Captured TCP endpoint",
+            "confidence": "OBSERVED",
+            "ts": 1790000219.3303595
+          },
+          {
+            "field": "Hostname",
+            "value": "api.telegram.org",
+            "source": "DNS answer",
+            "confidence": "OBSERVED",
+            "ts": 1790000219.0070245
+          },
+          {
+            "field": "TLS SNI",
+            "value": "api.telegram.org",
+            "source": "TLS ClientHello",
+            "confidence": "OBSERVED",
+            "ts": 1790000219.330132
+          }
+        ],
+        "recent": [
+          [
+            1790000218,
+            3,
+            654
+          ],
+          [
+            1790000219,
+            18,
+            9380
+          ]
+        ]
+      },
+      {
+        "ip": "172.67.132.115",
+        "ipv6": "Unknown",
+        "mac": "Unknown",
+        "hostname": "httpforever.com",
+        "manufacturer": "Unknown",
+        "os": "Unknown",
+        "device_type": "Unknown",
+        "scope": "Remote",
+        "status": "Active",
+        "first_seen": 1790000219.330393,
+        "last_seen": 1790000219.7071419,
+        "packets": 5,
+        "upload": 140,
+        "download": 285,
+        "active_connections": 1,
+        "packets_sec": 1.0,
+        "bytes_sec": 85.0,
+        "dns_names": [],
+        "evidence": [
+          {
+            "field": "Hostname",
+            "value": "httpforever.com",
+            "source": "DNS answer",
+            "confidence": "OBSERVED",
+            "ts": 1790000219.3510244
+          },
+          {
+            "field": "IP",
+            "value": "172.67.132.115",
+            "source": "Captured TCP endpoint",
+            "confidence": "OBSERVED",
+            "ts": 1790000219.7071419
+          },
+          {
+            "field": "HTTP Host",
+            "value": "httpforever.com",
+            "source": "HTTP request Host",
+            "confidence": "OBSERVED",
+            "ts": 1790000219.4984546
+          }
+        ],
+        "recent": [
+          [
+            1790000219,
+            5,
+            425
+          ]
+        ]
+      },
+      {
+        "ip": "64.233.162.188",
+        "ipv6": "Unknown",
+        "mac": "Unknown",
+        "hostname": "Unknown",
+        "manufacturer": "Unknown",
+        "os": "Unknown",
+        "device_type": "Unknown",
+        "scope": "Remote",
+        "status": "Active",
+        "first_seen": 1790000218.937588,
+        "last_seen": 1790000218.937588,
+        "packets": 1,
+        "upload": 66,
+        "download": 0,
+        "active_connections": 1,
+        "packets_sec": 0.2,
+        "bytes_sec": 13.2,
+        "dns_names": [],
+        "evidence": [
+          {
+            "field": "IP",
+            "value": "64.233.162.188",
+            "source": "Captured TCP endpoint",
+            "confidence": "OBSERVED",
+            "ts": 1790000218.937588
+          }
+        ],
+        "recent": [
+          [
+            1790000218,
+            1,
+            66
+          ]
+        ]
+      },
+      {
+        "ip": "2001:67c:4e8:f004::9",
+        "ipv6": "2001:67c:4e8:f004::9",
+        "mac": "Unknown",
+        "hostname": "api.telegram.org",
+        "manufacturer": "Unknown",
+        "os": "Unknown",
+        "device_type": "Unknown",
+        "scope": "Remote",
+        "status": "Referenced only",
+        "first_seen": 1790000219.0070083,
+        "last_seen": 1790000219.0070083,
+        "packets": 0,
+        "upload": 0,
+        "download": 0,
+        "active_connections": 0,
+        "packets_sec": 0.0,
+        "bytes_sec": 0.0,
+        "dns_names": [],
+        "evidence": [
+          {
+            "field": "Hostname",
+            "value": "api.telegram.org",
+            "source": "DNS answer",
+            "confidence": "OBSERVED",
+            "ts": 1790000219.0070083
+          }
+        ],
+        "recent": []
+      },
+      {
+        "ip": "104.21.4.210",
+        "ipv6": "Unknown",
+        "mac": "Unknown",
+        "hostname": "httpforever.com",
+        "manufacturer": "Unknown",
+        "os": "Unknown",
+        "device_type": "Unknown",
+        "scope": "Remote",
+        "status": "Referenced only",
+        "first_seen": 1790000219.330393,
+        "last_seen": 1790000219.3510244,
+        "packets": 0,
+        "upload": 0,
+        "download": 0,
+        "active_connections": 0,
+        "packets_sec": 0.0,
+        "bytes_sec": 0.0,
+        "dns_names": [],
+        "evidence": [
+          {
+            "field": "Hostname",
+            "value": "httpforever.com",
+            "source": "DNS answer",
+            "confidence": "OBSERVED",
+            "ts": 1790000219.3510244
+          }
+        ],
+        "recent": []
+      },
+      {
+        "ip": "2606:4700:3031::6815:4d2",
+        "ipv6": "2606:4700:3031::6815:4d2",
+        "mac": "Unknown",
+        "hostname": "httpforever.com",
+        "manufacturer": "Unknown",
+        "os": "Unknown",
+        "device_type": "Unknown",
+        "scope": "Remote",
+        "status": "Referenced only",
+        "first_seen": 1790000219.4186995,
+        "last_seen": 1790000219.4186995,
+        "packets": 0,
+        "upload": 0,
+        "download": 0,
+        "active_connections": 0,
+        "packets_sec": 0.0,
+        "bytes_sec": 0.0,
+        "dns_names": [],
+        "evidence": [
+          {
+            "field": "Hostname",
+            "value": "httpforever.com",
+            "source": "DNS answer",
+            "confidence": "OBSERVED",
+            "ts": 1790000219.4186995
+          }
+        ],
+        "recent": []
+      },
+      {
+        "ip": "2606:4700:3036::ac43:8473",
+        "ipv6": "2606:4700:3036::ac43:8473",
+        "mac": "Unknown",
+        "hostname": "httpforever.com",
+        "manufacturer": "Unknown",
+        "os": "Unknown",
+        "device_type": "Unknown",
+        "scope": "Remote",
+        "status": "Referenced only",
+        "first_seen": 1790000219.4186995,
+        "last_seen": 1790000219.4186995,
+        "packets": 0,
+        "upload": 0,
+        "download": 0,
+        "active_connections": 0,
+        "packets_sec": 0.0,
+        "bytes_sec": 0.0,
+        "dns_names": [],
+        "evidence": [
+          {
+            "field": "Hostname",
+            "value": "httpforever.com",
+            "source": "DNS answer",
+            "confidence": "OBSERVED",
+            "ts": 1790000219.4186995
+          }
+        ],
+        "recent": []
+      },
+      {
+        "ip": "104.18.32.47",
+        "ipv6": "Unknown",
+        "mac": "Unknown",
+        "hostname": "chatgpt.com",
+        "manufacturer": "Unknown",
+        "os": "Unknown",
+        "device_type": "Unknown",
+        "scope": "Remote",
+        "status": "Referenced only",
+        "first_seen": 1790000219.6337397,
+        "last_seen": 1790000219.6337397,
+        "packets": 0,
+        "upload": 0,
+        "download": 0,
+        "active_connections": 0,
+        "packets_sec": 0.0,
+        "bytes_sec": 0.0,
+        "dns_names": [],
+        "evidence": [
+          {
+            "field": "Hostname",
+            "value": "chatgpt.com",
+            "source": "DNS answer",
+            "confidence": "OBSERVED",
+            "ts": 1790000219.6337397
+          }
+        ],
+        "recent": []
+      }
+    ],
+    "edges": [
+      {
+        "source": "10.0.0.28",
+        "destination": "10.0.0.1",
+        "kind": "route",
+        "bytes": 0,
+        "packets": 0,
+        "last_seen": 0,
+        "evidence": "Routing table: default gateway"
+      },
+      {
+        "source": "10.0.0.28",
+        "destination": "172.64.155.209",
+        "kind": "traffic",
+        "bytes": 22378,
+        "packets": 11,
+        "last_seen": 1790000220.004069,
+        "evidence": "Observed IP traffic"
+      },
+      {
+        "source": "149.154.166.110",
+        "destination": "10.0.0.28",
+        "kind": "traffic",
+        "bytes": 7306,
+        "packets": 10,
+        "last_seen": 1790000219.3303595,
+        "evidence": "Observed IP traffic"
+      },
+      {
+        "source": "172.64.155.209",
+        "destination": "10.0.0.28",
+        "kind": "traffic",
+        "bytes": 3580,
+        "packets": 20,
+        "last_seen": 1790000220.004069,
+        "evidence": "Observed IP traffic"
+      },
+      {
+        "source": "10.0.0.28",
+        "destination": "149.154.166.110",
+        "kind": "traffic",
+        "bytes": 2728,
+        "packets": 11,
+        "last_seen": 1790000219.3303595,
+        "evidence": "Observed IP traffic"
+      },
+      {
+        "source": "10.0.0.1",
+        "destination": "10.0.0.28",
+        "kind": "traffic",
+        "bytes": 815,
+        "packets": 7,
+        "last_seen": 1790000219.633787,
+        "evidence": "Observed IP traffic"
+      },
+      {
+        "source": "10.0.0.28",
+        "destination": "10.0.0.1",
+        "kind": "traffic",
+        "bytes": 542,
+        "packets": 7,
+        "last_seen": 1790000219.633787,
+        "evidence": "Observed IP traffic"
+      },
+      {
+        "source": "10.0.0.28",
+        "destination": "172.67.132.115",
+        "kind": "traffic",
+        "bytes": 285,
+        "packets": 3,
+        "last_seen": 1790000219.7071419,
+        "evidence": "Observed IP traffic"
+      },
+      {
+        "source": "172.67.132.115",
+        "destination": "10.0.0.28",
+        "kind": "traffic",
+        "bytes": 140,
+        "packets": 2,
+        "last_seen": 1790000219.7071419,
+        "evidence": "Observed IP traffic"
+      },
+      {
+        "source": "64.233.162.188",
+        "destination": "10.0.0.28",
+        "kind": "traffic",
+        "bytes": 66,
+        "packets": 1,
+        "last_seen": 1790000218.937588,
+        "evidence": "Observed IP traffic"
+      }
+    ],
+    "total_devices": 12,
+    "omitted_nodes": 0,
+    "omitted_edges": 0,
+    "ts": 1790000220.1063344
+  },
+  "local_device": {
+    "ip": "10.0.0.28",
+    "ipv6": "Unknown",
+    "mac": "f4:7b:09:70:46:26",
+    "hostname": "nitro-acer",
+    "manufacturer": "Intel Corporate",
+    "os": "Linux",
+    "device_type": "This Device",
+    "scope": "Local",
+    "status": "Active",
+    "first_seen": 1790000218.8684297,
+    "last_seen": 1790000220.9015691,
+    "packets": 222,
+    "upload": 33625,
+    "download": 122575,
+    "active_connections": 15,
+    "packets_sec": 44.4,
+    "bytes_sec": 31240.0,
+    "dns_names": [
+      "api.telegram.org",
+      "chatgpt.com",
+      "httpforever.com",
+      "www.google.com"
+    ],
+    "evidence": [
+      {
+        "field": "IP",
+        "value": "10.0.0.28",
+        "source": "System interface wlan0",
+        "confidence": "OBSERVED",
+        "ts": 1790000218.8684297
+      },
+      {
+        "field": "Device type",
+        "value": "This Device",
+        "source": "System interface wlan0",
+        "confidence": "CONFIRMED",
+        "ts": 1790000218.8684297
+      },
+      {
+        "field": "OS",
+        "value": "Linux",
+        "source": "Local operating system",
+        "confidence": "CONFIRMED",
+        "ts": 1790000218.8684297
+      },
+      {
+        "field": "MAC",
+        "value": "f4:7b:09:70:46:26",
+        "source": "System interface wlan0",
+        "confidence": "OBSERVED",
+        "ts": 1790000218.8684297
+      },
+      {
+        "field": "Manufacturer",
+        "value": "Intel Corporate",
+        "source": "OUI registry: /usr/share/nmap/nmap-mac-prefixes",
+        "confidence": "OBSERVED",
+        "ts": 1790000220.9015691
+      },
+      {
+        "field": "Hostname",
+        "value": "nitro-acer",
+        "source": "Local system hostname",
+        "confidence": "CONFIRMED",
+        "ts": 1790000218.8684297
+      },
+      {
+        "field": "IP",
+        "value": "10.0.0.28",
+        "source": "Captured TCP endpoint",
+        "confidence": "OBSERVED",
+        "ts": 1790000220.9015691
+      },
+      {
+        "field": "MAC",
+        "value": "f4:7b:09:70:46:26",
+        "source": "Ethernet frame + on-link routing prefix",
+        "confidence": "OBSERVED",
+        "ts": 1790000220.9015691
+      },
+      {
+        "field": "IP",
+        "value": "10.0.0.28",
+        "source": "Captured UDP endpoint",
+        "confidence": "OBSERVED",
+        "ts": 1790000220.0551763
+      }
+    ],
+    "recent": [
+      [
+        1790000218,
+        6,
+        872
+      ],
+      [
+        1790000219,
+        65,
+        36902
+      ],
+      [
+        1790000220,
+        151,
+        118426
+      ]
+    ]
+  },
+  "source_pcap": "/home/erwin/loyiha/netlab/validation/phase3/wlan0-final/netlab-wlan0-20260921-191658.pcapng",
+  "source_counts": {
+    "netlab": 311,
+    "capinfos": 311,
+    "tshark": 311
+  },
+  "stats": {
+    "total_packets": 311,
+    "total_bytes": 180718,
+    "packets_per_sec": 0.0,
+    "bytes_per_sec": 0.0,
+    "peak_pps": 152.38602648445547,
+    "flows": 33,
+    "active_flows": 28,
+    "hosts": 38,
+    "dns_events": 22,
+    "http_transactions": 1,
+    "tls_sessions": 9,
+    "malformed": 0,
+    "queue_dropped": 0,
+    "queue_depth": 0,
+    "flows_evicted": 0,
+    "hosts_evicted": 0,
+    "unsupported_linktype": 0,
+    "history": [
+      [
+        1790000219.845654,
+        30.589381359252865,
+        10803.972145240632
+      ],
+      [
+        1790000220.862803,
+        152.38602648445547,
+        116893.84621274368
+      ],
+      [
+        1790000221.9360745,
+        44.72293461382617,
+        29872.125138622516
+      ],
+      [
+        1790000223.0590415,
+        50.7585305832946,
+        15552.591870828775
+      ],
+      [
+        1790000224.180321,
+        6.242869828843703,
+        412.0294087036844
+      ],
+      [
+        1790000225.336767,
+        11.241302272596247,
+        762.6791234176839
+      ],
+      [
+        1790000226.3374605,
+        0.0,
+        0.0
+      ]
+    ],
+    "streams": 18,
+    "streams_created": 22,
+    "streams_expired": 4,
+    "streams_evicted": 0,
+    "reassembled_bytes": 157375,
+    "reassembly_segments": 125,
+    "retransmissions": 1,
+    "out_of_order": 23,
+    "stream_gaps": 0,
+    "stream_gap_bytes": 0,
+    "reasm_buffered_bytes": 0,
+    "reasm_peak_buffered": 5865,
+    "http_messages": 2,
+    "http_resyncs": 0,
+    "tls_handshakes": 3
+  },
+  "exported_counts": {
+    "netlab": 311,
+    "capinfos": 311,
+    "tshark": 311
+  },
+  "device_export_counts": {
+    "netlab": 311,
+    "capinfos": 311,
+    "tshark": 311
+  },
+  "reopened_packets": 311,
+  "gui_heartbeat": {
+    "samples": 163,
+    "max_gap_seconds": 0.5899294400005601
+  },
+  "completed": 1790000228.5714834,
+  "passed": true
+}

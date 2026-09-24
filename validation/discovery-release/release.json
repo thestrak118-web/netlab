@@ -1,0 +1,31 @@
+{
+  "version": "1.5.1",
+  "package": "/home/erwin/loyiha/netlab_1.5.1_amd64.deb",
+  "sha256": "0a4b6244b16e37f08eb2b9c6c4b75932779514200e9cd7a7f17398539ddf0033",
+  "installed_source_matches": {
+    "src/netlab/__init__.py": true,
+    "src/netlab/analyze/devices.py": true,
+    "src/netlab/analyze/engine.py": true,
+    "src/netlab/analyze/flows.py": true,
+    "src/netlab/gui/main_window.py": true,
+    "src/netlab/gui/pages/devices.py": true,
+    "src/netlab/gui/pages/topology.py": true,
+    "src/netlab/integrations/discovery.py": true
+  },
+  "changed_files": [
+    "README.md",
+    "debian/changelog",
+    "debian/control",
+    "pyproject.toml",
+    "scripts/accept_discovery.py",
+    "src/netlab/__init__.py",
+    "src/netlab/analyze/devices.py",
+    "src/netlab/analyze/engine.py",
+    "src/netlab/analyze/flows.py",
+    "src/netlab/gui/main_window.py",
+    "src/netlab/gui/pages/devices.py",
+    "src/netlab/gui/pages/topology.py",
+    "src/netlab/integrations/discovery.py",
+    "tests/test_discovery.py"
+  ]
+}

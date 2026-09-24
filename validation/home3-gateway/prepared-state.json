@@ -1,0 +1,108 @@
+{
+  "status": "READY",
+  "default_routes_before": [
+    {
+      "dst": "default",
+      "gateway": "10.0.0.1",
+      "dev": "wlan0",
+      "protocol": "dhcp",
+      "prefsrc": "10.0.0.28",
+      "metric": 600,
+      "flags": []
+    }
+  ],
+  "interface": "wlan0",
+  "network": "Home3",
+  "gateway": "10.0.0.28",
+  "router": "10.0.0.1",
+  "prefix": 24,
+  "started_at": 1790018405.526309,
+  "expires_at": 1790022005.5263095,
+  "changed_sysctls": {
+    "net.ipv4.conf.all.send_redirects": [
+      "1",
+      "0"
+    ],
+    "net.ipv4.conf.wlan0.send_redirects": [
+      "1",
+      "0"
+    ]
+  },
+  "rules": [
+    [
+      "filter",
+      "FORWARD",
+      [
+        "-i",
+        "wlan0",
+        "-o",
+        "wlan0",
+        "-s",
+        "10.0.0.0/24",
+        "!",
+        "-d",
+        "10.0.0.0/24",
+        "-m",
+        "conntrack",
+        "--ctstate",
+        "NEW,ESTABLISHED,RELATED",
+        "-m",
+        "comment",
+        "--comment",
+        "netlab-home3-explicit",
+        "-j",
+        "ACCEPT"
+      ]
+    ],
+    [
+      "filter",
+      "FORWARD",
+      [
+        "-i",
+        "wlan0",
+        "-o",
+        "wlan0",
+        "!",
+        "-s",
+        "10.0.0.0/24",
+        "-d",
+        "10.0.0.0/24",
+        "-m",
+        "conntrack",
+        "--ctstate",
+        "ESTABLISHED,RELATED",
+        "-m",
+        "comment",
+        "--comment",
+        "netlab-home3-explicit",
+        "-j",
+        "ACCEPT"
+      ]
+    ],
+    [
+      "nat",
+      "POSTROUTING",
+      [
+        "-o",
+        "wlan0",
+        "-s",
+        "10.0.0.0/24",
+        "!",
+        "-d",
+        "10.0.0.0/24",
+        "-m",
+        "addrtype",
+        "!",
+        "--src-type",
+        "LOCAL",
+        "-m",
+        "comment",
+        "--comment",
+        "netlab-home3-explicit",
+        "-j",
+        "MASQUERADE"
+      ]
+    ]
+  ],
+  "default_routes_unchanged": true
+}

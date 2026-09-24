@@ -1,0 +1,3 @@
+assets/netlab.desktop usr/share/applications
+assets/netlab.conf etc/netlab
+assets/uz.netlab.helper.policy usr/share/polkit-1/actions

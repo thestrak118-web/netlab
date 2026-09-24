@@ -1,0 +1,8 @@
+{
+  "capture_packets": 1941,
+  "tshark_capture_packets": 1941,
+  "exported_device": "10.0.0.1",
+  "exported_packets": 91,
+  "tshark_exported_packets": 91,
+  "original_packet_bytes_preserved": true
+}

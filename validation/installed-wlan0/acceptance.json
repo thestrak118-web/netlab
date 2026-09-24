@@ -1,0 +1,89 @@
+{
+  "version": "1.1.0",
+  "module": "/usr/lib/python3/dist-packages/netlab/__init__.py",
+  "interface": "wlan0",
+  "gui_platform": "wayland",
+  "pcap": "/home/erwin/loyiha/netlab/validation/installed-wlan0/netlab-wlan0-20260921-183022.pcapng",
+  "packets": 82,
+  "capinfos_count": 82,
+  "tshark_count": 82,
+  "reopened_packets": 82,
+  "traffic_response_bytes": [
+    12980,
+    12980
+  ],
+  "stats": {
+    "total_packets": 82,
+    "total_bytes": 41692,
+    "packets_per_sec": 0.0,
+    "bytes_per_sec": 0.0,
+    "peak_pps": 70.71336317035978,
+    "flows": 2,
+    "active_flows": 0,
+    "hosts": 2,
+    "dns_events": 0,
+    "http_transactions": 2,
+    "tls_sessions": 0,
+    "malformed": 0,
+    "queue_dropped": 0,
+    "queue_depth": 0,
+    "flows_evicted": 0,
+    "hosts_evicted": 0,
+    "unsupported_linktype": 0,
+    "history": [
+      [
+        1789997423.6430092,
+        4.919287968203094,
+        342.3824425869354
+      ],
+      [
+        1789997424.647072,
+        70.71336317035978,
+        39376.38769441331
+      ],
+      [
+        1789997425.697888,
+        5.709793542369853,
+        1720.551120767449
+      ],
+      [
+        1789997426.6984842,
+        0.0,
+        0.0
+      ]
+    ],
+    "streams": 0,
+    "streams_created": 2,
+    "streams_expired": 2,
+    "streams_evicted": 0,
+    "reassembled_bytes": 26080,
+    "reassembly_segments": 36,
+    "retransmissions": 5,
+    "out_of_order": 15,
+    "stream_gaps": 0,
+    "stream_gap_bytes": 0,
+    "reasm_buffered_bytes": 0,
+    "reasm_peak_buffered": 10132,
+    "http_messages": 4,
+    "http_resyncs": 0,
+    "tls_handshakes": 0
+  },
+  "http": [
+    {
+      "method": "GET",
+      "status": 200,
+      "body_bytes": 11513,
+      "body_complete": true,
+      "transfer": "chunked"
+    },
+    {
+      "method": "GET",
+      "status": 200,
+      "body_bytes": 11513,
+      "body_complete": true,
+      "transfer": "chunked"
+    }
+  ],
+  "packet_flow_correlation": true,
+  "file_offset_seek": true
+}

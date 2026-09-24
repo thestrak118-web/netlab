@@ -1,0 +1,90 @@
+{
+  "version": "1.2.0",
+  "module": "/usr/lib/python3/dist-packages/netlab/__init__.py",
+  "interface": "wlan0",
+  "platform": "wayland",
+  "started": 1789999546.5293245,
+  "checks": {},
+  "context": {
+    "interface": "wlan0",
+    "addresses": [
+      [
+        "10.0.0.28",
+        "f4:7b:09:70:46:26",
+        24
+      ],
+      [
+        "fe80::9048:8450:680c:5ef9",
+        "f4:7b:09:70:46:26",
+        64
+      ]
+    ],
+    "gateways": [
+      [
+        "10.0.0.28",
+        "10.0.0.1"
+      ]
+    ],
+    "neighbors": [],
+    "hostname": "nitro-acer",
+    "ts": 1789999547.1278436,
+    "errors": []
+  },
+  "traffic_commands": [
+    {
+      "command": [
+        "dig",
+        "-b",
+        "10.0.0.28",
+        "@1.1.1.1",
+        "example.com",
+        "A",
+        "+tries=1",
+        "+time=5"
+      ],
+      "returncode": 9,
+      "stdout": ";; communications error to 1.1.1.1#53: timed out\n\n; <<>> DiG 9.20.26-1-Debian <<>> -b 10.0.0.28 @1.1.1.1 example.com A +tries=1 +time=5\n; (1 server found)\n;; global options: +cmd\n;; no servers could be reached\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "curl",
+        "--interface",
+        "wlan0",
+        "--noproxy",
+        "*",
+        "--max-time",
+        "20",
+        "-sS",
+        "-o",
+        "/dev/null",
+        "-w",
+        "%{http_code}",
+        "http://httpforever.com/"
+      ],
+      "returncode": 0,
+      "stdout": "200",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "curl",
+        "--interface",
+        "wlan0",
+        "--noproxy",
+        "*",
+        "--max-time",
+        "20",
+        "-sS",
+        "-o",
+        "/dev/null",
+        "-w",
+        "%{http_code}",
+        "https://example.com/"
+      ],
+      "returncode": 6,
+      "stdout": "000",
+      "stderr": "curl: (6) Could not resolve host: example.com\n"
+    }
+  ]
+}

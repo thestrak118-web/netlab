@@ -1,0 +1,201 @@
+{
+  "version": "1.4.0",
+  "module": "/usr/lib/python3/dist-packages/netlab/__init__.py",
+  "platform": "wayland",
+  "started": 1790003338.0007658,
+  "network_context": {
+    "interface": "wlan0",
+    "addresses": [
+      [
+        "10.0.0.28",
+        "f4:7b:09:70:46:26",
+        24
+      ],
+      [
+        "fe80::9048:8450:680c:5ef9",
+        "f4:7b:09:70:46:26",
+        64
+      ]
+    ],
+    "gateways": [
+      [
+        "10.0.0.28",
+        "10.0.0.1"
+      ]
+    ],
+    "neighbors": [],
+    "hostname": "nitro-acer",
+    "ts": 1790003338.4258633,
+    "errors": []
+  },
+  "remote_excluded": [
+    "104.18.32.47",
+    "142.251.152.119",
+    "149.154.166.110",
+    "149.154.167.41",
+    "172.67.132.115",
+    "57.144.244.192",
+    "74.125.205.138"
+  ],
+  "gui_rows": 3,
+  "ipv4_ipv6_merged": true,
+  "live_counter": {
+    "before": 0,
+    "after": 181
+  },
+  "remote_monitor_rejected": true,
+  "topology": {
+    "local_devices": 3,
+    "remote_endpoints": 28,
+    "revisions_before": 1,
+    "revisions_after": 8,
+    "drawn_edges": [
+      [
+        "10.0.0.28",
+        "10.0.0.1",
+        "route"
+      ]
+    ],
+    "communication_rows": 22
+  },
+  "monitor": {
+    "identity": "interface:wlan0",
+    "addresses": [
+      "10.0.0.28",
+      "fe80::9048:8450:680c:5ef9"
+    ],
+    "counts": {
+      "dns": 18,
+      "http": 1,
+      "tls": 7,
+      "active_connections": 22,
+      "activity": 751
+    },
+    "activity_rows": 751
+  },
+  "export": {
+    "path": "/home/erwin/loyiha/netlab/validation/local-devices-final/selected-device.pcapng",
+    "netlab": 903,
+    "tshark": 903,
+    "capinfos": 903,
+    "original_bytes_preserved": true
+  },
+  "stop_monitoring": {
+    "before": 929,
+    "after": 2029,
+    "capture_running": true
+  },
+  "source_pcap": "/home/erwin/loyiha/netlab/validation/local-devices-final/netlab-wlan0-20260921-200858.pcapng",
+  "traffic_commands": [
+    {
+      "command": [
+        "dig",
+        "-b",
+        "10.0.0.28",
+        "httpforever.com",
+        "A",
+        "+tries=1",
+        "+time=5"
+      ],
+      "returncode": 0,
+      "stdout": "\n; <<>> DiG 9.20.26-1-Debian <<>> -b 10.0.0.28 httpforever.com A +tries=1 +time=5\n;; global options: +cmd\n;; Got answer:\n;; ->>HEADER<<- opcode: QUERY, status: NOERROR, id: 20745\n;; flags: qr rd ra; QUERY: 1, ANSWER: 2, AUTHORITY: 0, ADDITIONAL: 1\n\n;; OPT PSEUDOSECTION:\n; EDNS: version: 0, flags:; udp: 1232\n; COOKIE: f0fe01bbff38894c010000006ab1488a4b91a3b49c4fe809 (good)\n;; QUESTION SECTION:\n;httpforever.com.\t\tIN\tA\n\n;; ANSWER SECTION:\nhttpforever.com.\t56\tIN\tA\t104.21.4.210\nhttpforever.com.\t56\tIN\tA\t172.67.132.115\n\n;; Query time: 16 msec\n;; SERVER: 10.0.0.1#53(10.0.0.1) (UDP)\n;; WHEN: Mon Sep 21 20:08:58 +05 2026\n;; MSG SIZE  rcvd: 104\n\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "curl",
+        "--interface",
+        "wlan0",
+        "--noproxy",
+        "*",
+        "--max-time",
+        "20",
+        "-sS",
+        "-o",
+        "/dev/null",
+        "-w",
+        "%{http_code}",
+        "http://httpforever.com/"
+      ],
+      "returncode": 0,
+      "stdout": "200",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "curl",
+        "--interface",
+        "wlan0",
+        "--noproxy",
+        "*",
+        "--max-time",
+        "20",
+        "-sS",
+        "-o",
+        "/dev/null",
+        "-w",
+        "%{http_code}",
+        "https://www.google.com/"
+      ],
+      "returncode": 0,
+      "stdout": "200",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "dig",
+        "-b",
+        "10.0.0.28",
+        "httpforever.com",
+        "A",
+        "+tries=1",
+        "+time=5"
+      ],
+      "returncode": 0,
+      "stdout": "\n; <<>> DiG 9.20.26-1-Debian <<>> -b 10.0.0.28 httpforever.com A +tries=1 +time=5\n;; global options: +cmd\n;; Got answer:\n;; ->>HEADER<<- opcode: QUERY, status: NOERROR, id: 426\n;; flags: qr rd ra; QUERY: 1, ANSWER: 2, AUTHORITY: 0, ADDITIONAL: 1\n\n;; OPT PSEUDOSECTION:\n; EDNS: version: 0, flags:; udp: 1232\n; COOKIE: 656f5346080927d2010000006ab14890496e9ea36606efb0 (good)\n;; QUESTION SECTION:\n;httpforever.com.\t\tIN\tA\n\n;; ANSWER SECTION:\nhttpforever.com.\t50\tIN\tA\t104.21.4.210\nhttpforever.com.\t50\tIN\tA\t172.67.132.115\n\n;; Query time: 1224 msec\n;; SERVER: 10.0.0.1#53(10.0.0.1) (UDP)\n;; WHEN: Mon Sep 21 20:09:06 +05 2026\n;; MSG SIZE  rcvd: 104\n\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "curl",
+        "--interface",
+        "wlan0",
+        "--noproxy",
+        "*",
+        "--max-time",
+        "20",
+        "-sS",
+        "-o",
+        "/dev/null",
+        "-w",
+        "%{http_code}",
+        "http://httpforever.com/"
+      ],
+      "returncode": 0,
+      "stdout": "200",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "curl",
+        "--interface",
+        "wlan0",
+        "--noproxy",
+        "*",
+        "--max-time",
+        "20",
+        "-sS",
+        "-o",
+        "/dev/null",
+        "-w",
+        "%{http_code}",
+        "https://www.google.com/"
+      ],
+      "returncode": 0,
+      "stdout": "200",
+      "stderr": ""
+    }
+  ],
+  "passed": true,
+  "completed": 1790003349.2913864
+}

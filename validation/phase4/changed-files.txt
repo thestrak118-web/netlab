@@ -1,0 +1,10 @@
+modified	src/netlab/__init__.py
+added	src/netlab/analyze/monitor.py
+modified	src/netlab/gui/main_window.py
+modified	src/netlab/gui/pages/devices.py
+added	src/netlab/gui/pages/monitor.py
+added	tests/test_phase4.py
+added	scripts/accept_phase4.py
+modified	pyproject.toml
+modified	debian/changelog
+added	PHASE4-REPORT.md

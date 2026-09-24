@@ -1,0 +1,16 @@
+[
+  "README.md",
+  "debian/changelog",
+  "debian/control",
+  "pyproject.toml",
+  "scripts/accept_discovery.py",
+  "src/netlab/__init__.py",
+  "src/netlab/analyze/devices.py",
+  "src/netlab/analyze/engine.py",
+  "src/netlab/analyze/flows.py",
+  "src/netlab/gui/main_window.py",
+  "src/netlab/gui/pages/devices.py",
+  "src/netlab/gui/pages/topology.py",
+  "src/netlab/integrations/discovery.py",
+  "tests/test_discovery.py"
+]

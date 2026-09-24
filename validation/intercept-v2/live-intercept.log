@@ -1,0 +1,45 @@
+==============================================================================
+NetLab live interception test  --  private lab, 10.77.0.0/24
+running as uid 0 in a private namespace
+==============================================================================
+
+! AF_PACKET receive does not work here, so ARP poisoning cannot
+! be exercised. Falling back to routed mode: the victim reaches
+! the gateway through the attacker by route instead of by
+! forgery, so every other part of the interception path -- the
+! redirects, the proxies, DNS, TLS, credentials, teardown --
+! is still driven end to end. Run under sudo on the host to
+! cover ARP poisoning as well.
+
+
+[lab]   attacker 10.77.0.13 (16:d8:d3:46:a7:0d)  victim 10.77.0.50  gateway 10.77.0.254 (f6:3b:0e:ca:61:76)
+
+  PASS  victim reaches the gateway before arming             436 bytes
+  PASS  victim's ARP entry points at the real gateway        f6:3b:0e:ca:61:76
+
+  PASS  engagement armed                                     ip_forward, sslstrip, ssl-mitm, dns-spoof, redirects
+  PASS  scope resolved the target's hardware address         c6:ea:7d:39:43:f6
+  PASS  nftables redirects installed                         tcp/80 -> localhost:18080; tcp/443 -> localhost:18443; udp/53 -> localhost:15353
+        ARP poisoning not exercised (routed mode)
+  PASS  SSL strip rewrote the https links                    
+  PASS  HSTS header removed from the response                
+  PASS  Secure flag stripped from Set-Cookie                 
+  PASS  subresource integrity attribute removed              
+  PASS  traffic changer rewrote the body in flight           
+  PASS  form credentials read out of the stripped session    2 credential(s) total
+  PASS  HTTP Basic credentials read out of the stripped session 
+  PASS  matching DNS name answered with the attacker's address 10.77.0.13
+  PASS  unmatched DNS name still got the real answer         203.0.113.77
+  PASS  TLS terminated with a NetLab certificate and read    CA ca.crt
+  PASS  credentials read from inside the TLS session         
+  PASS  a client that does not trust the CA still refuses    curl exit 60
+
+  PASS  nftables redirects removed                           
+  PASS  the netlab nftables table no longer exists           
+  PASS  ip_forward restored to its original value            1 -> 1
+  PASS  victim gets the untouched page again after disarm    
+  PASS  audit log records the whole engagement               17 entries, 15 actions
+
+==============================================================================
+22/22 checks passed
+==============================================================================

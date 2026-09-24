@@ -1,0 +1,1103 @@
+{
+  "version": "1.5.0",
+  "module": "/home/erwin/loyiha/netlab/src/netlab/__init__.py",
+  "platform": "wayland",
+  "devices": [
+    {
+      "ip": "10.0.0.28",
+      "ipv6": "fe80::9048:8450:680c:5ef9",
+      "mac": "f4:7b:09:70:46:26",
+      "hostname": "nitro-acer",
+      "manufacturer": "Intel Corporate",
+      "os": "Linux",
+      "device_type": "This Device",
+      "scope": "Local",
+      "status": "Active",
+      "first_seen": 1790007471.0379696,
+      "last_seen": 1790007500.2076135,
+      "packets": 1770,
+      "upload": 118425,
+      "download": 236715,
+      "active_connections": 78,
+      "packets_sec": 15.4,
+      "bytes_sec": 3749.6,
+      "dns_names": [
+        "",
+        "_airplay._tcp.local",
+        "_companion-link._tcp.local",
+        "_raop._tcp.local",
+        "_services._dns-sd._udp.local",
+        "api.telegram.org",
+        "chatgpt.com",
+        "region1.v2.argotunnel.com",
+        "supabase_kong_qaacademy"
+      ],
+      "evidence": [
+        {
+          "field": "Manufacturer",
+          "value": "Intel Corporate",
+          "source": "OUI registry: /usr/share/nmap/nmap-mac-prefixes",
+          "confidence": "OBSERVED",
+          "ts": 1790007500.2076135
+        },
+        {
+          "field": "IP",
+          "value": "10.0.0.28",
+          "source": "Captured TCP endpoint",
+          "confidence": "OBSERVED",
+          "ts": 1790007500.2076135
+        },
+        {
+          "field": "MAC",
+          "value": "f4:7b:09:70:46:26",
+          "source": "Ethernet frame + on-link routing prefix",
+          "confidence": "OBSERVED",
+          "ts": 1790007500.2076135
+        },
+        {
+          "field": "IP",
+          "value": "10.0.0.28",
+          "source": "Captured UDP endpoint",
+          "confidence": "OBSERVED",
+          "ts": 1790007498.746218
+        },
+        {
+          "field": "IP",
+          "value": "10.0.0.28",
+          "source": "Captured endpoint",
+          "confidence": "OBSERVED",
+          "ts": 1790007495.1341474
+        },
+        {
+          "field": "MAC",
+          "value": "f4:7b:09:70:46:26",
+          "source": "ARP address binding",
+          "confidence": "OBSERVED",
+          "ts": 1790007495.3486257
+        },
+        {
+          "field": "IP",
+          "value": "10.0.0.28",
+          "source": "Captured ARP endpoint",
+          "confidence": "OBSERVED",
+          "ts": 1790007495.3486257
+        },
+        {
+          "field": "IP",
+          "value": "10.0.0.28",
+          "source": "Captured ICMP endpoint",
+          "confidence": "OBSERVED",
+          "ts": 1790007495.721585
+        },
+        {
+          "field": "IP",
+          "value": "10.0.0.28",
+          "source": "System interface wlan0",
+          "confidence": "OBSERVED",
+          "ts": 1790007491.4370103
+        },
+        {
+          "field": "Device type",
+          "value": "This Device",
+          "source": "System interface wlan0",
+          "confidence": "CONFIRMED",
+          "ts": 1790007491.4370103
+        },
+        {
+          "field": "OS",
+          "value": "Linux",
+          "source": "Local operating system",
+          "confidence": "CONFIRMED",
+          "ts": 1790007491.4370103
+        },
+        {
+          "field": "MAC",
+          "value": "f4:7b:09:70:46:26",
+          "source": "System interface wlan0",
+          "confidence": "OBSERVED",
+          "ts": 1790007491.4370103
+        },
+        {
+          "field": "Hostname",
+          "value": "nitro-acer",
+          "source": "Local system hostname",
+          "confidence": "CONFIRMED",
+          "ts": 1790007491.4370103
+        },
+        {
+          "field": "Manufacturer",
+          "value": "Intel Corporate",
+          "source": "OUI registry: /usr/share/nmap/nmap-mac-prefixes",
+          "confidence": "OBSERVED",
+          "ts": 1790007491.4370103
+        },
+        {
+          "field": "IP",
+          "value": "fe80::9048:8450:680c:5ef9",
+          "source": "System interface wlan0",
+          "confidence": "OBSERVED",
+          "ts": 1790007491.4370103
+        }
+      ],
+      "recent": [
+        [
+          1790007471,
+          11,
+          1801
+        ],
+        [
+          1790007472,
+          51,
+          37519
+        ],
+        [
+          1790007473,
+          13,
+          1808
+        ],
+        [
+          1790007474,
+          13,
+          2609
+        ],
+        [
+          1790007475,
+          48,
+          6076
+        ],
+        [
+          1790007476,
+          219,
+          12131
+        ],
+        [
+          1790007477,
+          251,
+          44774
+        ],
+        [
+          1790007478,
+          107,
+          41782
+        ],
+        [
+          1790007479,
+          40,
+          1854
+        ],
+        [
+          1790007480,
+          89,
+          4880
+        ],
+        [
+          1790007481,
+          16,
+          1964
+        ],
+        [
+          1790007482,
+          55,
+          12510
+        ],
+        [
+          1790007483,
+          80,
+          11488
+        ],
+        [
+          1790007484,
+          84,
+          12968
+        ],
+        [
+          1790007485,
+          100,
+          18442
+        ],
+        [
+          1790007486,
+          67,
+          6751
+        ],
+        [
+          1790007487,
+          67,
+          6262
+        ],
+        [
+          1790007488,
+          119,
+          29326
+        ],
+        [
+          1790007489,
+          54,
+          5565
+        ],
+        [
+          1790007490,
+          47,
+          36047
+        ],
+        [
+          1790007491,
+          3,
+          488
+        ],
+        [
+          1790007492,
+          15,
+          10022
+        ],
+        [
+          1790007493,
+          32,
+          11503
+        ],
+        [
+          1790007494,
+          3,
+          258
+        ],
+        [
+          1790007495,
+          109,
+          17564
+        ],
+        [
+          1790007496,
+          5,
+          582
+        ],
+        [
+          1790007497,
+          25,
+          2942
+        ],
+        [
+          1790007498,
+          39,
+          13348
+        ],
+        [
+          1790007499,
+          7,
+          1593
+        ],
+        [
+          1790007500,
+          1,
+          283
+        ]
+      ],
+      "identity": "interface:wlan0",
+      "addresses": [
+        "10.0.0.28",
+        "fe80::9048:8450:680c:5ef9"
+      ],
+      "mac_addresses": [
+        "f4:7b:09:70:46:26"
+      ],
+      "hostnames": [
+        "nitro-acer"
+      ],
+      "local_evidence": [
+        "Selected interface wlan0"
+      ]
+    },
+    {
+      "ip": "10.0.0.13",
+      "ipv6": "Unknown",
+      "mac": "86:fe:d7:88:54:76",
+      "hostname": "Unknown",
+      "manufacturer": "Unknown",
+      "os": "Unknown",
+      "device_type": "Unknown",
+      "scope": "Local",
+      "status": "Active",
+      "first_seen": 1790007476.5378752,
+      "last_seen": 1790007495.721585,
+      "packets": 15,
+      "upload": 842,
+      "download": 678,
+      "active_connections": 4,
+      "packets_sec": 0.0,
+      "bytes_sec": 0.0,
+      "dns_names": [],
+      "evidence": [
+        {
+          "field": "IP",
+          "value": "10.0.0.13",
+          "source": "Captured ARP endpoint",
+          "confidence": "OBSERVED",
+          "ts": 1790007495.300929
+        },
+        {
+          "field": "MAC",
+          "value": "86:fe:d7:88:54:76",
+          "source": "ARP address binding",
+          "confidence": "OBSERVED",
+          "ts": 1790007495.300929
+        },
+        {
+          "field": "MAC",
+          "value": "86:fe:d7:88:54:76",
+          "source": "Active discovery: Nmap on-link address binding",
+          "confidence": "OBSERVED",
+          "ts": 1790007500.2745702
+        },
+        {
+          "field": "IP",
+          "value": "10.0.0.13",
+          "source": "Active discovery: on-link response on wlan0",
+          "confidence": "OBSERVED",
+          "ts": 1790007500.2745702
+        },
+        {
+          "field": "IP",
+          "value": "10.0.0.13",
+          "source": "Captured UDP endpoint",
+          "confidence": "OBSERVED",
+          "ts": 1790007495.4863865
+        },
+        {
+          "field": "MAC",
+          "value": "86:fe:d7:88:54:76",
+          "source": "Ethernet frame + on-link routing prefix",
+          "confidence": "OBSERVED",
+          "ts": 1790007495.721585
+        },
+        {
+          "field": "IP",
+          "value": "10.0.0.13",
+          "source": "Captured ICMP endpoint",
+          "confidence": "OBSERVED",
+          "ts": 1790007495.721585
+        }
+      ],
+      "recent": [
+        [
+          1790007476,
+          1,
+          42
+        ],
+        [
+          1790007495,
+          14,
+          1478
+        ]
+      ],
+      "identity": "mac:wlan0:86:fe:d7:88:54:76",
+      "addresses": [
+        "10.0.0.13"
+      ],
+      "mac_addresses": [
+        "86:fe:d7:88:54:76"
+      ],
+      "hostnames": [],
+      "local_evidence": [
+        "Observed ARP address binding"
+      ]
+    },
+    {
+      "ip": "10.0.0.12",
+      "ipv6": "Unknown",
+      "mac": "4e:01:17:16:3e:ff",
+      "hostname": "Unknown",
+      "manufacturer": "Unknown",
+      "os": "Unknown",
+      "device_type": "Unknown",
+      "scope": "Local",
+      "status": "Active",
+      "first_seen": 1790007481.5702045,
+      "last_seen": 1790007497.8991096,
+      "packets": 16,
+      "upload": 266,
+      "download": 1032,
+      "active_connections": 6,
+      "packets_sec": 0.8,
+      "bytes_sec": 70.8,
+      "dns_names": [],
+      "evidence": [
+        {
+          "field": "IP",
+          "value": "10.0.0.12",
+          "source": "Captured ARP endpoint",
+          "confidence": "OBSERVED",
+          "ts": 1790007495.3011932
+        },
+        {
+          "field": "MAC",
+          "value": "4e:01:17:16:3e:ff",
+          "source": "ARP address binding",
+          "confidence": "OBSERVED",
+          "ts": 1790007495.3011932
+        },
+        {
+          "field": "MAC",
+          "value": "4e:01:17:16:3e:ff",
+          "source": "Active discovery: Nmap on-link address binding",
+          "confidence": "OBSERVED",
+          "ts": 1790007500.2745702
+        },
+        {
+          "field": "IP",
+          "value": "10.0.0.12",
+          "source": "Active discovery: on-link response on wlan0",
+          "confidence": "OBSERVED",
+          "ts": 1790007500.2745702
+        },
+        {
+          "field": "IP",
+          "value": "10.0.0.12",
+          "source": "Captured UDP endpoint",
+          "confidence": "OBSERVED",
+          "ts": 1790007497.8991096
+        },
+        {
+          "field": "MAC",
+          "value": "4e:01:17:16:3e:ff",
+          "source": "Ethernet frame + on-link routing prefix",
+          "confidence": "OBSERVED",
+          "ts": 1790007497.8991096
+        },
+        {
+          "field": "IP",
+          "value": "10.0.0.12",
+          "source": "Captured ICMP endpoint",
+          "confidence": "OBSERVED",
+          "ts": 1790007495.7165926
+        }
+      ],
+      "recent": [
+        [
+          1790007481,
+          1,
+          42
+        ],
+        [
+          1790007483,
+          1,
+          42
+        ],
+        [
+          1790007495,
+          10,
+          860
+        ],
+        [
+          1790007497,
+          4,
+          354
+        ]
+      ],
+      "identity": "mac:wlan0:4e:01:17:16:3e:ff",
+      "addresses": [
+        "10.0.0.12"
+      ],
+      "mac_addresses": [
+        "4e:01:17:16:3e:ff"
+      ],
+      "hostnames": [],
+      "local_evidence": [
+        "Observed ARP address binding"
+      ]
+    },
+    {
+      "ip": "10.0.0.4",
+      "ipv6": "Unknown",
+      "mac": "08:36:c9:e5:22:d2, a0:ce:c8:6a:9e:ef",
+      "hostname": "MAC-39B52F, MacBook-Pro-MacBook",
+      "manufacturer": "Unknown",
+      "os": "Unknown",
+      "device_type": "Laptop",
+      "scope": "Local",
+      "status": "Active",
+      "first_seen": 1790007476.0826244,
+      "last_seen": 1790007498.0582306,
+      "packets": 31,
+      "upload": 2865,
+      "download": 2060,
+      "active_connections": 9,
+      "packets_sec": 2.0,
+      "bytes_sec": 443.0,
+      "dns_names": [],
+      "evidence": [
+        {
+          "field": "IP",
+          "value": "10.0.0.4",
+          "source": "Captured ARP endpoint",
+          "confidence": "OBSERVED",
+          "ts": 1790007495.1379354
+        },
+        {
+          "field": "MAC",
+          "value": "a0:ce:c8:6a:9e:ef",
+          "source": "ARP address binding",
+          "confidence": "OBSERVED",
+          "ts": 1790007495.1379354
+        },
+        {
+          "field": "Manufacturer",
+          "value": "CE Link Limited",
+          "source": "OUI registry: /usr/share/nmap/nmap-mac-prefixes",
+          "confidence": "OBSERVED",
+          "ts": 1790007500.2745702
+        },
+        {
+          "field": "IP",
+          "value": "10.0.0.4",
+          "source": "Captured UDP endpoint",
+          "confidence": "OBSERVED",
+          "ts": 1790007498.0582306
+        },
+        {
+          "field": "MAC",
+          "value": "a0:ce:c8:6a:9e:ef",
+          "source": "Ethernet frame + on-link routing prefix",
+          "confidence": "OBSERVED",
+          "ts": 1790007498.0582306
+        },
+        {
+          "field": "IP",
+          "value": "10.0.0.4",
+          "source": "Captured ICMP endpoint",
+          "confidence": "OBSERVED",
+          "ts": 1790007495.4911911
+        },
+        {
+          "field": "MAC",
+          "value": "08:36:c9:e5:22:d2",
+          "source": "Ethernet frame + on-link routing prefix",
+          "confidence": "OBSERVED",
+          "ts": 1790007497.91113
+        },
+        {
+          "field": "Manufacturer",
+          "value": "Netgear",
+          "source": "OUI registry: /usr/share/nmap/nmap-mac-prefixes",
+          "confidence": "OBSERVED",
+          "ts": 1790007497.91113
+        },
+        {
+          "field": "MAC",
+          "value": "a0:ce:c8:6a:9e:ef",
+          "source": "Active discovery: Nmap on-link address binding",
+          "confidence": "OBSERVED",
+          "ts": 1790007500.2745702
+        },
+        {
+          "field": "IP",
+          "value": "10.0.0.4",
+          "source": "Active discovery: on-link response on wlan0",
+          "confidence": "OBSERVED",
+          "ts": 1790007500.2745702
+        },
+        {
+          "field": "Hostname",
+          "value": "MacBook-Pro-MacBook",
+          "source": "Active discovery: mDNS/DNS-SD advertisement",
+          "confidence": "OBSERVED",
+          "ts": 1790007500.2745702
+        },
+        {
+          "field": "Friendly name",
+          "value": "MacBook Pro \u2014 MacBook",
+          "source": "Active discovery: mDNS/DNS-SD advertisement",
+          "confidence": "OBSERVED",
+          "ts": 1790007500.2745702
+        },
+        {
+          "field": "Exact device model",
+          "value": "Mac15,6",
+          "source": "Active discovery: mDNS/DNS-SD advertisement",
+          "confidence": "OBSERVED",
+          "ts": 1790007500.2745702
+        },
+        {
+          "field": "Device type",
+          "value": "Laptop",
+          "source": "Active discovery: mDNS advertised MacBook name and Mac model",
+          "confidence": "OBSERVED",
+          "ts": 1790007500.2745702
+        },
+        {
+          "field": "Hostname",
+          "value": "MAC-39B52F",
+          "source": "Active discovery: NetBIOS node status",
+          "confidence": "OBSERVED",
+          "ts": 1790007500.2745702
+        }
+      ],
+      "recent": [
+        [
+          1790007476,
+          2,
+          120
+        ],
+        [
+          1790007495,
+          19,
+          2590
+        ],
+        [
+          1790007497,
+          4,
+          509
+        ],
+        [
+          1790007498,
+          6,
+          1706
+        ]
+      ],
+      "identity": "ip:wlan0:10.0.0.4",
+      "addresses": [
+        "10.0.0.4"
+      ],
+      "mac_addresses": [
+        "08:36:c9:e5:22:d2",
+        "a0:ce:c8:6a:9e:ef"
+      ],
+      "hostnames": [
+        "MAC-39B52F",
+        "MacBook-Pro-MacBook"
+      ],
+      "local_evidence": [
+        "Observed ARP address binding"
+      ]
+    },
+    {
+      "ip": "10.0.0.21",
+      "ipv6": "Unknown",
+      "mac": "3a:ea:f9:39:af:b0, a0:ce:c8:6a:9e:ef",
+      "hostname": "MAC-39B52F, MacBook-Pro-MacBook",
+      "manufacturer": "Unknown",
+      "os": "Unknown",
+      "device_type": "Laptop",
+      "scope": "Local",
+      "status": "Active",
+      "first_seen": 1790007476.5368092,
+      "last_seen": 1790007498.1662464,
+      "packets": 35,
+      "upload": 3105,
+      "download": 2060,
+      "active_connections": 9,
+      "packets_sec": 2.0,
+      "bytes_sec": 443.0,
+      "dns_names": [],
+      "evidence": [
+        {
+          "field": "IP",
+          "value": "10.0.0.21",
+          "source": "Captured ARP endpoint",
+          "confidence": "OBSERVED",
+          "ts": 1790007495.3486257
+        },
+        {
+          "field": "MAC",
+          "value": "3a:ea:f9:39:af:b0",
+          "source": "ARP address binding",
+          "confidence": "OBSERVED",
+          "ts": 1790007495.3486257
+        },
+        {
+          "field": "IP",
+          "value": "10.0.0.21",
+          "source": "Captured UDP endpoint",
+          "confidence": "OBSERVED",
+          "ts": 1790007498.1662464
+        },
+        {
+          "field": "MAC",
+          "value": "3a:ea:f9:39:af:b0",
+          "source": "Ethernet frame + on-link routing prefix",
+          "confidence": "OBSERVED",
+          "ts": 1790007498.1662464
+        },
+        {
+          "field": "MAC",
+          "value": "a0:ce:c8:6a:9e:ef",
+          "source": "Ethernet frame + on-link routing prefix",
+          "confidence": "OBSERVED",
+          "ts": 1790007498.0104399
+        },
+        {
+          "field": "Manufacturer",
+          "value": "CE Link Limited",
+          "source": "OUI registry: /usr/share/nmap/nmap-mac-prefixes",
+          "confidence": "OBSERVED",
+          "ts": 1790007498.0104399
+        },
+        {
+          "field": "IP",
+          "value": "10.0.0.21",
+          "source": "Captured ICMP endpoint",
+          "confidence": "OBSERVED",
+          "ts": 1790007495.5234485
+        },
+        {
+          "field": "MAC",
+          "value": "3a:ea:f9:39:af:b0",
+          "source": "Active discovery: Nmap on-link address binding",
+          "confidence": "OBSERVED",
+          "ts": 1790007500.2745702
+        },
+        {
+          "field": "IP",
+          "value": "10.0.0.21",
+          "source": "Active discovery: on-link response on wlan0",
+          "confidence": "OBSERVED",
+          "ts": 1790007500.2745702
+        },
+        {
+          "field": "Hostname",
+          "value": "MacBook-Pro-MacBook",
+          "source": "Active discovery: mDNS/DNS-SD advertisement",
+          "confidence": "OBSERVED",
+          "ts": 1790007500.2745702
+        },
+        {
+          "field": "Friendly name",
+          "value": "MacBook Pro \u2014 MacBook",
+          "source": "Active discovery: mDNS/DNS-SD advertisement",
+          "confidence": "OBSERVED",
+          "ts": 1790007500.2745702
+        },
+        {
+          "field": "Exact device model",
+          "value": "Mac15,6",
+          "source": "Active discovery: mDNS/DNS-SD advertisement",
+          "confidence": "OBSERVED",
+          "ts": 1790007500.2745702
+        },
+        {
+          "field": "Device type",
+          "value": "Laptop",
+          "source": "Active discovery: mDNS advertised MacBook name and Mac model",
+          "confidence": "OBSERVED",
+          "ts": 1790007500.2745702
+        },
+        {
+          "field": "Hostname",
+          "value": "MAC-39B52F",
+          "source": "Active discovery: NetBIOS node status",
+          "confidence": "OBSERVED",
+          "ts": 1790007500.2745702
+        }
+      ],
+      "recent": [
+        [
+          1790007476,
+          1,
+          60
+        ],
+        [
+          1790007477,
+          1,
+          60
+        ],
+        [
+          1790007478,
+          1,
+          60
+        ],
+        [
+          1790007479,
+          1,
+          60
+        ],
+        [
+          1790007480,
+          1,
+          60
+        ],
+        [
+          1790007481,
+          1,
+          60
+        ],
+        [
+          1790007495,
+          19,
+          2590
+        ],
+        [
+          1790007497,
+          2,
+          180
+        ],
+        [
+          1790007498,
+          8,
+          2035
+        ]
+      ],
+      "identity": "ip:wlan0:10.0.0.21",
+      "addresses": [
+        "10.0.0.21"
+      ],
+      "mac_addresses": [
+        "3a:ea:f9:39:af:b0",
+        "a0:ce:c8:6a:9e:ef"
+      ],
+      "hostnames": [
+        "MAC-39B52F",
+        "MacBook-Pro-MacBook"
+      ],
+      "local_evidence": [
+        "Observed ARP address binding"
+      ]
+    },
+    {
+      "ip": "10.0.0.1",
+      "ipv6": "Unknown",
+      "mac": "08:36:c9:e5:22:d2, a0:ce:c8:6a:9e:ef",
+      "hostname": "Unknown",
+      "manufacturer": "NETGEAR, Inc.",
+      "os": "Linux/2.6.12, UPnP/1.0, NETGEAR-UPNP/1.0",
+      "device_type": "Gateway",
+      "scope": "Local",
+      "status": "Active",
+      "first_seen": 1790007471.0379696,
+      "last_seen": 1790007498.746218,
+      "packets": 94,
+      "upload": 9848,
+      "download": 5688,
+      "active_connections": 29,
+      "packets_sec": 3.6,
+      "bytes_sec": 472.8,
+      "dns_names": [],
+      "evidence": [
+        {
+          "field": "IP",
+          "value": "10.0.0.1",
+          "source": "Captured UDP endpoint",
+          "confidence": "OBSERVED",
+          "ts": 1790007498.746218
+        },
+        {
+          "field": "MAC",
+          "value": "08:36:c9:e5:22:d2",
+          "source": "Ethernet frame + on-link routing prefix",
+          "confidence": "OBSERVED",
+          "ts": 1790007498.746218
+        },
+        {
+          "field": "Manufacturer",
+          "value": "Netgear",
+          "source": "OUI registry: /usr/share/nmap/nmap-mac-prefixes",
+          "confidence": "OBSERVED",
+          "ts": 1790007500.2745702
+        },
+        {
+          "field": "IP",
+          "value": "10.0.0.1",
+          "source": "Captured ARP endpoint",
+          "confidence": "OBSERVED",
+          "ts": 1790007495.1379354
+        },
+        {
+          "field": "MAC",
+          "value": "08:36:c9:e5:22:d2",
+          "source": "ARP address binding",
+          "confidence": "OBSERVED",
+          "ts": 1790007495.1379354
+        },
+        {
+          "field": "Device type",
+          "value": "Gateway",
+          "source": "Routing table",
+          "confidence": "CONFIRMED",
+          "ts": 1790007491.4370103
+        },
+        {
+          "field": "IP",
+          "value": "10.0.0.1",
+          "source": "Routing table",
+          "confidence": "CONFIRMED",
+          "ts": 1790007491.4370103
+        },
+        {
+          "field": "IP",
+          "value": "10.0.0.1",
+          "source": "Captured ICMP endpoint",
+          "confidence": "OBSERVED",
+          "ts": 1790007495.4827437
+        },
+        {
+          "field": "MAC",
+          "value": "a0:ce:c8:6a:9e:ef",
+          "source": "Ethernet frame + on-link routing prefix",
+          "confidence": "OBSERVED",
+          "ts": 1790007495.4826899
+        },
+        {
+          "field": "Manufacturer",
+          "value": "CE Link Limited",
+          "source": "OUI registry: /usr/share/nmap/nmap-mac-prefixes",
+          "confidence": "OBSERVED",
+          "ts": 1790007495.4826899
+        },
+        {
+          "field": "IP",
+          "value": "10.0.0.1",
+          "source": "Captured TCP endpoint",
+          "confidence": "OBSERVED",
+          "ts": 1790007498.003716
+        },
+        {
+          "field": "HTTP Host",
+          "value": "10.0.0.1",
+          "source": "HTTP request Host",
+          "confidence": "OBSERVED",
+          "ts": 1790007498.001326
+        },
+        {
+          "field": "MAC",
+          "value": "08:36:c9:e5:22:d2",
+          "source": "Active discovery: Nmap on-link address binding",
+          "confidence": "OBSERVED",
+          "ts": 1790007500.2745702
+        },
+        {
+          "field": "IP",
+          "value": "10.0.0.1",
+          "source": "Active discovery: on-link response on wlan0",
+          "confidence": "OBSERVED",
+          "ts": 1790007500.2745702
+        },
+        {
+          "field": "Friendly name",
+          "value": "R8000 (Gateway)",
+          "source": "Active discovery: UPnP device description",
+          "confidence": "OBSERVED",
+          "ts": 1790007500.2745702
+        },
+        {
+          "field": "Exact device model",
+          "value": "R8000",
+          "source": "Active discovery: UPnP device description",
+          "confidence": "OBSERVED",
+          "ts": 1790007500.2745702
+        },
+        {
+          "field": "Manufacturer",
+          "value": "NETGEAR, Inc.",
+          "source": "Active discovery: UPnP device description",
+          "confidence": "OBSERVED",
+          "ts": 1790007500.2745702
+        },
+        {
+          "field": "OS",
+          "value": "Linux/2.6.12, UPnP/1.0, NETGEAR-UPNP/1.0",
+          "source": "Active discovery: UPnP advertised server string",
+          "confidence": "OBSERVED",
+          "ts": 1790007500.2745702
+        },
+        {
+          "field": "Device type",
+          "value": "Router",
+          "source": "Active discovery: UPnP advertised device type",
+          "confidence": "OBSERVED",
+          "ts": 1790007500.2745702
+        }
+      ],
+      "recent": [
+        [
+          1790007471,
+          4,
+          348
+        ],
+        [
+          1790007476,
+          1,
+          60
+        ],
+        [
+          1790007477,
+          8,
+          720
+        ],
+        [
+          1790007482,
+          4,
+          348
+        ],
+        [
+          1790007485,
+          4,
+          348
+        ],
+        [
+          1790007488,
+          8,
+          720
+        ],
+        [
+          1790007490,
+          4,
+          372
+        ],
+        [
+          1790007493,
+          8,
+          1172
+        ],
+        [
+          1790007495,
+          35,
+          9084
+        ],
+        [
+          1790007496,
+          5,
+          582
+        ],
+        [
+          1790007497,
+          7,
+          1081
+        ],
+        [
+          1790007498,
+          6,
+          701
+        ]
+      ],
+      "identity": "gateway-ip:wlan0:10.0.0.1",
+      "addresses": [
+        "10.0.0.1"
+      ],
+      "mac_addresses": [
+        "08:36:c9:e5:22:d2",
+        "a0:ce:c8:6a:9e:ef"
+      ],
+      "hostnames": [],
+      "local_evidence": [
+        "Routing table default gateway"
+      ]
+    }
+  ],
+  "discovery_messages": [
+    "5 local addresses \u00b7 3 named responses. Unadvertised names remain Unknown. Reports: /tmp/netlab-discovery-8meha_uf"
+  ],
+  "discovery_reports": "/tmp/netlab-discovery-8meha_uf",
+  "capture_continued": true,
+  "packet_counts": [
+    0,
+    1770
+  ],
+  "heartbeat_count": 293,
+  "max_gui_heartbeat_gap": 0.135793310997542,
+  "device_count": 6,
+  "own_addresses": [
+    "10.0.0.28",
+    "fe80::9048:8450:680c:5ef9"
+  ],
+  "monitor_opened": true,
+  "capture_path": "/home/erwin/loyiha/netlab/validation/discovery-release/source-fixed/netlab-wlan0-20260921-211751.pcapng",
+  "success": true,
+  "errors": []
+}
