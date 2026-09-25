@@ -1,3 +1,15 @@
+netlab (2.24.0) unstable; urgency=medium
+
+  * The Interception page is much less crowded. By default it shows only what a
+    first engagement needs: the name, interface, gateway and scope; the three
+    common modules (ARP poisoning, SSL strip, Capture files); four status
+    tiles; and the discover/scope/arm controls. Everything else -- SSL MITM,
+    DNS spoofing, rogue DHCP, cookie killer, NTLM relay, the relay target, the
+    re-poison timing, the note, "Find sniffers" and the detail counters -- is
+    behind an "Ilg'or modullar va sozlamalar" (Advanced) toggle.
+
+ -- Erwin <thestrak118@gmail.com>  Thu, 25 Sep 2026 14:15:00 +0500
+
 netlab (2.23.0) unstable; urgency=medium
 
   * The console now shows the sites the traffic is reaching, live and passively

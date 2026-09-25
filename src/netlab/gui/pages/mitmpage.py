@@ -27,6 +27,10 @@ from netlab.gui.models import InterceptEventModel, TargetModel
 from netlab.gui.widgets import Banner, Card, make_table
 from netlab.util.format import human_count
 
+# Modules a beginner reaches for first are shown by default; the rest live
+# under the "Ilg'or" (Advanced) toggle so the page is not a wall of options.
+COMMON_MODULES = {"arp_poison", "sslstrip", "carve_files"}
+
 MODULES = [
     ("arp_poison", "ARP poisoning",
      "Tell each target that the gateway is at this machine's MAC, and the "
@@ -200,6 +204,7 @@ class MitmPage(QWidget):
     def _build_scope_box(self) -> QGroupBox:
         box = QGroupBox("Engagement")
         form = QFormLayout(box)
+        self._scope_form = form
         form.setContentsMargins(12, 10, 12, 10)
         form.setSpacing(7)
 
@@ -233,20 +238,60 @@ class MitmPage(QWidget):
         self.note_edit = QLineEdit()
         self.note_edit.setPlaceholderText("optional: ticket or engagement ref")
         form.addRow("Note", self.note_edit)
+
+        # Relay target and note are advanced; hidden until "Ilg'or" is on.
+        self._advanced_rows = (self.relay_target_edit, self.note_edit)
+        for widget in self._advanced_rows:
+            widget.setVisible(False)
+            label = form.labelForField(widget)
+            if label is not None:
+                label.setVisible(False)
         return box
 
     def _build_modules_box(self) -> QGroupBox:
         box = QGroupBox("Modules")
-        grid = QGridLayout(box)
-        grid.setContentsMargins(12, 10, 12, 10)
-        grid.setHorizontalSpacing(16)
-        grid.setVerticalSpacing(5)
+        outer = QVBoxLayout(box)
+        outer.setContentsMargins(12, 10, 12, 10)
+        outer.setSpacing(6)
         self.module_boxes: dict[str, QCheckBox] = {}
-        for i, (key, label, tip) in enumerate(MODULES):
+
+        # Common modules, always visible.
+        common = QGridLayout()
+        common.setHorizontalSpacing(16)
+        common.setVerticalSpacing(5)
+        row = 0
+        for key, label, tip in MODULES:
+            if key not in COMMON_MODULES:
+                continue
             check = QCheckBox(label)
             check.setToolTip(tip)
             self.module_boxes[key] = check
-            grid.addWidget(check, i % 4, i // 4)
+            common.addWidget(check, row, 0)
+            row += 1
+        outer.addLayout(common)
+
+        # The "Ilg'or" toggle reveals everything else.
+        self.advanced_toggle = QCheckBox("Ilg'or modullar va sozlamalar")
+        self.advanced_toggle.setToolTip(
+            "SSL MITM, DNS spoofing, rogue DHCP, cookie killer, NTLM relay and "
+            "the timing/relay options.")
+        self.advanced_toggle.toggled.connect(self._toggle_advanced)
+        outer.addWidget(self.advanced_toggle)
+
+        self._advanced_box = QWidget()
+        adv = QGridLayout(self._advanced_box)
+        adv.setContentsMargins(0, 0, 0, 0)
+        adv.setHorizontalSpacing(16)
+        adv.setVerticalSpacing(5)
+        r = 0
+        for key, label, tip in MODULES:
+            if key in COMMON_MODULES:
+                continue
+            check = QCheckBox(label)
+            check.setToolTip(tip)
+            self.module_boxes[key] = check
+            adv.addWidget(check, r % 3, r // 3)
+            r += 1
 
         interval_row = QHBoxLayout()
         interval_row.addWidget(QLabel("Re-poison every"))
@@ -266,8 +311,26 @@ class MitmPage(QWidget):
             "device under test. Without it, SSL MITM produces a warning.")
         self.ca_button.clicked.connect(self.ca_export_requested.emit)
         interval_row.addWidget(self.ca_button)
-        grid.addLayout(interval_row, 4, 0, 1, 2)
+        adv.addLayout(interval_row, (r % 3) + 1, 0, 1, 2)
+        self._advanced_box.setVisible(False)
+        outer.addWidget(self._advanced_box)
+        outer.addStretch(1)
         return box
+
+    def _toggle_advanced(self, on: bool) -> None:
+        self._advanced_box.setVisible(on)
+        # The relay target and note are advanced too; reveal them together.
+        for widget in getattr(self, "_advanced_rows", ()):
+            widget.setVisible(on)
+            label = self._scope_form.labelForField(widget)
+            if label is not None:
+                label.setVisible(on)
+        # ...as are the "Find sniffers" probe and the detail stat tiles.
+        if hasattr(self, "promisc_button"):
+            self.promisc_button.setVisible(on)
+        for name in ("frames", "dns"):
+            if name in getattr(self, "cards", {}):
+                self.cards[name].setVisible(on)
 
     def _build_status_row(self) -> QHBoxLayout:
         row = QHBoxLayout()
@@ -282,6 +345,9 @@ class MitmPage(QWidget):
         }
         for card in self.cards.values():
             row.addWidget(card)
+        # ARP frames and forged DNS are detail; hidden until "Ilg'or".
+        self.cards["frames"].setVisible(False)
+        self.cards["dns"].setVisible(False)
         row.addStretch(1)
         return row
 
@@ -302,6 +368,7 @@ class MitmPage(QWidget):
             "Probe in-scope hosts for promiscuous mode - another machine on "
             "the segment that is capturing everything.")
         self.promisc_button.clicked.connect(self.promisc_requested.emit)
+        self.promisc_button.setVisible(False)          # advanced
         row.addWidget(self.promisc_button)
 
         self.use_selected = QPushButton("Scope to selection")
