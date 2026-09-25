@@ -85,11 +85,12 @@ PAGES = [
 NAV_GROUPS = [
     ("scan", "SKANER", [("Hostlar", "devices"), ("Topologiya", "topology"),
                         ("Nmap skan", "nmap")]),
-    ("konsol", "KONSOL", [("Konsol", "console"), ("Jonli traffik", "live"),
-                          ("Ulanishlar", "connections"),
-                          ("Parollar", "creds")]),
-    ("mitm", "INTERCEPTION", [("Interception", "mitm"), ("Qoidalar", "rules"),
-                              ("Tiklash", "files")]),
+    ("traffik", "TRAFFIK", [("Jonli traffik", "live"),
+                            ("Ulanishlar", "connections")]),
+    ("passwords", "PAROLLAR", [("Parollar", "creds")]),
+    ("konsol", "KONSOL", [("Konsol", "console")]),
+    ("mitm", "MITM", [("Interception", "mitm"), ("Qoidalar", "rules"),
+                      ("Tiklash", "files")]),
 ]
 
 
@@ -193,10 +194,10 @@ class MainWindow(QMainWindow):
         self.mode_bar.setObjectName("ModeBar")
         self.mode_bar.setExpanding(False)
         self.mode_bar.setDrawBase(False)
-        self.mode_bar.setIconSize(QSize(18, 18))
+        self.mode_bar.setIconSize(QSize(26, 26))
         mode_icons = {"scan": "mode-scan", "traffik": "mode-traffik",
-                      "passwords": "mode-passwords", "files": "mode-files",
-                      "mitm": "mode-mitm"}
+                      "passwords": "mode-passwords", "konsol": "mode-konsol",
+                      "files": "mode-files", "mitm": "mode-mitm"}
         icon_dir = Path(__file__).with_name("icons")
         for gid in self._group_order:
             idx = self.mode_bar.addTab(self._group_label[gid])
@@ -278,6 +279,11 @@ class MainWindow(QMainWindow):
             "asks you to confirm the engagement first.")
         self.mitm_btn.clicked.connect(self._toolbar_mitm_toggle)
         tb.addWidget(self.mitm_btn)
+
+        # Intercepter-NG shows the packet tally right in the top bar.
+        self.toolbar_packets = QLabel("Packets: 0")
+        self.toolbar_packets.setObjectName("PacketTally")
+        tb.addWidget(self.toolbar_packets)
 
         right.addWidget(toolbar)
 
@@ -1192,6 +1198,8 @@ class MainWindow(QMainWindow):
             % (packets_text, human_bytes(stats.total_bytes),
                self._captured_pps, human_count(stats.flows),
                human_count(stats.hosts)))
+        self.toolbar_packets.setText(
+            "Packets: %s (%s)" % (packets_text, human_bytes(stats.total_bytes)))
         if stats.queue_dropped:
             self.status_drops.setText(
                 "  dropped before analysis: %s" % human_count(stats.queue_dropped))

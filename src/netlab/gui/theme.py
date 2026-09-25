@@ -120,22 +120,30 @@ QGroupBox::title {{
 /* Intercepter-NG-style top navigation: mode tabs, then a thinner page row. */
 #ModeRow {{ background: {PANEL}; }}
 #PageRow {{ background: {BG}; border-bottom: 1px solid {BORDER}; }}
-QTabBar#ModeBar {{ qproperty-drawBase: 0; }}
+/* Intercepter-NG-style mode strip: big icons, the active mode lit up with a
+   filled tile rather than a thin underline. */
+QTabBar#ModeBar {{ qproperty-drawBase: 0; qproperty-iconSize: 26px; }}
 QTabBar#ModeBar::tab {{
     background: transparent;
     color: {MUTED};
-    padding: 8px 16px;
-    margin: 0 2px;
-    border: none;
-    border-bottom: 2px solid transparent;
-    font-weight: 600;
-    letter-spacing: 0.5px;
+    padding: 9px 18px;
+    margin: 3px 3px;
+    border: 1px solid transparent;
+    border-radius: 8px;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.6px;
+    min-width: 64px;
 }}
 QTabBar#ModeBar::tab:selected {{
-    color: {TEXT};
-    border-bottom: 2px solid {ACCENT};
+    color: #eafff5;
+    background: {ACCENT};
+    border: 1px solid {ACCENT};
 }}
-QTabBar#ModeBar::tab:hover:!selected {{ color: {TEXT}; }}
+QTabBar#ModeBar::tab:hover:!selected {{
+    color: {TEXT};
+    background: {PANEL_ALT};
+}}
 QTabBar#PageBar::tab {{
     background: transparent;
     color: {MUTED};
@@ -165,6 +173,10 @@ QTabBar#PageBar::tab:hover:!selected {{
 }}
 
 QLabel#PageTitle {{ font-size: 19px; font-weight: 700; padding: 2px 0; }}
+QLabel#PacketTally {{
+    color: {GREEN}; font-family: "DejaVu Sans Mono", monospace;
+    font-weight: 700; padding: 0 10px;
+}}
 QLabel#PageHint  {{ color: {MUTED}; font-size: 12px; }}
 QLabel#SectionTitle {{ font-size: 14px; font-weight: 600; padding: 4px 0; }}
 
