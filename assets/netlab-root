@@ -1,0 +1,24 @@
+#!/bin/sh
+# Desktop launcher: open NetLab with root privileges.
+#
+# NetLab runs fine unprivileged (it raises privileges per-action through the
+# helper), but launched from the menu it opens as root so capture, discovery
+# and interception need no further prompt. It elevates through pkexec, passing
+# the caller's X display and identity to the privileged side; if the operator
+# dismisses the prompt, NetLab still opens, just unprivileged.
+
+if [ "$(id -u)" = 0 ]; then
+    exec /usr/bin/netlab "$@"
+fi
+
+pkexec /usr/lib/netlab/netlab-as-root \
+    "${DISPLAY}" "${XAUTHORITY:-$HOME/.Xauthority}" \
+    "$(id -u)" "$(id -g)" "$(id -un)" "$@"
+rc=$?
+
+# 126 = not authorised, 127 = prompt dismissed. Either way, still open NetLab
+# rather than leaving the operator with nothing.
+if [ "$rc" = 126 ] || [ "$rc" = 127 ]; then
+    exec /usr/bin/netlab "$@"
+fi
+exit "$rc"

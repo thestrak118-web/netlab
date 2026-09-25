@@ -1,3 +1,6 @@
 assets/netlab.desktop usr/share/applications
 assets/netlab.conf etc/netlab
 assets/uz.netlab.helper.policy usr/share/polkit-1/actions
+assets/uz.netlab.run.policy usr/share/polkit-1/actions
+assets/netlab-root usr/bin
+assets/netlab-as-root usr/lib/netlab

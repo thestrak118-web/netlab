@@ -1,0 +1,17 @@
+#!/bin/sh
+# The privileged target of `netlab-root`, run as root by pkexec under the
+# uz.netlab.run policy. pkexec resets the environment, so the caller's display
+# and identity arrive as arguments; restore them and hand off to NetLab.
+#
+# SUDO_UID/GID/USER are set so NetLab keeps the operator's config, captures and
+# engagements in the operator's home (see netlab.config.real_user), not root's.
+
+DISPLAY="$1"
+XAUTHORITY="$2"
+SUDO_UID="$3"
+SUDO_GID="$4"
+SUDO_USER="$5"
+shift 5
+export DISPLAY XAUTHORITY SUDO_UID SUDO_GID SUDO_USER
+
+exec /usr/bin/netlab "$@"
