@@ -93,6 +93,18 @@ class TestConsolePage(unittest.TestCase):
         self.assertEqual(text.count("Starting poisoning 10.0.0.5"), 2)
         self.assertIn("network restored", text)
 
+    def test_sites_visited_are_shown_once(self):
+        page = self._page()
+        page.note_site("example.com", "HTTPS")
+        page.note_site("EXAMPLE.com.", "HTTPS")     # same host, normalised
+        page.note_site("other.com", "HTTP")
+        page.note_site("", "HTTP")                  # ignored
+        text = page.view.toPlainText()
+        self.assertEqual(text.count("example.com"), 1)
+        self.assertIn("[HTTPS]", text)
+        self.assertIn("other.com", text)
+        self.assertIn("[HTTP]", text)
+
     def test_strip_host_deduplicated(self):
         page = self._page()
         page.feed("strip.host", {"host": "example.com"})

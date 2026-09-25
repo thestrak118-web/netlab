@@ -56,6 +56,7 @@ class ConsolePage(QWidget):
         self._armed_noted = False
         self._seen_strip: set[str] = set()
         self._seen_spoof: set[str] = set()
+        self._seen_sites: set[str] = set()
 
         lay = QVBoxLayout(self)
         lay.setContentsMargins(0, 0, 0, 0)
@@ -162,6 +163,16 @@ class ConsolePage(QWidget):
             self._line("Starting poisoning %-15s : [%s]" % (ip, mac or "?"),
                        "poison")
 
+    def note_site(self, domain: str, kind: str = "HTTPS") -> None:
+        """A site the captured traffic reached, shown once. This is the live
+        record of where the watched traffic is going -- the sites being
+        visited -- from TLS SNI and cleartext HTTP hosts, passively."""
+        domain = (domain or "").strip().lower().rstrip(".")
+        if not domain or domain in self._seen_sites:
+            return
+        self._seen_sites.add(domain)
+        self._line("site   %-34s [%s]" % (domain, kind), "host")
+
     def note_disarmed(self) -> None:
         self._armed_noted = False
         self._seen_strip.clear()
@@ -252,6 +263,7 @@ class ConsolePage(QWidget):
         self._armed_noted = False
         self._seen_strip.clear()
         self._seen_spoof.clear()
+        self._seen_sites.clear()
         self._banner()
 
     def _save(self) -> None:

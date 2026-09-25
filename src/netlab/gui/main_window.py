@@ -128,6 +128,11 @@ class MainWindow(QMainWindow):
         self._live_marker = 0
         self._dns_marker = 0
         self._http_marker = 0
+        # Separate markers feed the live console independently of which page is
+        # open, so it shows the sites the traffic is reaching as they happen.
+        self._console_tls_marker = 0
+        self._console_http_marker = 0
+        self._console_cred_keys: set = set()
         self._source_path: Path | None = None
         self._reader: RandomAccessCapture | None = None
         self._reader_path: Path | None = None
@@ -1121,6 +1126,8 @@ class MainWindow(QMainWindow):
             if self.stack.currentWidget() is self.live_page:
                 self.live_page.update_counts()
 
+        self._feed_console()
+
         if self._armed and self.helper.running and now >= self._status_next:
             self._status_next = now + 1.0
             self._helper_call("status")
@@ -1129,6 +1136,35 @@ class MainWindow(QMainWindow):
         self._update_capture_rate(self._captured_packets(stats))
         self._refresh_current_page(stats)
         self._update_status(stats)
+
+    def _feed_console(self) -> None:
+        """Show live activity in the console regardless of the open page: the
+        sites the traffic reaches (TLS SNI, HTTP host), and any cleartext
+        credential read off the wire. Each site is shown once, so it does not
+        flood."""
+        new_tls, self._console_tls_marker = \
+            self.analysis.tls_order.since(self._console_tls_marker)
+        for sess in new_tls:
+            sni = getattr(sess, "sni", None)
+            if sni:
+                self.console_page.note_site(sni, "HTTPS")
+        new_http, self._console_http_marker = \
+            self.analysis.http_txns.since(self._console_http_marker)
+        for txn in new_http:
+            host = getattr(txn, "host", None)
+            if host:
+                self.console_page.note_site(host, "HTTP")
+        # Cleartext credentials read passively -- deduplicated by their key.
+        for cred in self.analysis.credentials.snapshot():
+            key = cred.key if hasattr(cred, "key") else id(cred)
+            if key in self._console_cred_keys:
+                continue
+            self._console_cred_keys.add(key)
+            self.console_page.feed("credential", {
+                "proto": cred.proto, "server": cred.server,
+                "port": cred.port, "context": cred.context,
+                "user": cred.user, "password": cred.password,
+                "hash": cred.hash, "hash_type": cred.hash_type})
 
     def _refresh_current_page(self, stats=None) -> None:
         page = self.stack.currentWidget()
