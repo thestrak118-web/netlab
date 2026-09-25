@@ -1,3 +1,16 @@
+netlab (2.25.0) unstable; urgency=medium
+
+  * Simpler top toolbar. The BPF capture-filter box (libpcap syntax) is hidden
+    by default -- a beginner does not need it in their face -- and is brought
+    back from Capture -> "Show capture filter (BPF)", or automatically when a
+    filter is preloaded with `netlab -f`.
+  * Simpler host list. The Hostlar table now shows five readable columns --
+    Device, Monitor, Hostname/OS/MAC/Vendor, Packets and Activity -- instead of
+    nine; Bytes, Connections and the per-second rate columns are hidden as
+    detail (they remain in the model, and in Connections/Topology).
+
+ -- Erwin <thestrak118@gmail.com>  Thu, 25 Sep 2026 14:45:00 +0500
+
 netlab (2.24.0) unstable; urgency=medium
 
   * The Interception page is much less crowded. By default it shows only what a

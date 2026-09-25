@@ -240,7 +240,8 @@ class MainWindow(QMainWindow):
         self.refresh_btn.setToolTip("Re-scan capture interfaces")
         tb.addWidget(self.refresh_btn)
 
-        tb.addWidget(QLabel("BPF"))
+        self.bpf_label = QLabel("BPF")
+        tb.addWidget(self.bpf_label)
         self.bpf_edit = QLineEdit()
         self.bpf_edit.setPlaceholderText(
             "Capture filter (libpcap syntax) — e.g. tcp port 443 or not arp")
@@ -251,6 +252,12 @@ class MainWindow(QMainWindow):
             "per-page filter box instead.")
         self.bpf_edit.setText(str(self.config.get("bpf_filter") or ""))
         tb.addWidget(self.bpf_edit, 1)
+        # The capture filter is an advanced control -- a beginner does not need
+        # libpcap syntax in their face. Hidden until toggled from the Capture
+        # menu (or when a filter is preloaded with `netlab -f`).
+        _show_bpf = bool(self.bpf_edit.text().strip())
+        self.bpf_label.setVisible(_show_bpf)
+        self.bpf_edit.setVisible(_show_bpf)
 
         self.start_btn = QPushButton("Start capture")
         self.start_btn.setObjectName("Primary")
@@ -417,6 +424,11 @@ class MainWindow(QMainWindow):
         cap_menu.addAction(self.act_stop)
 
         cap_menu.addSeparator()
+        self.act_bpf = QAction("Show capture &filter (BPF)", self)
+        self.act_bpf.setCheckable(True)
+        self.act_bpf.setChecked(self.bpf_edit.isVisible())
+        self.act_bpf.toggled.connect(self._toggle_bpf)
+        cap_menu.addAction(self.act_bpf)
         act_clear = QAction("&Clear analysis", self)
         act_clear.triggered.connect(self._clear_analysis_confirm)
         cap_menu.addAction(act_clear)
@@ -540,6 +552,12 @@ class MainWindow(QMainWindow):
         key = self.page_bar.tabData(index)
         if key:
             self._activate_page(key)
+
+    def _toggle_bpf(self, show: bool) -> None:
+        self.bpf_label.setVisible(show)
+        self.bpf_edit.setVisible(show)
+        if show:
+            self.bpf_edit.setFocus()
 
     def _mode_tab_clicked(self, index: int) -> None:
         # tabBarClicked fires even for the already-current tab -- which is how

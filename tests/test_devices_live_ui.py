@@ -33,7 +33,10 @@ def test_details_open_automatically_and_live_snapshots_update(app,engine,page_ty
     assert page.model.cell(d,6)==str(own.packets+7)
     assert page.model.cell(d,13)=='4.2'
     assert '4.2' in page.detail.text.toPlainText()
-    assert all(not page.table.isColumnHidden(c) for c in (0,1,6,7,8,9,12,13,14))
+    # The host list keeps only the readable columns visible; Bytes(7),
+    # Connections(8) and the per-second rates(13,14) are hidden as detail.
+    assert all(not page.table.isColumnHidden(c) for c in (0, 1, 6, 9, 12))
+    assert all(page.table.isColumnHidden(c) for c in (7, 8, 13, 14))
     page.close()
 
 

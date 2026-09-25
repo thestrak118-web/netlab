@@ -180,7 +180,11 @@ class DevicesPage(TablePage):
         self.splitter.setChildrenCollapsible(False)
         self.detail.setMinimumHeight(210)
         # Keep activity and rates visible; full identity/timestamps stay in Details.
-        for col in (2, 3, 4, 5, 10, 11): self.table.setColumnHidden(col, True)
+        # Keep the host list readable: show Device, Monitor, Hostname/OS/MAC/
+        # Vendor, Packets and Activity; hide the rest (MAC/Vendor/Type/Scope are
+        # already in the combined column; Bytes/Connections/rates are detail).
+        for col in (2, 3, 4, 5, 7, 8, 10, 11, 13, 14):
+            self.table.setColumnHidden(col, True)
         self.selected_identity = None
         self.revisions = 0
         self.live_status = QLabel('Stopped — start capture to receive live observations')
