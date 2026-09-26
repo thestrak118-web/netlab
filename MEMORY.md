@@ -1,7 +1,7 @@
 # NetLab — ish holati va davom ettirish (MEMORY)
 
 > Bu fayl keyingi safar **qoldirilgan joydan davom etish** uchun. Oxirgi
-> yangilangan: 2026-09-26. Joriy versiya: **2.26.0** (git `0cf84ae`, 422 test
+> yangilangan: 2026-09-26. Joriy versiya: **2.27.0** (git `e1f3777`, 422 test
 > yashil).
 
 NetLab = Kali uchun Intercepter-NG uslubidagi tarmoq analizatori + MITM vositasi
@@ -17,11 +17,11 @@ kodni xotirada saqlaydi. Har doim:
 
 ```sh
 pkill -f /usr/bin/netlab                                   # eskisini o'chir
-sudo apt install /home/erwin/loyiha/netlab_2.26.0_amd64.deb
+sudo apt install /home/erwin/loyiha/netlab_2.27.0_amd64.deb
 sudo -E netlab                                            # qayta och (-E = X kirish)
 ```
 
-Sarlavhada versiya ko'rinadi (`NetLab 2.26.0`). Shundan yangi/eski ekanini bил.
+Sarlavhada versiya ko'rinadi (`NetLab 2.27.0`). Shundan yangi/eski ekanini bил.
 
 ---
 
@@ -52,6 +52,7 @@ Versiya oshirish: `src/netlab/__init__.py` + `pyproject.toml` + `debian/changelo
 - **Root bilan ishlash** — `sudo -E netlab` yoki menyudan avto-root (pkexec);
   config/fayllar operator uyida qoladi (`real_user()` SUDO_UID orqali).
 - **Native nom aniqlash** — reverse-DNS/NBNS/UPnP/mDNS, nmap/root'siz.
+- **QUIC/HTTP-3 SNI (2.27.0)** — Instagram/YouTube/Google endi nomini ko'rsatadi (QUIC Initial deshifrlash, RFC 9001, paketlararo ClientHello). Jonli isbotlangan.
 - **"Kuzat" bir-tugma oqim (2.26.0)** — qurilma tanla → saytlar+parol. O'z
   qurilma passiv ISHLAYDI; boshqa qurilma MITM datapath'iga bog'liq (isbotlanmagan).
 
