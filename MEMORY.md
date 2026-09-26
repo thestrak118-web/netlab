@@ -1,7 +1,7 @@
 # NetLab — ish holati va davom ettirish (MEMORY)
 
 > Bu fayl keyingi safar **qoldirilgan joydan davom etish** uchun. Oxirgi
-> yangilangan: 2026-09-26. Joriy versiya: **2.25.0** (git `a0cfeba`, 422 test
+> yangilangan: 2026-09-26. Joriy versiya: **2.26.0** (git `0cf84ae`, 422 test
 > yashil).
 
 NetLab = Kali uchun Intercepter-NG uslubidagi tarmoq analizatori + MITM vositasi
@@ -17,11 +17,11 @@ kodni xotirada saqlaydi. Har doim:
 
 ```sh
 pkill -f /usr/bin/netlab                                   # eskisini o'chir
-sudo apt install /home/erwin/loyiha/netlab_2.25.0_amd64.deb
+sudo apt install /home/erwin/loyiha/netlab_2.26.0_amd64.deb
 sudo -E netlab                                            # qayta och (-E = X kirish)
 ```
 
-Sarlavhada versiya ko'rinadi (`NetLab 2.25.0`). Shundan yangi/eski ekanini bил.
+Sarlavhada versiya ko'rinadi (`NetLab 2.26.0`). Shundan yangi/eski ekanini bил.
 
 ---
 
@@ -52,6 +52,8 @@ Versiya oshirish: `src/netlab/__init__.py` + `pyproject.toml` + `debian/changelo
 - **Root bilan ishlash** — `sudo -E netlab` yoki menyudan avto-root (pkexec);
   config/fayllar operator uyida qoladi (`real_user()` SUDO_UID orqali).
 - **Native nom aniqlash** — reverse-DNS/NBNS/UPnP/mDNS, nmap/root'siz.
+- **"Kuzat" bir-tugma oqim (2.26.0)** — qurilma tanla → saytlar+parol. O'z
+  qurilma passiv ISHLAYDI; boshqa qurilma MITM datapath'iga bog'liq (isbotlanmagan).
 
 ## ❌ ISHLAMAYDI / ISBOTLANMAGAN (halol)
 
@@ -88,15 +90,15 @@ Versiya oshirish: `src/netlab/__init__.py` + `pyproject.toml` + `debian/changelo
 Foydalanuvchi umidsizligi: "ko'p mayda o'zgarish, aniq ishlaydigan narsa kerak".
 Prioritet tartibda:
 
-1. **[TAKLIF QILINGAN, JAVOB KUTILMOQDA] "Harvest credentials"ni default YOQIQ
-   qilish** — user parol sozlamasini izlab yurmasligi uchun. Oson: `config.py`
-   DEFAULTS da `harvest_credentials: True`. (Maxfiylik o'zgarishi — README'da
-   ayt.)
+1. **[✅ HAL QILINDI] Parol yig'ish** — "Kuzat" tugmasi harvest'ni majburan
+   yoqadi (_apply_harvest). Config default OFF qoldi (maxfiylik + testlar). Agar
+   user Kuzat'siz ham parol istasa, SOZLAMALAR → Harvest credentials.
 
-2. **"Qurilmani kuzat" bir-tugma avto-MITM** — Hostlar'da qurilmani tanlab
-   bitta tugma bilan: minimal MITM (ARP + monitor) yoqiladi va o'sha
-   qurilmaning Saytlar/Parollari ochiladi. Yangi o'rganuvchi MITM tafsilotini
-   bilishi shart emas. (User bir necha marta so'radi.)
+2. **[✅ BAJARILDI 2.26.0] "Kuzat (saytlar + parol)" tugmasi** — Hostlar'da
+   qurilma tanlab bir tugma: o'z qurilma passiv ochiladi; boshqa qurilma uchun
+   minimal MITM (ARP+SSL-strip+carve) yoqiladi + arm dialog + Selected Device
+   ko'rinishi (Saytlar/Parollar). Harvest majburan yoqiladi. LEKIN boshqa
+   qurilma uchun REAL datapath (keyingi #3) hali isbotlanmagan.
 
 3. **REAL MITM sinovi** — o'z LAN'ida ikki qurilma bilan, `sudo` ostida
    datapath'ni haqiqatan tekshirish. Bu — flagman ishlashini bilishning YAGONA
