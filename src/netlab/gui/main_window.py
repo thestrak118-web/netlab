@@ -117,6 +117,7 @@ class MainWindow(QMainWindow):
         self.queue = DropCountingQueue(int(self.config.get("queue_packets")))
         self.analysis = AnalysisEngine(self.queue, self.config)
         self.analysis.start()
+        self._apply_harvest()          # credential harvesting on by default
         self.capture = CaptureEngine(self.queue, self)
         self.importer = FileImporter(self.queue, self)
 
@@ -498,6 +499,7 @@ class MainWindow(QMainWindow):
         for page in (self.devices_page,):
             page.detail.navigate.connect(self._device_action)
             page.monitor_requested.connect(self._monitor_device)
+            page.watch_requested.connect(self._watch_device)
             page.intercept_requested.connect(self._send_to_interception)
             page.discovery_requested.connect(self._start_discovery)
             page.discovery_cancelled.connect(self.discovery.cancel)
@@ -633,6 +635,29 @@ class MainWindow(QMainWindow):
             return
         self.monitor_page.select_device(ip)
         self._show_page('monitor')
+
+    def _watch_device(self, ip):
+        """The headline flow: watch one device live -- its sites and any login
+        it makes. Your own device is read passively; another device is put in
+        the path first (ARP), which the arm dialog confirms."""
+        if not ip:
+            return
+        if not self.config.get("harvest_credentials"):
+            self.config.set("harvest_credentials", True)
+            self._apply_harvest()
+        self.monitor_page.engine = self.analysis
+        dev = self.analysis.resolve_device(ip)
+        own = dev is not None and getattr(dev, "device_type", "") == "This Device"
+        if not own:
+            if not self._ensure_helper():
+                return
+            self.mitm_page.watch(ip)        # scope + modules + arm confirmation
+        try:
+            self.monitor_page.select_device(ip)
+            self._show_page("monitor")
+        except ValueError:
+            self.status_source.setText(
+                "Cannot watch %s yet -- run Discover, then try again." % ip)
 
     def _send_to_interception(self, ips):
         """Intercepter-NG 'add to NAT': scanned host(s) become MiTM targets."""
@@ -1095,7 +1120,18 @@ class MainWindow(QMainWindow):
 
     def _settings_saved(self) -> None:
         self.timer.setInterval(min(1000, max(250, int(self.config.get("gui_refresh_ms")))))
+        self._apply_harvest()
         self.captures_page.refresh()
+
+    def _apply_harvest(self) -> None:
+        """Turn credential harvesting on/off on the live engine to match the
+        setting, so 'Watch device' and the Passwords page can read logins
+        without a restart."""
+        on = bool(self.config.get("harvest_credentials"))
+        self.analysis.credentials.enabled = on
+        if on:
+            from netlab.analyze import http as httpmod
+            httpmod.set_retain_sensitive(True)
 
     # ------------------------------------------------------------------ tick
 

@@ -169,6 +169,7 @@ class MonitorButtonDelegate(QStyledItemDelegate):
 
 class DevicesPage(TablePage):
     monitor_requested = Signal(str)
+    watch_requested = Signal(str)
     intercept_requested = Signal(list)
     discovery_requested = Signal()
     discovery_cancelled = Signal()
@@ -213,7 +214,21 @@ class DevicesPage(TablePage):
         self.monitor_delegate.monitor_requested.connect(self.monitor_requested.emit)
         self.table.setItemDelegateForColumn(12, self.monitor_delegate)
         self.table.horizontalHeader().moveSection(12, 1)
-        self.monitor_button = QPushButton('Monitor selected device')
+        # The headline action: pick a device and watch it live -- its sites and
+        # any login it makes. For another device this puts you in the path
+        # (MITM); for your own it is passive.
+        self.watch_button = QPushButton('👁  Kuzat (saytlar + parol)')
+        self.watch_button.setObjectName('Primary')
+        self.watch_button.setEnabled(False)
+        self.watch_button.setToolTip(
+            'Watch this device live: the sites it visits and any login it '
+            'makes. For a device other than this one, NetLab first puts itself '
+            'in the path (ARP), which you confirm.')
+        self.watch_button.clicked.connect(
+            lambda: self.watch_requested.emit(self.detail.ip) if self.detail.ip else None)
+        self.add_tool(self.watch_button)
+
+        self.monitor_button = QPushButton('Monitor (passiv)')
         self.monitor_button.setEnabled(False)
         self.monitor_button.clicked.connect(lambda: self.monitor_requested.emit(self.detail.ip) if self.detail.ip else None)
         self.add_tool(self.monitor_button)
@@ -263,6 +278,7 @@ class DevicesPage(TablePage):
     def _selected(self, d):
         self.selected_identity = d.identity
         self.monitor_button.setEnabled(True)
+        self.watch_button.setEnabled(bool(getattr(d, 'ip', '')))
         self.intercept_button.setEnabled(bool(getattr(d, 'ip', '')))
         if self.engine:
             self.detail.show_device(d, self.engine.relations_for_device(d.ip))
@@ -296,6 +312,7 @@ class DevicesPage(TablePage):
             self.selected_identity = None
             self.detail.clear_detail()
             self.monitor_button.setEnabled(False)
+            self.watch_button.setEnabled(False)
 
     def select_device(self, ip):
         self.category.setCurrentText('All Local')

@@ -690,6 +690,16 @@ class MitmPage(QWidget):
         modules["relay_target"] = self.relay_target_edit.text().strip()
         return modules
 
+    def watch(self, ip: str) -> None:
+        """One-click 'Kuzat': scope to this one device, switch on the modules
+        that let its traffic be read (ARP to get in the path, SSL strip, file
+        capture), and go through arming."""
+        self.targets_edit.setText(ip)
+        for key in ("arp_poison", "sslstrip", "carve_files"):
+            if key in self.module_boxes:
+                self.module_boxes[key].setChecked(True)
+        self._arm()
+
     def _arm(self) -> None:
         engagement = self.engagement_dict()
         if engagement is None:

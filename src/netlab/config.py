@@ -50,7 +50,7 @@ DEFAULTS: dict[str, Any] = {
 
     # credential harvesting (Intercepter mode). Off by default: it reads
     # what protocols were trying to keep private, so it is opted into.
-    "harvest_credentials": False,
+    "harvest_credentials": False,          # opt-in; "Kuzat" turns it on
     "max_credentials": 5000,
 
     # active interception

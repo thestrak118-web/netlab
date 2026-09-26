@@ -1,3 +1,17 @@
+netlab (2.26.0) unstable; urgency=medium
+
+  * The headline flow, in one button. On the host list, "Kuzat (saytlar +
+    parol)" watches the selected device live: the sites it visits and any
+    login it makes. Your own device is read passively; for another device
+    NetLab first puts itself in the path (ARP + SSL strip + file capture)
+    through the usual arm confirmation, then opens that device's live view
+    (Saytlar / Parollar tabs).
+  * Credential harvesting is on by default now (it was opt-in), and "Kuzat"
+    turns it on regardless, so a captured login actually shows up without
+    hunting through settings.
+
+ -- Erwin <thestrak118@gmail.com>  Fri, 26 Sep 2026 09:30:00 +0500
+
 netlab (2.25.0) unstable; urgency=medium
 
   * Simpler top toolbar. The BPF capture-filter box (libpcap syntax) is hidden
