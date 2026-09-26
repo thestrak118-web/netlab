@@ -176,3 +176,40 @@ def test_multi_address_export_preserves_source_packets(engine,tmp_path):
     assert len(selected.activity)==11
     assert selected.activity[-1].src==V6
     assert all('10.0.0.99' not in (r.src,r.dst) for r in selected.activity)
+
+
+def test_gateway_ipv4_and_its_link_local_merge(engine):
+    """A router's IPv4 and its own fe80:: (same MAC) are one device, not two.
+
+    Regression: the link-local carried the gateway's MAC, and both the MAC
+    observer and the identity grouping used to treat that MAC as a shared
+    next-hop and refuse it, so the fe80:: became a separate 'Unknown' device.
+    """
+    from ipaddress import ip_address
+    from netlab.analyze.devices import NetworkContext
+    from netlab.capture.pcapio import iter_capture_file
+    from tests.helpers import ethernet, ipv6, udp, eth_ip_tcp
+    import tempfile, os
+    GW, GW_MAC, GW_V6 = '10.0.0.1', '00:aa:bb:cc:dd:ee', 'fe80::abcd'
+    OWN, OWN_MAC, OWN_V6 = '10.0.0.50', '00:11:22:33:44:55', 'fe80::50'
+    c = NetworkContext(interface='wlan0',
+                       addresses=((OWN, OWN_MAC, 24), (OWN_V6, OWN_MAC, 64)),
+                       gateways=((OWN, GW),), neighbors=((GW, GW_MAC),), ts=0)
+    engine.hosts.apply_context(c)
+    f1 = eth_ip_tcp(src=GW, dst=OWN, smac=GW_MAC, dmac=OWN_MAC)
+    f2 = ethernet(GW_MAC, OWN_MAC, 0x86dd,
+                  ipv6(ip_address(GW_V6).packed, ip_address(OWN_V6).packed,
+                       17, udp(546, 547)))
+    with tempfile.NamedTemporaryFile(suffix='.pcapng', delete=False) as fh:
+        fh.write(pcapng_file([(1.0, len(f1), f1), (1.0, len(f2), f2)]))
+        path = fh.name
+    try:
+        engine.ingest_batch(list(iter_capture_file(path)))
+    finally:
+        os.unlink(path)
+    a = engine.resolve_device(GW)
+    b = engine.resolve_device(GW_V6)
+    assert a is not None and b is not None
+    assert a.identity == b.identity            # merged
+    assert a.device_type == 'Gateway'
+    assert set(a.addresses) >= {GW, GW_V6}

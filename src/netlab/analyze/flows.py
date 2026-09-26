@@ -554,7 +554,17 @@ class HostTable:
             bindings = dict(self.context.neighbors)
             if host.ip in bindings and mac != bindings[host.ip] and mac in bindings.values():
                 return
-            if (mac in next_hop_macs and host.ip not in gateways) or (mac in own_macs and host.ip not in own_ips):
+            # A link-local address (fe80::) is the device's own, never a routed
+            # peer behind the gateway's next-hop MAC -- so the MAC on its frame
+            # really is that device's, and must be recorded (it is what merges a
+            # router's IPv4 with its own fe80:: into one device).
+            try:
+                is_link_local = ipaddress.ip_address(host.ip).is_link_local
+            except ValueError:
+                is_link_local = False
+            if not is_link_local and (
+                    (mac in next_hop_macs and host.ip not in gateways)
+                    or (mac in own_macs and host.ip not in own_ips)):
                 return
         if host.macs and mac not in host.macs:
             host.evidence = {k:e for k,e in host.evidence.items()

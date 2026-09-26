@@ -1,3 +1,15 @@
+netlab (2.29.0) unstable; urgency=medium
+
+  * A device and its own link-local IPv6 are one device now, not two. A router
+    (or any host) seen by both its IPv4 and its own fe80:: address -- which
+    carries the same MAC -- used to appear twice, the fe80:: as a separate
+    "Unknown" entry, because that MAC looked like the gateway's shared next-hop
+    and was refused. A link-local address is always the device's own, so its
+    MAC is now recorded and the two addresses merge under one identity, with
+    the right role (Gateway / the device's own type).
+
+ -- Erwin <thestrak118@gmail.com>  Fri, 26 Sep 2026 12:00:00 +0500
+
 netlab (2.28.0) unstable; urgency=medium
 
   * Watching a device now uses its IPv4 address, and says what to do when there

@@ -237,10 +237,19 @@ def local_devices(endpoints, flows, context, now):
             continue
         macs = {e.value for e in endpoint.evidence if e.field == 'MAC'}
         stable = next(iter(macs)) if len(macs) == 1 else None
+        # A link-local address (fe80::/10, 169.254/16) is always the device's
+        # own, never a routed peer behind the gateway's MAC -- so it groups by
+        # its MAC even when that MAC is the gateway's, which is how a router's
+        # IPv4 and its own fe80:: merge into one device instead of two.
+        try:
+            is_link_local = ipaddress.ip_address(ip).is_link_local
+        except ValueError:
+            is_link_local = False
         if ip in own:
             identity = 'interface:' + (context.interface or 'selected')
-        elif stable and (ip in gateways or stable not in gateway_macs | own_macs):
-            identity = ('gateway:' if ip in gateways else 'mac:') + context.interface + ':' + stable
+        elif stable and (ip in gateways or is_link_local
+                         or stable not in gateway_macs | own_macs):
+            identity = 'mac:' + context.interface + ':' + stable
         else:
             identity = ('gateway-ip:' if ip in gateways else 'ip:') + context.interface + ':' + ip
         groups.setdefault(identity, []).append(endpoint)
