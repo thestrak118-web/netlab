@@ -16,6 +16,7 @@ from dataclasses import dataclass, field, replace
 from netlab.analyze import dns as dnsmod
 from netlab.analyze import http as httpmod
 from netlab.analyze import names as namesmod
+from netlab.analyze import quic as quicmod
 from netlab.analyze import tls as tlsmod
 from netlab.analyze.decode import SUPPORTED_LINKTYPES, decode
 from netlab.analyze.flows import FlowTable, HostTable, make_flow_key
@@ -112,6 +113,7 @@ class AnalysisEngine:
         self.live = BoundedRing(cap("live_rows"))
         self.flows = FlowTable(cap("max_flows"))
         self.hosts = HostTable(cap("max_hosts"))
+        self._quic_sni = quicmod.QuicSni()
         self.dns_events = BoundedRing(cap("max_dns_events"))
         self.http_txns = BoundedRing(cap("max_http_events"))
         self.tls_sessions = BoundedLRUDict(cap("max_tls_events"))
@@ -283,6 +285,20 @@ class AnalysisEngine:
                 if evt:
                     self._record_dns(evt, flow)
                     return evt.protocol
+            # QUIC (HTTP/3, UDP 443): the sites that no longer use TCP TLS --
+            # Instagram, YouTube, Google, Facebook. The Initial's ClientHello is
+            # readable, so the SNI is recovered the same way as for TLS.
+            if payload and (pkt.dport == 443 or pkt.sport == 443):
+                if quicmod.is_initial(payload):
+                    if flow.app_proto is None:
+                        flow.app_proto = "QUIC"
+                    name = self._quic_sni.observe(payload)
+                    if name:
+                        if not flow.service:
+                            flow.service = name
+                        server = pkt.dst if pkt.dport == 443 else pkt.src
+                        self.hosts.add_sni_name(server, name, pkt.ts)
+                    return "QUIC"
             # DHCP (67/68) and NetBIOS name service (137): a device's own name.
             if payload and pkt.sport in (67, 68) or pkt.dport in (67, 68):
                 info = namesmod.dhcp_hostname(payload)

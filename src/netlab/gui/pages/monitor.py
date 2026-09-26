@@ -109,6 +109,13 @@ def aggregate_sites(snapshot):
     for e in snapshot.dns:
         if e.qname:
             add(e.qname, 'DNS', e.ts)
+    # Connections carry the service name too -- this is how QUIC / HTTP-3 sites
+    # (Instagram, YouTube, Google) get here, since they never make a TCP TLS
+    # session for the parser to see.
+    for f in getattr(snapshot, 'connections', ()) or ():
+        service = getattr(f, 'service', '')
+        if service and '.' in service:
+            add(service, 'HTTPS', getattr(f, 'last_ts', 0) or 0)
     return [Site(d, v[0], v[1], v[2], v[3])
             for d, v in sorted(agg.items(), key=lambda kv: -kv[1][3])]
 

@@ -1,3 +1,17 @@
+netlab (2.27.0) unstable; urgency=medium
+
+  * QUIC / HTTP-3 sites now show their name. Instagram, YouTube, Google and
+    Facebook run over QUIC (UDP 443), not TCP TLS, so their SNI never reached
+    the TLS parser and they appeared only as anonymous UDP flows. NetLab now
+    decrypts the QUIC Initial (its ClientHello is readable with keys derived
+    from the connection ID, RFC 9001) and recovers the SNI, reassembling a
+    ClientHello split across packets. The name appears in Live Traffic's Domain
+    column, in the Connections "Service / SNI" column, and in a device's
+    Saytlar list, exactly like a TLS SNI. Only the requested name is read;
+    nothing after the handshake.
+
+ -- Erwin <thestrak118@gmail.com>  Fri, 26 Sep 2026 10:30:00 +0500
+
 netlab (2.26.0) unstable; urgency=medium
 
   * The headline flow, in one button. On the host list, "Kuzat (saytlar +
