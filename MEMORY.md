@@ -1,7 +1,7 @@
 # NetLab — ish holati va davom ettirish (MEMORY)
 
 > Bu fayl keyingi safar **qoldirilgan joydan davom etish** uchun. Oxirgi
-> yangilangan: 2026-09-26. Joriy versiya: **2.27.0** (git `e1f3777`, 422 test
+> yangilangan: 2026-09-26. Joriy versiya: **2.29.0** (git `18e40c8`, 422 test
 > yashil).
 
 NetLab = Kali uchun Intercepter-NG uslubidagi tarmoq analizatori + MITM vositasi
@@ -17,11 +17,11 @@ kodni xotirada saqlaydi. Har doim:
 
 ```sh
 pkill -f /usr/bin/netlab                                   # eskisini o'chir
-sudo apt install /home/erwin/loyiha/netlab_2.27.0_amd64.deb
+sudo apt install /home/erwin/loyiha/netlab_2.29.0_amd64.deb
 sudo -E netlab                                            # qayta och (-E = X kirish)
 ```
 
-Sarlavhada versiya ko'rinadi (`NetLab 2.27.0`). Shundan yangi/eski ekanini bил.
+Sarlavhada versiya ko'rinadi (`NetLab 2.29.0`). Shundan yangi/eski ekanini bил.
 
 ---
 
