@@ -642,11 +642,23 @@ class MainWindow(QMainWindow):
         the path first (ARP), which the arm dialog confirms."""
         if not ip:
             return
+        dev = self.analysis.resolve_device(ip)
+        # Watching (ARP/MITM) works on IPv4. Prefer the device's IPv4 address;
+        # if only a link-local IPv6 (fe80::) has been seen, its IPv4 is not
+        # known yet -- an ARP sweep finds it.
+        if dev is not None and getattr(dev, "ipv4_addresses", ()):
+            ip = dev.ipv4_addresses[0]
+        elif ":" in ip:
+            self._show_page("devices")
+            self._discovery_status(
+                "%s is only known by IPv6 so far — its IPv4 (needed to watch "
+                "it) is not seen yet. Press 'Discover devices' to find it, "
+                "then watch it." % ip, False)
+            return
         if not self.config.get("harvest_credentials"):
             self.config.set("harvest_credentials", True)
             self._apply_harvest()
         self.monitor_page.engine = self.analysis
-        dev = self.analysis.resolve_device(ip)
         own = dev is not None and getattr(dev, "device_type", "") == "This Device"
         if not own:
             if not self._ensure_helper():

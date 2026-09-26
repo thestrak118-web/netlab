@@ -1,3 +1,15 @@
+netlab (2.28.0) unstable; urgency=medium
+
+  * Watching a device now uses its IPv4 address, and says what to do when there
+    is none. Watching and MITM work over ARP, which is IPv4-only, but a device
+    is often first seen only by an IPv6 link-local address (fe80::) -- a phone
+    that has sent one IPv6 packet and nothing else. "Kuzat" now prefers the
+    device's IPv4 address when it has one, and when it does not it sends you to
+    the host list with a clear note to press "Discover devices" (an ARP sweep
+    finds the IPv4), instead of silently doing nothing.
+
+ -- Erwin <thestrak118@gmail.com>  Fri, 26 Sep 2026 11:15:00 +0500
+
 netlab (2.27.0) unstable; urgency=medium
 
   * QUIC / HTTP-3 sites now show their name. Instagram, YouTube, Google and
