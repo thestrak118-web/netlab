@@ -53,6 +53,10 @@ class Helper:
         self._session_lock = threading.Lock()
         self._stop = threading.Event()
         self._workers: list[threading.Thread] = []
+        # A monitor-mode Wi-Fi sniff takes the radio off the network; remember
+        # it so shutdown (including a dropped pipe) always restores managed mode.
+        self._monitor_iface = ""
+        self._monitor_reconnect = ""
 
     # ---------------------------------------------------------------- send
 
@@ -119,6 +123,12 @@ class Helper:
             except Exception as exc:             # pragma: no cover
                 report = {"errors": [str(exc)]}
             self.emit("shutdown", {"reason": reason, "report": report})
+        if self._monitor_iface:                 # restore the radio to the LAN
+            iface, self._monitor_iface = self._monitor_iface, ""
+            try:
+                netcfg.monitor_stop(iface, self._monitor_reconnect)
+            except Exception as exc:            # pragma: no cover
+                report.setdefault("errors", []).append(str(exc))
         self._stop.set()
         return report
 
@@ -176,6 +186,23 @@ class Helper:
 
     def cmd_hello(self) -> dict:
         return self._hello()
+
+    def cmd_wifi_monitor(self, interface: str, channel="",
+                         reconnect: str = "") -> dict:
+        """Enter 802.11 monitor mode so an unprivileged dumpcap can capture
+        every station's frames on `channel`. Remember it for restore-on-exit."""
+        result = netcfg.monitor_start(interface, channel)
+        self._monitor_iface = interface
+        self._monitor_reconnect = reconnect
+        return result
+
+    def cmd_wifi_managed(self, interface: str = "", reconnect: str = "") -> dict:
+        """Leave monitor mode and put the radio back on the network."""
+        iface = interface or self._monitor_iface
+        result = netcfg.monitor_stop(iface, reconnect or self._monitor_reconnect)
+        self._monitor_iface = ""
+        self._monitor_reconnect = ""
+        return result
 
     def cmd_interfaces(self) -> list:
         from netlab.capture.interfaces import list_interfaces

@@ -1,6 +1,6 @@
 """NetLab - network analysis and interception workbench for Kali Linux."""
 
-__version__ = "2.29.0"
+__version__ = "2.36.0"
 __appname__ = "NetLab"
 
 # NetLab has two halves, and the split is the point.

@@ -149,6 +149,8 @@ class MainWindow(QMainWindow):
         # Active interception lives in a separate, privileged process.
         self.helper = HelperClient(self)
         self._armed_state = False
+        self._watch_target = None        # the ip the one-click Kuzat is on
+        self._pending_watch_ip = None    # queued watch, armed after disarm
         self._helper_requests: dict[int, str] = {}
         self._cred_marker = 0
         self._active_credentials: list = []
@@ -500,6 +502,9 @@ class MainWindow(QMainWindow):
             page.detail.navigate.connect(self._device_action)
             page.monitor_requested.connect(self._monitor_device)
             page.watch_requested.connect(self._watch_device)
+            page.auto_watch_requested.connect(self._watch_device)
+            page.auto_watch_toggled.connect(self._auto_watch_toggled)
+            page.set_auto_watch(self.config.get("auto_watch_on_select", False))
             page.intercept_requested.connect(self._send_to_interception)
             page.discovery_requested.connect(self._start_discovery)
             page.discovery_cancelled.connect(self.discovery.cancel)
@@ -639,7 +644,9 @@ class MainWindow(QMainWindow):
     def _watch_device(self, ip):
         """The headline flow: watch one device live -- its sites and any login
         it makes. Your own device is read passively; another device is put in
-        the path first (ARP), which the arm dialog confirms."""
+        the path first (ARP). Confirmation is skipped unless the operator asked
+        for it (config watch_confirm), and switching to a new target first
+        disarms the current one so a second arm never races the helper."""
         if not ip:
             return
         dev = self.analysis.resolve_device(ip)
@@ -649,27 +656,68 @@ class MainWindow(QMainWindow):
         if dev is not None and getattr(dev, "ipv4_addresses", ()):
             ip = dev.ipv4_addresses[0]
         elif ":" in ip:
+            # In auto-watch this fires for every IPv6-only row; say it once,
+            # quietly, and do not nag with a modal.
+            self._discovery_status(
+                "%s is only known by IPv6 so far — press 'Discover devices' "
+                "to find its IPv4, then watch it." % ip, False)
+            return
+        own = dev is not None and getattr(dev, "device_type", "") == "This Device"
+        if own:
+            self.monitor_page.engine = self.analysis
+            self._open_monitor(ip)
+            return
+        if not self._ensure_helper():
+            return
+        if self._watch_target == ip and self._armed:
+            self.monitor_page.engine = self.analysis      # already on it
+            self._open_monitor(ip)
+            return
+        if self._armed:
+            # Move interception to the new target: disarm now, arm once the
+            # helper confirms it is down (handled in the 'disarmed' event).
+            self._pending_watch_ip = ip
+            self.mitm_page.disarm_requested.emit()
+            return
+        self._start_watch(ip)
+
+    def _host_reachable(self, ip):
+        """Unprivileged: is the target answering ARP right now? (Injectable.)"""
+        from netlab.integrations.reach import host_reachable
+        return host_reachable(ip)
+
+    def _start_watch(self, ip):
+        """Arm the one-click watch on a resolved IPv4 (helper already up). First
+        wake and confirm the target so a dozing phone gets a clear 'wake it'
+        message instead of the helper's raw 'no target answered ARP' refusal."""
+        if not self._host_reachable(ip):
+            self._watch_target = None
+            self._pending_watch_ip = None
             self._show_page("devices")
             self._discovery_status(
-                "%s is only known by IPv6 so far — its IPv4 (needed to watch "
-                "it) is not seen yet. Press 'Discover devices' to find it, "
-                "then watch it." % ip, False)
+                "%s hozir javob bermayapti (uxlagan bo'lishi mumkin). Qurilma "
+                "ekranini yoqib biror ilova oching, so'ng qayta Kuzat bosing — "
+                "yoki Discover devices bilan yangilang." % ip, False)
             return
         if not self.config.get("harvest_credentials"):
             self.config.set("harvest_credentials", True)
             self._apply_harvest()
         self.monitor_page.engine = self.analysis
-        own = dev is not None and getattr(dev, "device_type", "") == "This Device"
-        if not own:
-            if not self._ensure_helper():
-                return
-            self.mitm_page.watch(ip)        # scope + modules + arm confirmation
+        self._watch_target = ip
+        self.mitm_page.watch(ip, confirm=self.config.get("watch_confirm", False))
+        self.status_source.setText("👁 Kuzat: %s — MITM yoqilmoqda…" % ip)
+        self._open_monitor(ip)
+
+    def _open_monitor(self, ip):
         try:
             self.monitor_page.select_device(ip)
             self._show_page("monitor")
         except ValueError:
             self.status_source.setText(
                 "Cannot watch %s yet -- run Discover, then try again." % ip)
+
+    def _auto_watch_toggled(self, on):
+        self.config.set("auto_watch_on_select", bool(on))
 
     def _send_to_interception(self, ips):
         """Intercepter-NG 'add to NAT': scanned host(s) become MiTM targets."""
@@ -1384,6 +1432,8 @@ class MainWindow(QMainWindow):
     def _helper_closed(self, reason: str) -> None:
         was_armed = self._armed
         self._armed = False
+        self._watch_target = None
+        self._pending_watch_ip = None
         self.mitm_page.set_armed(False)
         self.mitm_page.set_helper_state(False, reason)
         self.mitm_page.add_event("helper.closed", {"reason": reason})
@@ -1415,6 +1465,12 @@ class MainWindow(QMainWindow):
         elif name == "disarmed":
             self._armed = False
             self.mitm_page.set_armed(False)
+            pending = self._pending_watch_ip
+            self._pending_watch_ip = None
+            if pending:
+                self._start_watch(pending)      # move to the queued watch target
+            else:
+                self._watch_target = None
         if name not in ("log", "http.exchange"):
             self.mitm_page.add_event(name, data)
             self.console_page.feed(name, data)
@@ -1447,6 +1503,18 @@ class MainWindow(QMainWindow):
                 return
             self.mitm_page.add_event("error", {"command": command,
                                                "message": str(payload)})
+            if command == "arm" and "answered ARP" in str(payload):
+                # A dozing/absent target -- not a scary "Helper refused".
+                target = self._watch_target or "Nishon"
+                self._watch_target = None
+                self._pending_watch_ip = None
+                self._show_page("devices")
+                self._discovery_status(
+                    "%s hozir javob bermayapti (uxlagan bo'lishi mumkin). "
+                    "Qurilma ekranini yoqib biror ilova oching, so'ng qayta "
+                    "Kuzat bosing — yoki Discover devices bilan yangilang."
+                    % target, False)
+                return
             QMessageBox.warning(self, "Helper refused",
                                 "%s failed:\n\n%s" % (command or "command",
                                                        payload))
@@ -1454,7 +1522,15 @@ class MainWindow(QMainWindow):
         if command == "arm":
             self._armed = True
             self.mitm_page.set_armed(True, payload)
-            self._nav_to("mitm")
+            if self._watch_target:
+                # A one-click / auto watch: land on the device's own live view,
+                # so its sites and logins read exactly like this machine's.
+                self.status_source.setText(
+                    "👁 Kuzat faol: %s — trafigi o'zingizникidek ko'rinadi"
+                    % self._watch_target)
+                self._open_monitor(self._watch_target)
+            else:
+                self._nav_to("mitm")
         elif command == "disarm":
             self._armed = False
             self.mitm_page.set_armed(False)

@@ -33,6 +33,7 @@ Homepage = "https://example.invalid/netlab"
 [project.scripts]
 netlab = "netlab.app:main"
 netlab-helper = "netlab.priv.helper:main"
+netlab-wifisniff = "netlab.capture.wifimon:main"
 
 [project.optional-dependencies]
 test = ["pytest>=7", "pytest-cov>=4"]

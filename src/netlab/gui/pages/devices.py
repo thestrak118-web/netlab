@@ -1,10 +1,10 @@
 """Device projections of HostTable, with navigation to the existing analyzers."""
 import time
-from PySide6.QtCore import Qt, Signal, QSize, QEvent
+from PySide6.QtCore import Qt, Signal, QSize, QEvent, QTimer
 from PySide6.QtGui import QColor
 from PySide6.QtWidgets import QWidget, QVBoxLayout, QHBoxLayout, QPushButton, QLabel, QComboBox, QStyledItemDelegate, QStyleOptionButton, QStyle, QApplication
 from netlab.gui.models import NetLabTableModel, LEFT, RIGHT
-from netlab.gui.device_icons import device_icon, os_icon
+from netlab.gui.device_icons import device_icon, os_icon, snapshot_icon
 from netlab.gui.pages.detail import DetailPane, kv
 from netlab.gui.widgets import TablePage
 from netlab.util.format import human_bytes, ts_full
@@ -50,17 +50,17 @@ class DeviceModel(NetLabTableModel):
     def data(self, index, role=Qt.ItemDataRole.DisplayRole):
         if index.isValid() and index.column() == 0 and role == Qt.ItemDataRole.DecorationRole:
             d = self._rows[index.row()]
-            # OS icon (penguin / Windows / Android / Apple) when the OS is
-            # known, like Intercepter-NG; otherwise the device-type icon.
-            return (os_icon(d.os) if getattr(d, 'os', 'Unknown') not in ('', 'Unknown')
-                    else None) or device_icon(d.device_type)
+            # OS icon (penguin / Windows / Android / Apple) when known, then the
+            # verified device type, then a MAC-based phone/computer glyph -- a
+            # bare host is never the '?' unknown mark.
+            return snapshot_icon(d)
         return super().data(index, role)
 
     def tooltip(self, d, col):
         return ('Addresses: ' + ', '.join(d.addresses) + '\nMAC: ' + d.mac +
                 '\nHostname: ' + d.hostname + '\nVendor: ' + d.manufacturer +
                 '\nType: ' + d.device_type + '\nLocal evidence: ' + '; '.join(d.local_evidence) +
-                ('\nNo verified device type: phone/laptop icons require identity evidence.' if d.device_type == 'Unknown' else ''))
+                ('\nIcon inferred from the MAC (randomised = personal device); no advertised name/type yet.' if d.device_type == 'Unknown' else ''))
 
     def fields(self, d):
         return dict(device=d.addresses, src=d.ip, dst=d.ip, hostname=d.hostname, mac=d.mac,
@@ -100,7 +100,7 @@ class DeviceDetails(QWidget):
 
     def show_device(self, d, relations):
         self.ip = d.ip
-        self.icon.setPixmap(device_icon(d.device_type).pixmap(32, 32))
+        self.icon.setPixmap(snapshot_icon(d).pixmap(32, 32))
         for button in self.buttons.values():
             button.setEnabled(True)
         lines = ['Identity', kv('Device ID', d.identity),
@@ -170,6 +170,8 @@ class MonitorButtonDelegate(QStyledItemDelegate):
 class DevicesPage(TablePage):
     monitor_requested = Signal(str)
     watch_requested = Signal(str)
+    auto_watch_requested = Signal(str)
+    auto_watch_toggled = Signal(bool)
     intercept_requested = Signal(list)
     discovery_requested = Signal()
     discovery_cancelled = Signal()
@@ -228,6 +230,25 @@ class DevicesPage(TablePage):
             lambda: self.watch_requested.emit(self.detail.ip) if self.detail.ip else None)
         self.add_tool(self.watch_button)
 
+        # Auto-watch: when on, selecting a device immediately watches it live
+        # (MITM). Switching devices moves the interception to the new one. A
+        # visible, sticky toggle -- never a hidden default -- so it can never
+        # poison a device the operator only meant to inspect.
+        self.auto_watch_btn = QPushButton('⚡ Avto-Kuzat')
+        self.auto_watch_btn.setCheckable(True)
+        self.auto_watch_btn.setToolTip(
+            'When on, selecting a device starts watching it live (MITM) at '
+            'once, no confirmation. Switching devices moves interception to '
+            'the newly selected one. Turn off to just inspect devices.')
+        self.auto_watch_btn.toggled.connect(self._auto_watch_toggled)
+        self.add_tool(self.auto_watch_btn)
+        self._auto_watch_last = None
+        self._auto_watch_pending = None
+        self._auto_watch_timer = QTimer(self)
+        self._auto_watch_timer.setSingleShot(True)
+        self._auto_watch_timer.setInterval(400)   # settle on a row before arming
+        self._auto_watch_timer.timeout.connect(self._auto_watch_fire)
+
         self.monitor_button = QPushButton('Monitor (passiv)')
         self.monitor_button.setEnabled(False)
         self.monitor_button.clicked.connect(lambda: self.monitor_requested.emit(self.detail.ip) if self.detail.ip else None)
@@ -282,6 +303,39 @@ class DevicesPage(TablePage):
         self.intercept_button.setEnabled(bool(getattr(d, 'ip', '')))
         if self.engine:
             self.detail.show_device(d, self.engine.relations_for_device(d.ip))
+        self._maybe_auto_watch(d)
+
+    def _maybe_auto_watch(self, d):
+        """Fire auto-watch only when the SELECTED DEVICE CHANGES (not on every
+        refresh tick, which also calls _selected for the same row), and never
+        for this machine. Debounced so clicking through rows settles first."""
+        if not self.auto_watch_btn.isChecked():
+            return
+        ip = getattr(d, 'ip', '')
+        if (ip and d.identity != self._auto_watch_last
+                and getattr(d, 'device_type', '') != 'This Device'):
+            self._auto_watch_last = d.identity
+            self._auto_watch_pending = ip
+            self._auto_watch_timer.start()
+
+    def _auto_watch_fire(self):
+        ip, self._auto_watch_pending = self._auto_watch_pending, None
+        if ip:
+            self.auto_watch_requested.emit(ip)
+
+    def _auto_watch_toggled(self, on):
+        # Re-arm tracking so turning it on watches the current selection next
+        # tick, and turning it off stops any pending fire.
+        self._auto_watch_last = None
+        self._auto_watch_timer.stop()
+        self.auto_watch_toggled.emit(bool(on))
+
+    def set_auto_watch(self, on):
+        """Reflect the persisted setting without re-emitting the toggle signal."""
+        self.auto_watch_btn.blockSignals(True)
+        self.auto_watch_btn.setChecked(bool(on))
+        self.auto_watch_btn.blockSignals(False)
+        self._auto_watch_last = None
 
     def _activated(self, d):
         """Double-click / Enter: peek, then open the host's device view."""

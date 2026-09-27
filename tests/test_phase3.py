@@ -179,6 +179,10 @@ def window(app, engine, tmp_path):
     w.connections_page.set_engine(engine)
     w._tick()
     yield w
+    # A test may leave interception "armed"; closeEvent would then pop a modal
+    # confirmation that blocks forever under offscreen Qt. Clear it so teardown
+    # never hangs.
+    w._armed = False
     with patch.object(w.config, 'save'):
         w.close()
 
@@ -313,3 +317,147 @@ def test_device_refresh_keeps_order_and_detail_scroll(window, app):
     page.refresh(tuple(reversed(devices)))
     assert [d.ip for d in page.model._rows] == order
     assert page.detail.text.verticalScrollBar().value() == scroll
+
+
+# --- one-click Kuzat (no confirm) and auto-watch target switching ------------
+
+def test_watch_arms_without_confirm_by_default(window, monkeypatch):
+    """Kuzat / auto-watch arm the selected device directly -- confirm=False --
+    and switching to a new target disarms the current one first so a second
+    arm never races the helper (v2.16 session lock)."""
+    from types import SimpleNamespace
+    w = window
+    monkeypatch.setattr(w, "_ensure_helper", lambda: True)
+    monkeypatch.setattr(w, "_host_reachable", lambda ip: True)
+    monkeypatch.setattr(w.monitor_page, "select_device", lambda ip: None)
+    watched, disarms = [], []
+    monkeypatch.setattr(w.mitm_page, "watch",
+                        lambda ip, confirm=True: watched.append((ip, confirm)))
+    w.mitm_page.disarm_requested.connect(lambda: disarms.append(True))
+    devs = {"10.0.0.50": SimpleNamespace(device_type="Smartphone", ipv4_addresses=("10.0.0.50",)),
+            "10.0.0.51": SimpleNamespace(device_type="Smartphone", ipv4_addresses=("10.0.0.51",))}
+    monkeypatch.setattr(w.analysis, "resolve_device", lambda ip: devs.get(ip))
+    w._watch_target = None
+    w._armed = False
+
+    w._watch_device("10.0.0.50")                    # not armed -> arm A directly
+    assert watched == [("10.0.0.50", False)]
+    assert w._watch_target == "10.0.0.50"
+
+    w._armed = True                                 # helper confirmed armed
+    w._watch_device("10.0.0.51")                    # armed on A -> disarm, queue B
+    assert disarms == [True]
+    assert w._pending_watch_ip == "10.0.0.51"
+    assert watched == [("10.0.0.50", False)]        # B not armed yet
+
+    w._helper_event("disarmed", {})                 # helper down -> arm queued B
+    assert watched[-1] == ("10.0.0.51", False)
+    assert w._watch_target == "10.0.0.51"
+    assert w._pending_watch_ip is None
+
+
+def test_watch_confirm_setting_forces_the_dialog(window, monkeypatch):
+    from types import SimpleNamespace
+    w = window
+    monkeypatch.setattr(w, "_ensure_helper", lambda: True)
+    monkeypatch.setattr(w, "_host_reachable", lambda ip: True)
+    monkeypatch.setattr(w.monitor_page, "select_device", lambda ip: None)
+    calls = []
+    monkeypatch.setattr(w.mitm_page, "watch",
+                        lambda ip, confirm=True: calls.append(confirm))
+    monkeypatch.setattr(w.analysis, "resolve_device",
+                        lambda ip: SimpleNamespace(device_type="Smartphone", ipv4_addresses=("10.0.0.60",)))
+    w._armed = False
+    w._watch_target = None
+    w.config.set("watch_confirm", True)
+    w._watch_device("10.0.0.60")
+    assert calls == [True]
+
+
+def test_arm_confirm_false_skips_the_dialog_and_arms(window, monkeypatch):
+    import netlab.gui.pages.mitmpage as M
+    mp = window.mitm_page
+    monkeypatch.setattr(mp, "engagement_dict", lambda: {"targets": ["10.0.0.50"]})
+    monkeypatch.setattr(mp, "modules_dict", lambda: {"arp_poison": True})
+    monkeypatch.setattr(mp, "save_config", lambda: None)
+
+    def _boom(*a, **k):
+        raise AssertionError("ArmDialog must not be built when confirm=False")
+    monkeypatch.setattr(M, "ArmDialog", _boom)
+    emitted = []
+    mp.arm_requested.connect(lambda eng, mods: emitted.append((eng, mods)))
+    mp._arm(confirm=False)
+    assert len(emitted) == 1
+    eng, _mods = emitted[0]
+    assert eng["authorised"] is True and "Kuzat" in eng["authorisation_text"]
+
+
+def test_arm_confirm_true_still_gates_on_the_dialog(window, monkeypatch):
+    from PySide6.QtWidgets import QDialog
+    import netlab.gui.pages.mitmpage as M
+    mp = window.mitm_page
+    monkeypatch.setattr(mp, "engagement_dict", lambda: {"targets": ["10.0.0.50"]})
+    monkeypatch.setattr(mp, "modules_dict", lambda: {"arp_poison": True})
+    monkeypatch.setattr(mp, "save_config", lambda: None)
+
+    class Rejected:
+        def __init__(self, *a, **k): pass
+        def exec(self): return QDialog.DialogCode.Rejected
+    monkeypatch.setattr(M, "ArmDialog", Rejected)
+    emitted = []
+    mp.arm_requested.connect(lambda *a: emitted.append(a))
+    mp._arm(confirm=True)
+    assert emitted == []                            # cancelled -> nothing armed
+
+
+def test_watch_on_unreachable_target_does_not_arm(window, monkeypatch):
+    """A dozing target is caught before the helper: no arm, a friendly nudge."""
+    from types import SimpleNamespace
+    w = window
+    monkeypatch.setattr(w, "_ensure_helper", lambda: True)
+    monkeypatch.setattr(w, "_host_reachable", lambda ip: False)   # asleep
+    monkeypatch.setattr(w.monitor_page, "select_device", lambda ip: None)
+    watched, statuses = [], []
+    monkeypatch.setattr(w.mitm_page, "watch",
+                        lambda ip, confirm=True: watched.append(ip))
+    monkeypatch.setattr(w, "_discovery_status",
+                        lambda text, running=False: statuses.append(text))
+    monkeypatch.setattr(w.analysis, "resolve_device",
+                        lambda ip: SimpleNamespace(device_type="Smartphone",
+                                                   ipv4_addresses=("10.0.0.70",),
+                                                   addresses=("10.0.0.70",)) if ip == "10.0.0.70" else None)
+    w._armed = False
+    w._watch_target = None
+    w._watch_device("10.0.0.70")
+    assert watched == []                       # nothing was armed
+    assert w._watch_target is None
+    assert any("javob bermayapti" in s for s in statuses)
+
+
+def test_watch_arm_success_lands_on_the_device_not_the_mitm_page(window, monkeypatch):
+    w = window
+    opened, navs = [], []
+    monkeypatch.setattr(w, "_open_monitor", lambda ip: opened.append(ip))
+    monkeypatch.setattr(w, "_nav_to", lambda key: navs.append(key))
+    monkeypatch.setattr(w.mitm_page, "set_armed", lambda *a, **k: None)
+    w._watch_target = "10.0.0.80"
+    w._helper_requests[999] = "arm"
+    w._helper_replied(999, True, {"targets": ["10.0.0.80"]})
+    assert opened == ["10.0.0.80"]             # the device's own live view
+    assert "mitm" not in navs                  # not the MITM config page
+
+
+def test_arm_arp_failure_is_a_friendly_nudge_not_a_refusal(window, monkeypatch):
+    import netlab.gui.main_window as MW
+    w = window
+    boxes, statuses = [], []
+    monkeypatch.setattr(MW.QMessageBox, "warning", lambda *a, **k: boxes.append(a))
+    monkeypatch.setattr(w, "_discovery_status",
+                        lambda text, running=False: statuses.append(text))
+    w._watch_target = "10.0.0.81"
+    w._helper_requests[7] = "arm"
+    w._helper_replied(7, False,
+                      "no target in the engagement answered ARP; nothing to poison")
+    assert boxes == []                         # no scary "Helper refused" modal
+    assert any("javob bermayapti" in s for s in statuses)
+    assert w._watch_target is None

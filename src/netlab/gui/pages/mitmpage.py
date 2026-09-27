@@ -690,17 +690,19 @@ class MitmPage(QWidget):
         modules["relay_target"] = self.relay_target_edit.text().strip()
         return modules
 
-    def watch(self, ip: str) -> None:
+    def watch(self, ip: str, confirm: bool = True) -> None:
         """One-click 'Kuzat': scope to this one device, switch on the modules
         that let its traffic be read (ARP to get in the path, SSL strip, file
-        capture), and go through arming."""
+        capture), and go through arming. When confirm is False the ARM dialog is
+        skipped and interception starts at once -- the operator already asked
+        for it by pressing Kuzat (or by selecting the device in auto-watch)."""
         self.targets_edit.setText(ip)
         for key in ("arp_poison", "sslstrip", "carve_files"):
             if key in self.module_boxes:
                 self.module_boxes[key].setChecked(True)
-        self._arm()
+        self._arm(confirm=confirm)
 
-    def _arm(self) -> None:
+    def _arm(self, confirm: bool = True) -> None:
         engagement = self.engagement_dict()
         if engagement is None:
             return
@@ -710,11 +712,18 @@ class MitmPage(QWidget):
                 self, "Nothing to run",
                 "Select at least one module before arming.")
             return
-        in_scope = [h for h in self._hosts.values() if h.get("in_scope")]
-        dialog = ArmDialog(engagement, modules, in_scope, self)
-        if dialog.exec() != QDialog.DialogCode.Accepted:
-            return
+        if confirm:
+            in_scope = [h for h in self._hosts.values() if h.get("in_scope")]
+            dialog = ArmDialog(engagement, modules, in_scope, self)
+            if dialog.exec() != QDialog.DialogCode.Accepted:
+                return
+            engagement["authorisation_text"] = dialog.authorisation_text()
+        else:
+            # No modal, but never silent: the console/event log records the
+            # gateway and per-target poison lines the moment this arms.
+            engagement["authorisation_text"] = (
+                "operator started one-click Kuzat at "
+                + time.strftime("%Y-%m-%d %H:%M:%S"))
         engagement["authorised"] = True
-        engagement["authorisation_text"] = dialog.authorisation_text()
         self.save_config()
         self.arm_requested.emit(engagement, modules)

@@ -11,6 +11,31 @@ import pytest
 
 
 @pytest.fixture(autouse=True)
+def _isolate_config(tmp_path_factory, monkeypatch):
+    """Never let a test touch the operator's real ~/.config/netlab/config.json.
+
+    Tests set throwaway values (e.g. a tmp capture_dir); a code path that then
+    calls CONFIG.save() would persist that garbage to the real file -- which is
+    exactly how a pytest tmp dir once ended up as the live capture directory.
+    Redirect saves to a tmp dir and snapshot/restore the in-memory singleton so
+    nothing leaks between tests or onto disk."""
+    from netlab import config as cfgmod
+    d = tmp_path_factory.mktemp("netlab-config-iso")
+    # Redirect only the SAVE target (config_path), not config_dir/xdg logic,
+    # so tests that assert on config_dir()/XDG still see the real thing.
+    monkeypatch.setattr(cfgmod, "config_path", lambda: d / "config.json")
+    try:
+        snapshot = dict(cfgmod.CONFIG._data)
+    except Exception:
+        snapshot = None
+    yield
+    if snapshot is not None:
+        with cfgmod.CONFIG._lock:
+            cfgmod.CONFIG._data.clear()
+            cfgmod.CONFIG._data.update(snapshot)
+
+
+@pytest.fixture(autouse=True)
 def _reset_retain_sensitive():
     try:
         from netlab.analyze import http as httpmod

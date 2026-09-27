@@ -1,3 +1,112 @@
+netlab (2.36.0) unstable; urgency=medium
+
+  * Tests can no longer pollute the operator's real config. A pytest tmp dir had
+    leaked into ~/.config/netlab/config.json as the live capture_dir (so real
+    captures were being written under /tmp/pytest-of-erwin), because a test set
+    a throwaway capture_dir on the shared CONFIG singleton and a save() then
+    persisted it. conftest now redirects config_path() to a tmp file and
+    snapshots/restores CONFIG in-memory for every test, so nothing a test sets
+    reaches disk or the next test. config_dir()/XDG logic is untouched.
+
+ -- Erwin <thestrak118@gmail.com>  Sun, 28 Sep 2026 07:00:00 +0500
+
+netlab (2.35.0) unstable; urgency=medium
+
+  * Wi-Fi monitor sniff: report REAL stations, not bad-FCS noise. A live 30s
+    capture listed 417 "stations" -- almost all phantoms from corrupted frames
+    (no FCS in the radiotap header to reject them), whose garbled source MAC
+    tshark read as a new device. inspect() now finds the access point's BSSID
+    (the dominant one), counts only source MACs on that BSSID, and keeps those
+    that recur (>= min_frames, default 5); one-off corruption is dropped. The
+    same 30s capture now resolves to the 5 real stations (the phones, the TV,
+    the router). New wifidecrypt.real_stations() is unit-tested; the CLI also
+    prints the AP BSSID.
+
+ -- Erwin <thestrak118@gmail.com>  Sun, 27 Sep 2026 09:15:00 +0500
+
+netlab (2.34.0) unstable; urgency=medium
+
+  * Passive Wi-Fi sniff of OTHER stations (WPA2 decrypt). As a managed client
+    you only ever see your own traffic; NetLab can now put the card in 802.11
+    monitor mode, capture every station's frames on the channel, restore the
+    radio to the network, and -- given the SSID and passphrase -- decrypt each
+    client whose 4-way handshake was captured with airdecap-ng, writing a
+    plaintext pcap NetLab opens like any other. New `netlab-wifisniff` command
+    (run with sudo: monitor mode needs root). Engine: capture/wifidecrypt.py
+    (airdecap wrapper + tshark inspection of frames/clients/handshakes),
+    capture/wifimon.py (monitor→capture→restore→decrypt, restore guaranteed),
+    intercept/netcfg.py monitor_start/monitor_stop, and helper wifi_monitor /
+    wifi_managed commands that restore managed mode on a dropped pipe. Verified
+    live on iwlwifi: 1500+ frames and multiple stations captured, radio
+    restored cleanly. Honest limits: needs the client's handshake (a reconnect)
+    to decrypt; WPA3/SAE cannot be decrypted passively; monitor mode is one
+    channel and takes the card off the network.
+
+ -- Erwin <thestrak118@gmail.com>  Sun, 27 Sep 2026 08:30:00 +0500
+
+netlab (2.33.0) unstable; urgency=medium
+
+  * Watching another device now just works, and lands on that device. Kuzat /
+    Avto-Kuzat first wake and confirm the target with an unprivileged liveness
+    probe (a few non-blocking TCP connects nudge a dozing Wi-Fi radio, then the
+    neighbour table is read as ground truth) before arming. A target that does
+    not answer gets a clear "wake it, then try again" nudge on the host list
+    instead of the raw "Helper refused — no target answered ARP" dialog. And on
+    a successful watch-arm NetLab opens the device's OWN live view (its sites,
+    DNS, HTTP, TLS, logins) rather than the Interception config page, so another
+    device reads exactly like this machine. New integrations/reach.py
+    (host_reachable / neighbour_present), wired into the watch flow; the arm
+    reply handler routes a watch to the monitor and softens the ARP-miss error.
+
+ -- Erwin <thestrak118@gmail.com>  Sat, 26 Sep 2026 22:30:00 +0500
+
+netlab (2.32.0) unstable; urgency=medium
+
+  * One-click Kuzat, and optional auto-watch on select. "Kuzat (saytlar +
+    parol)" now arms interception on the selected device immediately, without
+    the type-ARM confirmation dialog -- the button press is the intent (set
+    watch_confirm=true to restore the dialog). It is never silent: the console
+    and event log still record the gateway and per-target poison lines the
+    moment it arms. A new "⚡ Avto-Kuzat" toolbar toggle (off by default,
+    remembered in config auto_watch_on_select) watches whichever device you
+    select, live: selecting a new device first disarms the current target and,
+    once the helper confirms it is down, arms the new one -- so a second arm
+    never races the helper's session lock. Auto-watch fires only on a real
+    selection change (not on every refresh tick) and never for this machine or
+    an IPv6-only host. Switching targets is serialised through a pending-watch
+    queue drained on the 'disarmed' event.
+
+ -- Erwin <thestrak118@gmail.com>  Sat, 26 Sep 2026 21:00:00 +0500
+
+netlab (2.31.0) unstable; urgency=medium
+
+  * An unnamed on-link host now reads as a device, never a blank "Unknown
+    Device" with a question-mark icon. A randomised (locally-administered) MAC
+    -- the privacy address every modern phone and laptop uses by default -- is
+    a fact read from the address, so such a host shows a smartphone glyph and
+    the name "Private device"; any other unidentified MAC shows a neutral
+    computer glyph and "Device". A verified OS, device type or advertised
+    vendor still wins, unchanged. Icons remain presentation only: they add no
+    classification evidence, and the identity pane still shows the real MAC/IP/
+    ARP evidence. New device_icons.snapshot_icon() is the one icon source for
+    the host list, the device detail pane and the selected-device header.
+
+ -- Erwin <thestrak118@gmail.com>  Sat, 26 Sep 2026 19:30:00 +0500
+
+netlab (2.30.0) unstable; urgency=medium
+
+  * Discover devices now finds silent hosts without a password. A phone asleep
+    on Wi-Fi broadcasts nothing, so it never appeared in passive capture and,
+    because it was not yet in the neighbour table, the elevation-free name pass
+    skipped it too -- only the root Nmap ARP sweep could reveal it. Discovery
+    now runs an unprivileged ARP presence prime first: one non-blocking TCP
+    connect per on-link IPv4 forces the kernel to resolve each address's MAC
+    (no raw sockets, no elevation), then a fresh neighbour-table read promotes
+    every responding host to a device on presence alone. Idle phones, TVs and
+    printers show up immediately; Nmap still adds names, models and OS after.
+
+ -- Erwin <thestrak118@gmail.com>  Sat, 26 Sep 2026 18:00:00 +0500
+
 netlab (2.29.0) unstable; urgency=medium
 
   * A device and its own link-local IPv6 are one device now, not two. A router

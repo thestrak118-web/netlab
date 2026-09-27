@@ -85,5 +85,5 @@ COMMANDS = (
     "hello", "interfaces", "iface", "gateway", "arp_scan", "resolve",
     "arm", "disarm", "status", "add_target", "remove_target",
     "changer_rules", "dns_rules", "promisc_scan", "ca_info", "credentials",
-    "files", "shutdown",
+    "files", "wifi_monitor", "wifi_managed", "shutdown",
 )

@@ -1,14 +1,19 @@
 """Explicit, bounded local discovery. No packet interception or background scans.
 
-Nmap supplies ARP presence and name protocols; active evidence is labelled and
-never increments passive capture counters. Workers return immutable records.
+An unprivileged ARP presence prime resolves every on-link address into the
+kernel neighbour table first, so an idle device that broadcasts nothing (a phone
+asleep on Wi-Fi) still appears without a password; Nmap then adds ARP presence
+and name protocols. Active evidence is labelled and never increments passive
+capture counters. Workers return immutable records.
 """
 from dataclasses import dataclass
 import ipaddress
 import os
 from pathlib import Path
 import re
+import select
 import shutil
+import socket
 import subprocess
 import tempfile
 import threading
@@ -170,6 +175,68 @@ class DiscoveryRunner(QObject):
             raise RuntimeError(clean(stderr.decode(errors='replace')) or 'Nmap discovery failed')
         return stdout
 
+    def _arp_prime(self, targets, settle=1.2):
+        """Unprivileged ARP presence prime. A non-blocking TCP connect to each
+        on-link IPv4 forces the kernel to resolve that address's MAC -- the SYN
+        is queued behind ARP, so a closed port, a RST or a silent drop all leave
+        the neighbour entry cached; only an absent host never answers ARP. No
+        raw sockets, no elevation, no packets beyond one SYN per on-link
+        address. The neighbour table is then read as ground truth."""
+        hosts = []
+        for net in targets:
+            for ip in ipaddress.ip_network(net).hosts():
+                hosts.append(str(ip))
+                if len(hosts) >= 256:
+                    break
+        pending = []
+        for ip in hosts:
+            if self._cancel.is_set():
+                break
+            try:
+                s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+                s.setblocking(False)
+                s.connect_ex((ip, 9))   # discard port; any port resolves ARP
+                pending.append(s)
+            except OSError:
+                pass
+            if len(pending) >= 128:      # bound simultaneously open sockets
+                select.select([], pending, [], 0.2)
+                for s in pending:
+                    try: s.close()
+                    except OSError: pass
+                pending = []
+        if pending:
+            select.select([], pending, [], 0.2)
+            for s in pending:
+                try: s.close()
+                except OSError: pass
+        # Let the kernel finish resolving before the neighbour table is read.
+        deadline = time.monotonic() + settle
+        while time.monotonic() < deadline and not self._cancel.is_set():
+            time.sleep(0.1)
+
+    def _emit_neighbours(self, context, generation):
+        """Promote every on-link IPv4 neighbour to a device on presence alone.
+        Names, OS and model still come from the native and Nmap passes; this
+        just makes a silent, elevation-free host visible immediately."""
+        ts = time.time()
+        own = {a[0] for a in context.addresses}
+        seen = 0
+        for ip, mac in context.neighbors:
+            if ':' in ip or ip in own or not context.on_link(ip):
+                continue
+            evidence = [Evidence('IP', ip,
+                                 'Active discovery: on-link ARP presence on '
+                                 + context.interface, Confidence.OBSERVED, ts)]
+            if mac:
+                evidence.append(Evidence('MAC', mac,
+                                         'Active discovery: neighbour table',
+                                         Confidence.OBSERVED, ts))
+            self.batch.emit(generation, context,
+                            (DiscoveredHost(ip, mac, tuple(evidence), ts),))
+            seen += 1
+        return seen
+
     def _native_names(self, context, generation):
         """Unprivileged first pass: name the hosts already in the neighbour
         table with a plain socket -- reverse DNS, then NBNS -- so a name shows
@@ -223,7 +290,26 @@ class DiscoveryRunner(QObject):
     def _run(self, interface, generation, known_context):
         try:
             context = known_context or NetworkContext.discover(interface)
-            # Names first, natively and without a password prompt.
+            # Presence first: an unprivileged ARP prime resolves idle on-link
+            # devices into the neighbour table, then a fresh read surfaces them
+            # as devices -- no password, before any Nmap or name protocol.
+            try:
+                self.progress.emit('Probing on-link addresses to reveal silent '
+                                   'devices (no elevation needed)…')
+                self._arp_prime(discovery_targets(context))
+                primed = NetworkContext.discover(interface)
+                if primed.addresses:
+                    context = primed
+                found = self._emit_neighbours(context, generation)
+                if found:
+                    self.progress.emit(f'{found} on-link device(s) present in '
+                                       'the neighbour table.')
+            except ValueError:
+                pass          # no on-link IPv4 prefix -- fall through to names
+            if self._cancel.is_set():
+                self.finished.emit('Discovery cancelled.')
+                return
+            # Names next, natively and without a password prompt.
             self._native_names(context, generation)
             if self._cancel.is_set():
                 self.finished.emit('Discovery cancelled.')

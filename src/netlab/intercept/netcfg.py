@@ -94,6 +94,53 @@ def default_gateway(interface: str = "") -> str:
     return m.group(1) if m else ""
 
 
+# --------------------------------------------------------------- monitor mode
+
+def monitor_start(interface: str, channel="") -> dict:
+    """Put `interface` into 802.11 monitor mode, locked to `channel` if given,
+    so the radio hands up EVERY frame on the air -- including other stations',
+    which a managed client never sees. Takes the interface off the network.
+    Root only; the same `iw`/`ip` sequence verified live on iwlwifi."""
+    if not interface:
+        raise NetcfgError("an interface is required")
+    _run(["nmcli", "device", "set", interface, "managed", "no"])   # best effort
+    code, _o, err = _run(["ip", "link", "set", interface, "down"])
+    if code != 0:
+        raise NetcfgError(err or ("could not bring %s down" % interface))
+    code, _o, err = _run(["iw", "dev", interface, "set", "monitor", "control"])
+    if code != 0:                                    # stricter drivers
+        code, _o, err = _run(["iw", "dev", interface, "set", "type", "monitor"])
+        if code != 0:
+            _run(["ip", "link", "set", interface, "up"])
+            raise NetcfgError(
+                err or ("%s does not support monitor mode" % interface))
+    _run(["ip", "link", "set", interface, "up"])
+    if channel:
+        _run(["iw", "dev", interface, "set", "channel", str(channel)])
+    _code, out, _e = _run(["iw", "dev", interface, "info"])
+    if "type monitor" not in out:
+        raise NetcfgError("%s did not enter monitor mode" % interface)
+    return {"interface": interface, "mode": "monitor",
+            "channel": str(channel or "")}
+
+
+def monitor_stop(interface: str, reconnect: str = "") -> dict:
+    """Restore `interface` to managed mode and reconnect it. Idempotent and
+    best-effort: it is also what the helper runs on shutdown, so a crash never
+    leaves the radio stuck off the network."""
+    if not interface:
+        return {"interface": interface, "mode": "managed"}
+    _run(["ip", "link", "set", interface, "down"])
+    _run(["iw", "dev", interface, "set", "type", "managed"])
+    _run(["ip", "link", "set", interface, "up"])
+    _run(["nmcli", "device", "set", interface, "managed", "yes"])
+    if reconnect:
+        _run(["nmcli", "connection", "up", reconnect], timeout=25)
+    else:
+        _run(["nmcli", "device", "connect", interface], timeout=25)
+    return {"interface": interface, "mode": "managed"}
+
+
 def arp_table() -> dict[str, str]:
     """The kernel neighbour cache, as {ip: mac}."""
     out_map: dict[str, str] = {}

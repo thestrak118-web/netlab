@@ -51,6 +51,14 @@ def valid_mac(value):
     return value
 
 
+def mac_is_local(mac):
+    """True when a MAC's locally-administered bit is set -- a randomised
+    (privacy) address, as modern phones and laptops use by default. This is a
+    fact read from the address itself, not a guess about the device."""
+    m = valid_mac((mac or '').split(',')[0].strip())
+    return bool(m) and bool(int(m[:2], 16) & 0x02)
+
+
 @dataclass(frozen=True)
 class NetworkContext:
     interface: str = ''
@@ -195,6 +203,11 @@ class DeviceSnapshot(EndpointSnapshot):
                           self.device_type, self.attribute('Manufacturer')):
             if candidate and candidate != 'Unknown':
                 return candidate
+        # A host we could not name is still a real device, never a blank
+        # "Unknown": a randomised MAC is a personal privacy device, any other
+        # MAC just a device whose vendor/name did not advertise.
+        if self.mac and self.mac != 'Unknown':
+            return 'Private device' if mac_is_local(self.mac) else 'Device'
         return 'Unknown Device'
 
     @property

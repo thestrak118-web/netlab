@@ -6,7 +6,7 @@ from PySide6.QtWidgets import (QWidget, QVBoxLayout, QHBoxLayout, QLabel, QPushB
                                QTabWidget, QFileDialog, QMessageBox)
 from netlab.analyze.monitor import MonitorRegistry, MonitorState, snapshot_for_device
 from netlab.capture.export import export_device_pcap
-from netlab.gui.device_icons import device_icon
+from netlab.gui.device_icons import device_icon, snapshot_icon
 from netlab.gui.models import (NetLabTableModel, DnsModel, HttpModel,
                                CredentialModel, LEFT, RIGHT)
 from netlab.gui.widgets import make_table
@@ -342,7 +342,7 @@ class MonitorPage(QWidget):
         if d:
             self._last_device = d
             self.selected_ip = d.ip
-            self.icon.setPixmap(device_icon(d.device_type).pixmap(36,36))
+            self.icon.setPixmap(snapshot_icon(d).pixmap(36,36))
             status = '● Active' if d.status == 'Active' else '○ Inactive'
             # Plain identity line; the per-field evidence/confidence detail
             # moves to the tooltip so the page stays readable.
