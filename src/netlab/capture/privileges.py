@@ -8,7 +8,10 @@ supported but is not recommended and is reported as such.
 
 from __future__ import annotations
 
-import grp
+try:
+    import grp                              # POSIX only; absent on Windows
+except ImportError:
+    grp = None
 import os
 import shutil
 import subprocess
@@ -61,7 +64,9 @@ def _read_capabilities(path: str) -> str:
 
 def check() -> PrivilegeReport:
     rep = PrivilegeReport()
-    rep.running_as_root = (os.geteuid() == 0)
+    # Windows has no root uid; treat it as not-root (its capture path is Npcap,
+    # not this one, and the offline build never captures live anyway).
+    rep.running_as_root = hasattr(os, "geteuid") and os.geteuid() == 0
 
     exe = shutil.which("dumpcap")
     rep.dumpcap = exe
@@ -79,13 +84,15 @@ def check() -> PrivilegeReport:
 
     try:
         st = path.stat()
-        rep.group_owner = grp.getgrgid(st.st_gid).gr_name
-    except (OSError, KeyError):
+        rep.group_owner = grp.getgrgid(st.st_gid).gr_name if grp else None
+    except (OSError, KeyError, AttributeError):
         rep.group_owner = None
 
     try:
-        user_groups = {grp.getgrgid(g).gr_name for g in os.getgroups()}
-    except (OSError, KeyError):
+        getgroups = getattr(os, "getgroups", None)
+        user_groups = ({grp.getgrgid(g).gr_name for g in getgroups()}
+                       if grp and getgroups else set())
+    except (OSError, KeyError, AttributeError):
         user_groups = set()
     rep.user_in_group = bool(rep.group_owner and rep.group_owner in user_groups)
 

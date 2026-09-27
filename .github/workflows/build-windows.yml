@@ -1,0 +1,56 @@
+name: build-windows
+
+# Builds a Windows netlab.exe on a real Windows runner (PyInstaller can only
+# target the OS it runs on). Run it by hand from the Actions tab, or it fires on
+# a v* tag and attaches the exe to the release.
+on:
+  workflow_dispatch:
+  push:
+    tags: ["v*"]
+
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install NetLab and build tools
+        run: |
+          python -m pip install --upgrade pip
+          pip install PySide6 cryptography pyinstaller pillow
+
+      - name: Make a Windows icon from the PNG
+        run: |
+          python -c "from PIL import Image; Image.open('assets/netlab-256.png').save('assets/netlab.ico', sizes=[(16,16),(32,32),(48,48),(64,64),(128,128),(256,256)])"
+
+      - name: Build netlab.exe
+        run: >
+          pyinstaller --noconfirm --onefile --windowed
+          --name netlab
+          --icon assets/netlab.ico
+          --paths src
+          --collect-all PySide6
+          --collect-submodules netlab
+          --add-data "src/netlab/gui/icons;netlab/gui/icons"
+          windows/netlab-launcher.py
+
+      - name: Smoke-test the exe launches (--version)
+        run: |
+          .\dist\netlab.exe --version
+        continue-on-error: true
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: netlab-windows-exe
+          path: dist/netlab.exe
+          if-no-files-found: error
+
+      - name: Attach to release (on a tag)
+        if: startsWith(github.ref, 'refs/tags/')
+        uses: softprops/action-gh-release@v2
+        with:
+          files: dist/netlab.exe

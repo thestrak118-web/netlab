@@ -94,7 +94,7 @@ def real_user() -> tuple[int, int, Path]:
     operator's home and be owned by them. This resolves that identity from
     SUDO_UID/PKEXEC_UID; without them it is just the current user.
     """
-    if os.geteuid() == 0:
+    if _geteuid() == 0:
         for var in ("SUDO_UID", "PKEXEC_UID"):
             value = os.environ.get(var)
             if value and value.isdigit():
@@ -102,15 +102,25 @@ def real_user() -> tuple[int, int, Path]:
                     import pwd
                     info = pwd.getpwuid(int(value))
                     return info.pw_uid, info.pw_gid, Path(info.pw_dir)
-                except (KeyError, OSError):
+                except (KeyError, OSError, ImportError):
                     pass
-    return os.getuid(), os.getgid(), Path.home()
+    getuid = getattr(os, "getuid", None)
+    getgid = getattr(os, "getgid", None)
+    return (getuid() if getuid else 0), (getgid() if getgid else 0), Path.home()
+
+
+def _geteuid() -> int:
+    """os.geteuid(), or 0 on Windows (which has no uid model) so the GUI and
+    offline analysis still import and run there; live/privileged features stay
+    Linux-only and refuse gracefully at runtime."""
+    fn = getattr(os, "geteuid", None)
+    return fn() if fn else 0
 
 
 def _own(path: Path) -> None:
     """Give `path` back to the real user when NetLab created it as root, so a
     later unprivileged run can still read and write it."""
-    if os.geteuid() != 0:
+    if _geteuid() != 0 or not hasattr(os, "chown"):
         return
     uid, gid, _home = real_user()
     if uid == 0:
