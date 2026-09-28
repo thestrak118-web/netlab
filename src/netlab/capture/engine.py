@@ -25,6 +25,34 @@ from PySide6.QtCore import QObject, Signal
 from netlab.capture.interfaces import dumpcap_path
 from netlab.capture.pcapio import (CaptureFormatError, StreamingCaptureParser)
 
+
+def _drop_to_operator():
+    """When NetLab runs as root (the root launcher, so MITM needs no per-action
+    pkexec) dumpcap must NOT run as root: a root-run dumpcap drops its own
+    privileges and then cannot open the operator's capture file ("Permission
+    denied"). Return a preexec_fn that switches the child to the operator --
+    their uid/gid and full group list, so the wireshark group is kept and
+    dumpcap's file capabilities still apply. None when already unprivileged or
+    there is no operator to drop to (so a plain root shell is unaffected)."""
+    if getattr(os, "geteuid", lambda: 0)() != 0:
+        return None
+    try:
+        import pwd
+        from netlab.config import real_user
+        uid, gid, _home = real_user()
+        if uid == 0:
+            return None
+        groups = os.getgrouplist(pwd.getpwuid(uid).pw_name, gid)
+    except Exception:
+        return None
+
+    def _preexec():
+        os.setgroups(groups)
+        os.setgid(gid)
+        os.setuid(uid)
+
+    return _preexec
+
 READ_CHUNK = 1 << 18
 FILE_WAIT_TIMEOUT = 10.0
 
@@ -161,6 +189,11 @@ class CaptureEngine(QObject):
             return False
         try:
             session.output_path.parent.mkdir(parents=True, exist_ok=True)
+            if getattr(os, "geteuid", lambda: 0)() == 0:
+                # Created as root -> give it to the operator so the dropped
+                # dumpcap (and a later unprivileged run) can write there.
+                from netlab.config import _own
+                _own(session.output_path.parent)
         except OSError as exc:
             self.failed.emit("Cannot create the capture directory:\n%s" % exc)
             return False
@@ -178,7 +211,8 @@ class CaptureEngine(QObject):
         try:
             self._proc = subprocess.Popen(
                 argv, stdout=subprocess.DEVNULL, stderr=subprocess.PIPE,
-                text=True, bufsize=1, start_new_session=True)
+                text=True, bufsize=1, start_new_session=True,
+                preexec_fn=_drop_to_operator())
         except OSError as exc:
             self._proc = None
             self.failed.emit("Could not start dumpcap:\n%s" % exc)

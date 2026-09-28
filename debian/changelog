@@ -1,3 +1,17 @@
+netlab (2.37.0) unstable; urgency=medium
+
+  * Capture works when NetLab runs as root (the root launcher, so MITM needs no
+    per-action pkexec). A root-run dumpcap drops its own privileges and then
+    could not open the operator's capture file ("Permission denied opening
+    wlan0" -> the file could not be created). The capture engine now runs
+    dumpcap with a preexec_fn that switches the child to the operator (their
+    uid/gid and full group list, keeping the wireshark group so dumpcap's file
+    capabilities still apply), and chowns a root-created capture dir back to the
+    operator. Verified live: a root parent captured 37 packets to the operator's
+    directory, file owned by the operator. No effect when already unprivileged.
+
+ -- Erwin <thestrak118@gmail.com>  Mon, 28 Sep 2026 09:45:00 +0500
+
 netlab (2.36.0) unstable; urgency=medium
 
   * Tests can no longer pollute the operator's real config. A pytest tmp dir had
