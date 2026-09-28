@@ -126,18 +126,31 @@ def monitor_start(interface: str, channel="") -> dict:
 
 def monitor_stop(interface: str, reconnect: str = "") -> dict:
     """Restore `interface` to managed mode and reconnect it. Idempotent and
-    best-effort: it is also what the helper runs on shutdown, so a crash never
-    leaves the radio stuck off the network."""
+    best-effort: all recovery steps are attempted before errors are raised.
+    The helper also calls this on shutdown."""
     if not interface:
         return {"interface": interface, "mode": "managed"}
-    _run(["ip", "link", "set", interface, "down"])
-    _run(["iw", "dev", interface, "set", "type", "managed"])
-    _run(["ip", "link", "set", interface, "up"])
-    _run(["nmcli", "device", "set", interface, "managed", "yes"])
+    errors = []
+
+    def attempt(argv, timeout=8.0):
+        try:
+            code, _, err = _run(argv, timeout=timeout)
+            if code:
+                errors.append("%s: %s" % (" ".join(argv), err or "command failed"))
+        except NetcfgError as exc:
+            errors.append(str(exc))
+
+    # Attempt every recovery step even when an earlier command fails.
+    attempt(["ip", "link", "set", interface, "down"])
+    attempt(["iw", "dev", interface, "set", "type", "managed"])
+    attempt(["ip", "link", "set", interface, "up"])
+    attempt(["nmcli", "device", "set", interface, "managed", "yes"])
     if reconnect:
-        _run(["nmcli", "connection", "up", reconnect], timeout=25)
+        attempt(["nmcli", "connection", "up", reconnect], timeout=25)
     else:
-        _run(["nmcli", "device", "connect", interface], timeout=25)
+        attempt(["nmcli", "device", "connect", interface], timeout=25)
+    if errors:
+        raise NetcfgError("Wi-Fi restore incomplete: " + "; ".join(errors))
     return {"interface": interface, "mode": "managed"}
 
 
@@ -206,22 +219,31 @@ class KernelState:
         for key, value in wanted.items():
             current = _sysctl_read(key)
             if current is None:
-                continue
+                if key.startswith("net.ipv6."):
+                    continue  # IPv6 may be disabled in the kernel.
+                raise NetcfgError("cannot read required sysctl %s" % key)
             self._saved.setdefault(key, current)
-            if current != value and _sysctl_write(key, value):
+            if current != value:
+                if not _sysctl_write(key, value) or _sysctl_read(key) != value:
+                    raise NetcfgError("cannot apply sysctl %s=%s" % (key, value))
                 changed[key] = (current, value)
         self.applied = True
         return changed
 
     def restore(self) -> dict:
         restored = {}
+        errors = []
         for key, value in list(self._saved.items()):
             current = _sysctl_read(key)
-            if current is not None and current != value:
-                if _sysctl_write(key, value):
-                    restored[key] = (current, value)
-        self._saved.clear()
-        self.applied = False
+            if current != value:
+                if not _sysctl_write(key, value) or _sysctl_read(key) != value:
+                    errors.append(key)
+                    continue
+                restored[key] = (current, value)
+            del self._saved[key]
+        self.applied = bool(self._saved)
+        if errors:
+            raise NetcfgError("cannot restore sysctl: " + ", ".join(errors))
         return restored
 
     def snapshot(self) -> dict:
@@ -296,9 +318,11 @@ class RedirectRules:
                                   capture_output=True, timeout=10)
         except (OSError, subprocess.TimeoutExpired):
             return False
+        if proc.returncode != 0:
+            return False
         self.installed = False
         self.rules = []
-        return proc.returncode == 0
+        return True
 
     def list_ruleset(self) -> str:
         code, out, _ = _run(["nft", "list", "table", self.family, self.table])

@@ -1,8 +1,9 @@
 # NetLab — ish holati va davom ettirish (MEMORY)
 
 > Bu fayl keyingi safar **qoldirilgan joydan davom etish** uchun. Oxirgi
-> yangilangan: 2026-09-26. Joriy versiya: **2.29.0** (git `18e40c8`, 422 test
-> yashil).
+> yangilangan: 2026-09-28. Joriy manba versiyasi: **2.37.1**.
+> Lifecycle/recovery tuzatishlari ishchi daraxtda; yangi .deb hali qurilmagan.
+> Tekshiruv: 484/484 test o'tdi (34.92 s); 14 yangi regressiya testi.
 
 NetLab = Kali uchun Intercepter-NG uslubidagi tarmoq analizatori + MITM vositasi
 (PySide6 GUI). Manba: `/home/erwin/loyiha/netlab`. `.deb` fayllar bir pog'ona
@@ -17,11 +18,11 @@ kodni xotirada saqlaydi. Har doim:
 
 ```sh
 pkill -f /usr/bin/netlab                                   # eskisini o'chir
-sudo apt install /home/erwin/loyiha/netlab_2.29.0_amd64.deb
+sudo apt install /home/erwin/loyiha/netlab_2.37.1_amd64.deb
 sudo -E netlab                                            # qayta och (-E = X kirish)
 ```
 
-Sarlavhada versiya ko'rinadi (`NetLab 2.29.0`). Shundan yangi/eski ekanini bил.
+Sarlavhada versiya ko'rinadi (`NetLab 2.37.1`). Shundan yangi/eski ekanini bил.
 
 ---
 
@@ -29,7 +30,7 @@ Sarlavhada versiya ko'rinadi (`NetLab 2.29.0`). Shundan yangi/eski ekanini bил
 
 ```sh
 cd /home/erwin/loyiha/netlab
-QT_QPA_PLATFORM=offscreen python3 -m pytest tests/ -q     # 422 test
+QT_QPA_PLATFORM=offscreen python3 -m pytest tests/ -q
 dpkg-buildpackage -us -uc -b                              # .deb qurish -> ../
 sudo -E netlab                                            # root bilan ochish
 sudo -E netlab --check                                    # capture/root holati
@@ -85,6 +86,15 @@ Versiya oshirish: `src/netlab/__init__.py` + `pyproject.toml` + `debian/changelo
 | — | `docs/MITM-DARSLIK.md` — MITM darsligi (o'zbekcha) |
 
 ---
+
+## 2026-09-28: lifecycle va recovery tuzatishlari
+
+- Helper arm/disarm/shutdown ketma-ket bajariladi; shutdown’dan keyingi start rad etiladi.
+- Sysctl yozuvi tekshiriladi; tiklanmagan qiymatlar qayta urinish uchun saqlanadi.
+- Wi-Fi qisman startdan keyin ham tiklanadi; tiklash xatolari yashirilmaydi.
+- GUI recovery tugamasa yangi Kuzat’ni boshlamaydi, Disarm tugmasi faol qoladi.
+- Metadata/README/CLI yordam matni amaldagi xulqqa moslandi.
+- Real ARP datapath bu tuzatish paytida sinalmadi.
 
 ## ⏭️ KEYINGI QADAMLAR (davom etish shu yerdan)
 

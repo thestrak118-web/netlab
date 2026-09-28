@@ -105,6 +105,7 @@ class InterceptSession:
         self.carved: list[dict] = []
         self._lock = threading.RLock()
         self._teardown_done = False
+        self._cleanup_errors: list[str] = []
         atexit.register(self._emergency_restore)
 
     # -------------------------------------------------------------- events
@@ -352,27 +353,31 @@ class InterceptSession:
             try:
                 self.poisoner.stop(restore=True)
                 report["arp_restored"] = self.poisoner.restored
+                if not report["arp_restored"]:
+                    raise InterceptError("ARP restoration incomplete")
             except Exception as exc:
                 report["errors"].append("arp: %s" % exc)
-            self.poisoner = None
+            else:
+                self.poisoner = None
         if self.redirects is not None:
             try:
                 report["redirects_removed"] = self.redirects.destroy()
+                if not report["redirects_removed"]:
+                    raise InterceptError("could not remove redirect rules")
             except Exception as exc:
                 report["errors"].append("nft: %s" % exc)
-            self.redirects = None
-        for name, module in (("dhcp", self.dhcp), ("dns", self.dns),
-                             ("sslstrip", self.http_proxy),
-                             ("ssl-mitm", self.tls_proxy),
-                             ("ntlm-relay", self.relay)):
+            else:
+                self.redirects = None
+        for name in ("dhcp", "dns", "http_proxy", "tls_proxy", "relay"):
+            module = getattr(self, name)
             if module is None:
                 continue
             try:
                 module.stop()
             except Exception as exc:
                 report["errors"].append("%s: %s" % (name, exc))
-        self.dhcp = self.dns = self.http_proxy = self.tls_proxy = None
-        self.relay = None
+            else:
+                setattr(self, name, None)
         if self.kernel is not None:
             try:
                 restored = self.kernel.restore()
@@ -380,8 +385,11 @@ class InterceptSession:
                 report["sysctl"] = restored
             except Exception as exc:
                 report["errors"].append("sysctl: %s" % exc)
-            self.kernel = None
-        self._teardown_done = True
+            else:
+                self.kernel = None
+        self._teardown_done = not report["errors"]
+        self._cleanup_errors = list(report["errors"])
+        report["cleanup_pending"] = bool(self._cleanup_errors)
         self.started_modules = []
         return report
 
@@ -457,6 +465,8 @@ class InterceptSession:
     def status(self) -> dict:
         return {
             "armed": self.armed,
+            "cleanup_pending": bool(self._cleanup_errors),
+            "errors": list(self._cleanup_errors),
             "armed_at": self.armed_at,
             "uptime": (time.time() - self.armed_at) if self.armed else 0.0,
             "engagement": self.engagement.to_dict(),

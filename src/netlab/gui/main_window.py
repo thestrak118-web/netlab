@@ -1463,11 +1463,12 @@ class MainWindow(QMainWindow):
             self._armed = True
             self.mitm_page.set_armed(True, data)
         elif name == "disarmed":
-            self._armed = False
-            self.mitm_page.set_armed(False)
+            pending_cleanup = bool(data.get("errors") or data.get("cleanup_pending"))
+            self._armed = pending_cleanup  # Keep Disarm available for recovery.
+            self.mitm_page.set_armed(pending_cleanup, data)
             pending = self._pending_watch_ip
             self._pending_watch_ip = None
-            if pending:
+            if pending and not pending_cleanup:
                 self._start_watch(pending)      # move to the queued watch target
             else:
                 self._watch_target = None
@@ -1532,11 +1533,15 @@ class MainWindow(QMainWindow):
             else:
                 self._nav_to("mitm")
         elif command == "disarm":
-            self._armed = False
-            self.mitm_page.set_armed(False)
+            report = payload if isinstance(payload, dict) else {}
+            self._armed = bool(report.get("errors") or report.get("cleanup_pending"))
+            self.mitm_page.set_armed(self._armed, report)
             self.mitm_page.add_event("disarmed", payload if isinstance(payload, dict) else {})
         elif command == "status" and isinstance(payload, dict):
-            if payload.get("armed"):
+            if payload.get("cleanup_pending"):
+                self._armed = True
+                self.mitm_page.set_armed(True, payload)
+            elif payload.get("armed"):
                 self._armed = True
                 self.mitm_page.update_status(payload)
                 self.rules_page.update_hits(

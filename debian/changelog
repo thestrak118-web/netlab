@@ -1,3 +1,14 @@
+netlab (2.37.1) unstable; urgency=medium
+
+  * Serialize helper arm/disarm/shutdown and Wi-Fi mode changes; reject starts
+    after shutdown and retain incomplete recovery state for retry.
+  * Fail on required sysctl errors, verify writes, and preserve failed restore
+    values. Report Wi-Fi recovery failures and recover partial monitor starts.
+  * Add lifecycle/recovery regressions and align package metadata and launch
+    documentation with the current application.
+
+ -- Erwin <thestrak118@gmail.com>  Mon, 28 Sep 2026 13:00:00 +0500
+
 netlab (2.37.0) unstable; urgency=medium
 
   * Capture works when NetLab runs as root (the root launcher, so MITM needs no

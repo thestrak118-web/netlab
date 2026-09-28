@@ -504,7 +504,11 @@ class MitmPage(QWidget):
             widget.setReadOnly(armed)
         for check in self.module_boxes.values():
             check.setEnabled(not armed)
-        if armed:
+        if self._status.get("cleanup_pending") or self._status.get("errors"):
+            self.banner.set_text(
+                "Network recovery incomplete. Retry Disarm and restore. "
+                + "; ".join(self._status.get("errors", [])), "error")
+        elif armed:
             modules = ", ".join(self._status.get("modules", []))
             self.banner.set_text(
                 "ARMED on %s. %s. Forged frames are being transmitted to %d "
@@ -528,7 +532,9 @@ class MitmPage(QWidget):
         proxy = s.get("proxy", {})
         dns = s.get("dns", {})
 
-        if armed:
+        if s.get("cleanup_pending") or s.get("errors"):
+            self.cards["state"].set_value("Recovery needed", "retry disarm", theme.RED)
+        elif armed:
             uptime = int(s.get("uptime", 0))
             self.cards["state"].set_value(
                 "Armed", "%dm %02ds in the path" % (uptime // 60, uptime % 60),

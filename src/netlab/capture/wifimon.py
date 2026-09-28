@@ -4,9 +4,9 @@
 
 The privileged mode switch goes through the helper (`wifi_monitor` /
 `wifi_managed`); the capture is an ordinary dumpcap the unprivileged side already
-runs; decryption is airdecap-ng (see `wifidecrypt`). Restore is guaranteed here
-in a `finally`, and the helper independently restores on a dropped pipe, so the
-radio is never left off the network.
+runs; decryption is airdecap-ng (see `wifidecrypt`). Recovery is attempted even
+after a partial start, and failures are reported. The helper independently
+attempts recovery on a dropped pipe.
 
 The steps are injected so the flow is unit-testable without a radio: `enter`
 and `leave` call the helper, `capture` writes a pcap. On real hardware the GUI
@@ -66,21 +66,23 @@ def run_sniff(interface: str, channel, essid: str, passphrase: str = "",
     `raw` is the monitor capture, `decrypted` the plaintext pcap (None if no
     client handshake was caught), `summary` the `wifidecrypt.inspect` counts.
     `enter(interface, channel)` and `leave(interface)` drive the helper. Managed
-    mode is always restored, even on error.
+    mode recovery is attempted even on error, with failures reported.
     """
     work = Path(workdir) if workdir else Path(".")
     raw = work / "wifimon.pcap"
-    entered = False
     try:
         enter(interface, channel)
-        entered = True
         capture(interface, raw, seconds)
-    finally:
-        if entered:
-            try:
-                leave(interface)
-            except Exception:                        # never mask the real error
-                pass
+    except BaseException as exc:
+        # Enter can fail after changing the radio. Always attempt recovery.
+        try:
+            leave(interface)
+        except Exception as restore_exc:
+            raise WifiMonError("%s; Wi-Fi restore failed: %s" %
+                               (exc, restore_exc)) from exc
+        raise
+    else:
+        leave(interface)  # A restore error must not be reported as success.
     summary = wifidecrypt.inspect(raw)
     decrypted = None
     if summary["handshake_macs"]:

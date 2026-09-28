@@ -47,10 +47,9 @@ class Helper:
         self.session: InterceptSession | None = None
         self._write_lock = threading.Lock()
         # Commands run on their own threads (see _dispatch), so two of them can
-        # touch self.session at once.  This lock guards the short critical
-        # sections that create, swap out or clear it, so a second arm cannot
-        # slip past the "already armed" check and a disarm cannot race an arm.
-        self._session_lock = threading.Lock()
+        # Serialize whole lifecycle operations, including their side effects.
+        # Reentrant for shutdown's call to cmd_disarm and signal handling.
+        self._session_lock = threading.RLock()
         self._stop = threading.Event()
         self._workers: list[threading.Thread] = []
         # A monitor-mode Wi-Fi sniff takes the radio off the network; remember
@@ -114,22 +113,20 @@ class Helper:
         self._stop.set()
 
     def shutdown(self, reason: str = "") -> dict:
+        self._stop.set()  # Reject queued starts before waiting for an active one.
         report = {}
         with self._session_lock:
-            session, self.session = self.session, None
-        if session is not None:
-            try:
-                report = session.disarm()
-            except Exception as exc:             # pragma: no cover
-                report = {"errors": [str(exc)]}
-            self.emit("shutdown", {"reason": reason, "report": report})
-        if self._monitor_iface:                 # restore the radio to the LAN
-            iface, self._monitor_iface = self._monitor_iface, ""
-            try:
-                netcfg.monitor_stop(iface, self._monitor_reconnect)
-            except Exception as exc:            # pragma: no cover
-                report.setdefault("errors", []).append(str(exc))
-        self._stop.set()
+            if self.session is not None:
+                try:
+                    report = self.cmd_disarm()
+                except Exception as exc:         # pragma: no cover
+                    report = {"errors": [str(exc)]}
+                self.emit("shutdown", {"reason": reason, "report": report})
+            if self._monitor_iface:
+                try:
+                    self.cmd_wifi_managed()
+                except Exception as exc:
+                    report.setdefault("errors", []).append(str(exc))
         return report
 
     # ------------------------------------------------------------ dispatch
@@ -191,18 +188,33 @@ class Helper:
                          reconnect: str = "") -> dict:
         """Enter 802.11 monitor mode so an unprivileged dumpcap can capture
         every station's frames on `channel`. Remember it for restore-on-exit."""
-        result = netcfg.monitor_start(interface, channel)
-        self._monitor_iface = interface
-        self._monitor_reconnect = reconnect
-        return result
+        with self._session_lock:
+            if self._stop.is_set():
+                raise InterceptError("the helper is shutting down")
+            if self._monitor_iface:
+                raise InterceptError("restore the previous monitor interface first")
+            # Remember before the first mutation, including partial failures.
+            self._monitor_iface = interface
+            self._monitor_reconnect = reconnect
+            try:
+                return netcfg.monitor_start(interface, channel)
+            except Exception as exc:
+                try:
+                    self.cmd_wifi_managed()
+                except Exception as restore_exc:
+                    raise netcfg.NetcfgError(
+                        "%s; Wi-Fi restore failed: %s" % (exc, restore_exc)) from exc
+                raise
 
     def cmd_wifi_managed(self, interface: str = "", reconnect: str = "") -> dict:
         """Leave monitor mode and put the radio back on the network."""
-        iface = interface or self._monitor_iface
-        result = netcfg.monitor_stop(iface, reconnect or self._monitor_reconnect)
-        self._monitor_iface = ""
-        self._monitor_reconnect = ""
-        return result
+        with self._session_lock:
+            iface = interface or self._monitor_iface
+            result = netcfg.monitor_stop(iface, reconnect or self._monitor_reconnect)
+            if iface == self._monitor_iface:
+                self._monitor_iface = ""
+                self._monitor_reconnect = ""
+            return result
 
     def cmd_interfaces(self) -> list:
         from netlab.capture.interfaces import list_interfaces
@@ -251,31 +263,35 @@ class Helper:
             raise ScopeError(
                 "the engagement was sent without an authorisation; NetLab "
                 "will not transmit until the operator confirms the scope")
-        session = InterceptSession(eng, modules or {}, ca_dir=ca_dir,
-                                   owner_uid=_owner_uid(),
-                                   on_event=self.emit)
-        # Claim the slot under the lock *before* arming: a session that exists
-        # but has not finished arming still blocks a second arm, so two racing
-        # cmd_arm calls cannot both start poisoning.
         with self._session_lock:
+            if self._stop.is_set():
+                raise InterceptError("the helper is shutting down")
             if self.session is not None:
                 raise InterceptError(
                     "an engagement is already armed; disarm first")
+            session = InterceptSession(eng, modules or {}, ca_dir=ca_dir,
+                                       owner_uid=_owner_uid(), on_event=self.emit)
             self.session = session
-        try:
-            return session.arm()
-        except Exception:
-            with self._session_lock:
-                if self.session is session:
+            try:
+                return session.arm()
+            except Exception:
+                # Keep a failed cleanup reachable for another disarm attempt.
+                # Do not emit "disarmed" for an arm that never succeeded:
+                # the caller must receive the original failure reply first.
+                report = session._teardown()
+                session.armed = False
+                if not report.get("errors"):
                     self.session = None
-            raise
+                raise
 
     def cmd_disarm(self) -> dict:
         with self._session_lock:
-            session, self.session = self.session, None
-        if session is None:
-            return {"armed": False, "note": "nothing was armed"}
-        return session.disarm()
+            if self.session is None:
+                return {"armed": False, "note": "nothing was armed"}
+            report = self.session.disarm()
+            if not report.get("errors"):
+                self.session = None
+            return report
 
     def cmd_status(self) -> dict:
         session = self.session

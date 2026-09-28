@@ -36,9 +36,9 @@ def _find_icon() -> str | None:
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
         prog="netlab",
-        description="NetLab - passive network analysis workbench for Kali Linux.",
-        epilog="NetLab captures through dumpcap and never decrypts TLS. "
-               "Phase 1 implements no active interception.")
+        description="NetLab - network analysis and interception workbench for Kali Linux.",
+        epilog="NetLab captures through dumpcap. Active interception requires "
+               "an authorised engagement; passive capture does not decrypt TLS.")
     parser.add_argument("--version", action="version",
                         version="NetLab %s" % __version__)
     parser.add_argument("-i", "--interface", metavar="IFACE",

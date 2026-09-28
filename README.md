@@ -99,14 +99,16 @@ would never crack.
 ## Install
 
 ```sh
-sudo apt install ./netlab_2.29.0_amd64.deb
+sudo apt install ./netlab_2.37.1_amd64.deb
 ```
 
 Then launch **NetLab** from the Applications menu, or run `netlab`.
 
 ## Privileges
 
-NetLab runs as a normal desktop user, and stays that way.
+Running `netlab` from a terminal keeps the GUI under the current user's
+privileges. The Applications-menu launcher (`netlab-root`) requests root
+through `pkexec`; dismissing that prompt opens it unprivileged instead.
 
 **Capture** rights live in `dumpcap`:
 
@@ -117,18 +119,19 @@ netlab --check                             # confirm
 ```
 
 **Interception** needs `CAP_NET_RAW` and `CAP_NET_ADMIN`, which live in a
-separate process: `netlab-helper`. The GUI starts it through `pkexec` the
-first time you arm something, talks to it over a pipe, and never holds those
-privileges itself. Everything raw — ARP frames, sysctl, nftables, the DHCP
-socket — happens there.
+separate process: `netlab-helper`. An unprivileged GUI starts it through
+`pkexec` the first time you arm something and talks to it over a pipe.
+A root GUI starts the helper directly. ARP frames, sysctl, nftables and the
+DHCP socket for interception are managed by the helper.
 
 When the GUI exits, the pipe closes, and that is the helper's signal to
-restore the network and exit. A crashed GUI cannot leave a subnet poisoned.
+restore the network and exit. Recovery errors are reported and failed state
+is retained for retry. A forced helper kill or host failure cannot run cleanup.
 
 ### Running the whole thing as root
 
-The unprivileged-plus-`pkexec` model above is the default and the safer one.
-But NetLab also runs directly as root, which some operators prefer — capture
+The terminal command supports the unprivileged-plus-`pkexec` model above.
+NetLab also runs directly as root, as the menu launcher requests — capture
 and interception then need no `pkexec` prompt, and host discovery can ARP-sweep
 without one:
 
@@ -209,9 +212,9 @@ netlab-helper --check           # interception prerequisites (run as root)
   dropped by the proxies, the DNS spoofer and the DHCP server alike.
 * Hide the certificate warning that SSL MITM produces on a device that does
   not trust its CA.
-* Leave the network changed. ARP, `ip_forward`, `send_redirects` and the
-  nftables table are restored on disarm, on `SIGTERM`, on pipe close and from
-  an `atexit` hook.
+ARP, `ip_forward`, `send_redirects` and nftables cleanup is attempted on
+disarm, `SIGTERM`, pipe close and from an `atexit` hook. Failed cleanup is
+reported; force-killing the helper or losing power bypasses these hooks.
 
 ## Layout
 
@@ -232,6 +235,9 @@ src/netlab/
 ```sh
 QT_QPA_PLATFORM=offscreen python3 -m pytest tests/ -q
 ```
+
+On desktops whose Qt theme loads GTK even offscreen, also set
+`QT_QPA_PLATFORMTHEME=generic XDG_CURRENT_DESKTOP=` for the test command.
 
 The interception tests do not need root and do not touch a real network: the
 proxies, the DNS spoofer and the CA are exercised over loopback, the frame
