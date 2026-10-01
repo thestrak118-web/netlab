@@ -99,7 +99,7 @@ would never crack.
 ## Install
 
 ```sh
-sudo apt install ./netlab_2.37.1_amd64.deb
+sudo apt install ./netlab_2.37.3_amd64.deb
 ```
 
 Then launch **NetLab** from the Applications menu, or run `netlab`.

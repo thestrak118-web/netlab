@@ -68,6 +68,7 @@ class NetworkContext:
     hostname: str = ''
     ts: float = 0.0
     errors: tuple = ()
+    routers: tuple = ()                   # Router IPs flagged by the kernel neighbor table
 
     def on_link(self, ip):
         try:
@@ -80,7 +81,7 @@ class NetworkContext:
 
     @classmethod
     def from_json(cls, interface, addresses, routes, neighbors=(), hostname='', ts=0):
-        own, gateways, peers = [], [], []
+        own, gateways, peers, routers = [], [], [], []
         for item in addresses:
             if item.get('ifname') != interface:
                 continue
@@ -98,7 +99,12 @@ class NetworkContext:
             ip, mac = valid_ip(peer.get('dst')), valid_mac(peer.get('lladdr'))
             if peer.get('dev') == interface and ip and mac and not set(peer.get('state', [])).intersection({'FAILED','INCOMPLETE'}):
                 peers.append((ip, mac))
-        return cls(interface, tuple(own), tuple(gateways), tuple(peers), hostname, ts)
+                # iproute2 emits the flag as "router": null. Testing the
+                # value's truthiness would silently discard real routers.
+                if 'router' in peer and peer['router'] is not False:
+                    routers.append(ip)
+        return cls(interface, tuple(own), tuple(gateways), tuple(peers), hostname, ts,
+                   routers=tuple(dict.fromkeys(routers)))
 
     @classmethod
     def discover(cls, interface):
@@ -115,8 +121,7 @@ class NetworkContext:
         # Keep dev in JSON records: ip omits it when filtered with 'dev'.
         neighbors = read('neighbor', 'show')
         result = cls.from_json(interface, addresses, routes, neighbors, socket.gethostname(), time.time())
-        return cls(result.interface, result.addresses, result.gateways, result.neighbors,
-                   result.hostname, result.ts, tuple(errors))
+        return replace(result, errors=tuple(errors))
 
 
 class OuiDatabase:
@@ -253,14 +258,19 @@ def local_devices(endpoints, flows, context, now):
         # A link-local address (fe80::/10, 169.254/16) is always the device's
         # own, never a routed peer behind the gateway's MAC -- so it groups by
         # its MAC even when that MAC is the gateway's, which is how a router's
-        # IPv4 and its own fe80:: merge into one device instead of two.
+        # IPv4 and its own fe80:: merge into one device instead of two. A
+        # ROUTER address (flagged as such in the neighbour table, e.g. the
+        # gateway's own global IPv6 2a05:…) is the gateway itself for the same
+        # reason and must merge in too -- otherwise it shows as a separate
+        # un-watchable IPv6-only host. A plain on-link IP that merely shares the
+        # gateway MAC (a conflicting binding) is NOT trusted and stays separate.
         try:
             is_link_local = ipaddress.ip_address(ip).is_link_local
         except ValueError:
             is_link_local = False
         if ip in own:
             identity = 'interface:' + (context.interface or 'selected')
-        elif stable and (ip in gateways or is_link_local
+        elif stable and (ip in gateways or is_link_local or ip in context.routers
                          or stable not in gateway_macs | own_macs):
             identity = 'mac:' + context.interface + ':' + stable
         else:

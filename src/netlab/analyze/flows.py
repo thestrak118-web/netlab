@@ -546,11 +546,16 @@ class HostTable:
         mac = valid_mac(mac)
         if not mac:
             return
+        own_macs = {m for _, m, _ in self.context.addresses if m}
+        own_ips = {ip for ip, _, _ in self.context.addresses}
+        # Locally forwarded traffic and our own MITM ARP announcements use
+        # this interface's MAC for someone else's IP. They remain captured
+        # packets, but are not evidence of that peer's hardware identity.
+        if mac in own_macs and host.ip not in own_ips:
+            return
         if source == 'Ethernet frame + on-link routing prefix':
             gateways = {ip for _, ip in self.context.gateways}
             next_hop_macs = {m for ip, m in self.context.neighbors if ip in gateways}
-            own_macs = {m for _, m, _ in self.context.addresses}
-            own_ips = {ip for ip, _, _ in self.context.addresses}
             bindings = dict(self.context.neighbors)
             if host.ip in bindings and mac != bindings[host.ip] and mac in bindings.values():
                 return
@@ -593,7 +598,26 @@ class HostTable:
     def apply_context(self, context):
         # Refresh current system roles without treating a periodic route read
         # as new captured traffic, or keeping a vanished gateway confirmed.
+        own_macs = {mac for _, mac, _ in context.addresses if mac}
+        own_ips = {ip for ip, _, _ in context.addresses}
         for host in self._hosts.values():
+            # Capture may have started before interface discovery completed.
+            # Reconcile only proven local-MAC contamination; preserve real
+            # conflicts between two remote MACs instead of forcing a merge.
+            if host.ip not in own_ips and host.macs & own_macs:
+                host.macs.difference_update(own_macs)
+                host.evidence = {k: e for k, e in host.evidence.items()
+                                 if not (e.field == 'MAC' and e.value in own_macs)
+                                 and not e.source.startswith('OUI registry:')}
+                vendors = set()
+                for mac in host.macs:
+                    vendor = self.oui.lookup(mac)
+                    if vendor != 'Unknown':
+                        vendors.add(vendor)
+                        host.observe('Manufacturer', vendor,
+                                     'OUI registry: ' + self.oui.path,
+                                     Confidence.OBSERVED, context.ts)
+                host.manufacturer = next(iter(vendors)) if len(vendors) == 1 else 'Unknown'
             host.evidence = {k: e for k, e in host.evidence.items()
                              if not (e.source.startswith('System interface') or
                                      e.source in ('Routing table', 'Local operating system', 'Local system hostname'))}
@@ -651,7 +675,10 @@ class HostTable:
             if record.mac:
                 self._observe_mac(host, record.mac, 'Active discovery: Nmap on-link address binding', record.ts)
             for e in record.evidence:
-                host.observe(e.field, e.value, e.source, e.confidence, e.ts)
+                if e.field == 'MAC':
+                    self._observe_mac(host, e.value, e.source, e.ts)
+                else:
+                    host.observe(e.field, e.value, e.source, e.confidence, e.ts)
 
     @host_locked
     def note_dns(self, ip, name, ts):

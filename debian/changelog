@@ -1,3 +1,24 @@
+netlab (2.37.3) unstable; urgency=medium
+
+  * Keep locally forged ARP and forwarded Ethernet MACs out of peer hardware
+    identities, including link-local IPv6. Preserve the captured packets.
+  * Reconcile local-MAC contamination when interface context arrives late,
+    removing stale vendor evidence while preserving genuine remote conflicts.
+  * Cover dual-stack client identity during MITM, late context and discovery;
+    replay the reported capture to verify IPv4/IPv6 merge without Intel MACs.
+
+ -- Erwin <thestrak118@gmail.com>  Mon, 28 Sep 2026 15:00:00 +0500
+
+netlab (2.37.2) unstable; urgency=medium
+
+  * Retain kernel neighbor router flags, including iproute2's null-valued
+    flag, through network discovery. Merge a confirmed router's global IPv6
+    with its IPv4 gateway when both have the same unambiguous MAC.
+  * Keep unflagged peers and conflicting MAC bindings separate; cover IPv4
+    selection for dual-stack clients and router discovery in regressions.
+
+ -- Erwin <thestrak118@gmail.com>  Mon, 28 Sep 2026 14:00:00 +0500
+
 netlab (2.37.1) unstable; urgency=medium
 
   * Serialize helper arm/disarm/shutdown and Wi-Fi mode changes; reject starts

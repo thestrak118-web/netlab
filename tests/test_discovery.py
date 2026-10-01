@@ -146,12 +146,15 @@ def test_context_discovery_retains_neighbor_interface(monkeypatch):
         elif 'neighbor' in argv:
             assert 'dev' not in argv, 'ip omits dev from filtered neighbor JSON'
             data=[{'dev':'wlan0','dst':'10.0.0.1','lladdr':'00:22:33:44:55:66','state':['REACHABLE']},
+                  {'dev':'wlan0','dst':'2001:db8::1','lladdr':'00:22:33:44:55:66','state':['DELAY'],'router':None},
                   {'dev':'eth0','dst':'192.168.1.5','lladdr':'00:22:33:44:55:77','state':['REACHABLE']}]
         else:data=[]
         return SimpleNamespace(stdout=json.dumps(data))
     monkeypatch.setattr('netlab.analyze.devices.subprocess.run',run)
     c=NetworkContext.discover('wlan0')
-    assert c.neighbors==(('10.0.0.1','00:22:33:44:55:66'),)
+    assert c.neighbors==(('10.0.0.1','00:22:33:44:55:66'),
+                         ('2001:db8::1','00:22:33:44:55:66'))
+    assert c.routers == ('2001:db8::1',)
 
 
 def test_native_reverse_dns_name_becomes_the_device_name(engine, app):

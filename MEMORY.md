@@ -1,9 +1,9 @@
 # NetLab — ish holati va davom ettirish (MEMORY)
 
 > Bu fayl keyingi safar **qoldirilgan joydan davom etish** uchun. Oxirgi
-> yangilangan: 2026-09-28. Joriy manba versiyasi: **2.37.1**.
-> Lifecycle/recovery tuzatishlari ishchi daraxtda; yangi .deb hali qurilmagan.
-> Tekshiruv: 484/484 test o'tdi (34.92 s); 14 yangi regressiya testi.
+> yangilangan: 2026-09-28. Joriy manba va o‘rnatilgan versiya: **2.37.3**.
+> 2.37.3 .deb qurildi va o‘rnatildi; lokal MITM MAC’i endi klient identifikatsiyasiga qo‘shilmaydi.
+> Tekshiruv: 493 test o‘tdi, 2 live-capture testi paket qurilishida skip (32.52 s).
 
 NetLab = Kali uchun Intercepter-NG uslubidagi tarmoq analizatori + MITM vositasi
 (PySide6 GUI). Manba: `/home/erwin/loyiha/netlab`. `.deb` fayllar bir pog'ona
@@ -18,11 +18,11 @@ kodni xotirada saqlaydi. Har doim:
 
 ```sh
 pkill -f /usr/bin/netlab                                   # eskisini o'chir
-sudo apt install /home/erwin/loyiha/netlab_2.37.1_amd64.deb
+sudo apt install /home/erwin/loyiha/netlab_2.37.3_amd64.deb
 sudo -E netlab                                            # qayta och (-E = X kirish)
 ```
 
-Sarlavhada versiya ko'rinadi (`NetLab 2.37.1`). Shundan yangi/eski ekanini bил.
+Sarlavhada versiya ko'rinadi (`NetLab 2.37.3`). Shundan yangi/eski ekanini bил.
 
 ---
 
@@ -86,6 +86,22 @@ Versiya oshirish: `src/netlab/__init__.py` + `pyproject.toml` + `debian/changelo
 | — | `docs/MITM-DARSLIK.md` — MITM darsligi (o'zbekcha) |
 
 ---
+
+## 2026-09-28: lokal MITM MAC’i bilan identity buzilishi (2.37.3)
+
+- Skrinshotdagi 192.168.1.5 ikkita MAC olgan: haqiqiy Xiaomi va operatorning Intel MAC’i. Capture’dagi lokal ARP poison e’lonlari sabab bo‘lgan.
+- `_observe_mac` operator MAC’ini boshqa IP’ning hardware identity’si sifatida qabul qilmaydi (ARP/Ethernet/discovery); paket hisoblari saqlanadi.
+- `apply_context` kech kelgan interface ma’lumoti bilan eski lokal-MAC/OUI ifloslanishini tozalaydi. Haqiqiy ikki remote MAC konflikti saqlanadi.
+- O‘rnatilgan 2.37.3 bilan `netlab-wlan0-20260928-132949.pcapng` qayta o‘qildi: 1347 paket, .5 va fe80::b974:9f24:2a38:f320 bitta qurilma, gateway MAC’i to‘g‘ri.
+- Ishlab turgan GUI avtomatik yopilmadi: foydalanuvchi Disarm/Stop qilib qayta ochishi kerak.
+
+## 2026-09-28: router IPv4 + global IPv6 (2.37.2)
+
+- `NetworkContext.from_json` neighbor JSON’dagi `"router": null` kalitini belgi sifatida o‘qiydi; `discover()` uni saqlaydi.
+- Gateway bilan bir MAC’dagi tasdiqlangan router IPv6 manzili bitta Gateway’ga birlashadi. Oddiy shared-MAC klientlar va qarama-qarshi MAC dalillari birlashmaydi.
+- O‘rnatilgan `/usr/lib/python3/dist-packages/netlab` nusxasi bilan faqat o‘qish tekshiruvi: bitta Gateway (192.168.1.1 + global IPv6 + fe80::1), bitta own device, to‘rtta klient (.2, .3, .5, .7).
+- Eski GUI signal testi haqiqiy helper’ni ishga tushirayotgan edi; test privileged handler’dan ajratildi. To‘liq paket qurilishi yakunlandi.
+- Bu tekshiruv qurilmalar ro‘yxati/identity uchun; klient trafikining real MITM sinovi bajarilmadi.
 
 ## 2026-09-28: lifecycle va recovery tuzatishlari
 

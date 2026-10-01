@@ -377,6 +377,9 @@ def test_watch_confirm_setting_forces_the_dialog(window, monkeypatch):
 def test_arm_confirm_false_skips_the_dialog_and_arms(window, monkeypatch):
     import netlab.gui.pages.mitmpage as M
     mp = window.mitm_page
+    # This test checks the dialog/signal contract, not the privileged helper.
+    # A real arm request leaves a queued error dialog for the next Qt test.
+    mp.arm_requested.disconnect(window._arm_interception)
     monkeypatch.setattr(mp, "engagement_dict", lambda: {"targets": ["10.0.0.50"]})
     monkeypatch.setattr(mp, "modules_dict", lambda: {"arp_poison": True})
     monkeypatch.setattr(mp, "save_config", lambda: None)

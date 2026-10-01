@@ -213,3 +213,103 @@ def test_gateway_ipv4_and_its_link_local_merge(engine):
     assert a.identity == b.identity            # merged
     assert a.device_type == 'Gateway'
     assert set(a.addresses) >= {GW, GW_V6}
+
+
+def test_gateway_ipv4_and_its_global_ipv6_merge(engine):
+    """A router's IPv4 and kernel-confirmed global IPv6 (same MAC) are
+    one Gateway, not a separate un-watchable IPv6-only host.
+
+    Regression: only fe80:: link-local merged on the gateway MAC; a global IPv6
+    on that MAC fell through to an ip-keyed identity and showed as a phantom
+    device you could not MITM (MITM needs the merged IPv4).
+    """
+    from ipaddress import ip_address
+    from netlab.analyze.devices import NetworkContext
+    from netlab.capture.pcapio import iter_capture_file
+    from tests.helpers import ethernet, ipv6, udp, eth_ip_tcp
+    import tempfile, os
+    GW, GW_MAC = '10.0.0.1', '00:aa:bb:cc:dd:ee'
+    GW_V6 = '2a05:45c2:212b:9d01:e2d3:62ff:fec7:c50'      # router global IPv6
+    OWN, OWN_MAC = '10.0.0.50', '00:11:22:33:44:55'
+    OWN_V6 = '2a05:45c2:212b:9d01:a7e1:6a06:5487:85c0'    # same /64 -> on-link
+    c = NetworkContext.from_json('wlan0',
+        [dict(ifname='wlan0', address=OWN_MAC, addr_info=[
+            dict(local=OWN, prefixlen=24), dict(local=OWN_V6, prefixlen=64)])],
+        [dict(dev='wlan0', dst='default', gateway=GW)],
+        [dict(dev='wlan0', dst=GW, lladdr=GW_MAC, state=['REACHABLE']),
+         dict(dev='wlan0', dst=GW_V6, lladdr=GW_MAC, state=['DELAY'], router=None)])
+    engine.hosts.apply_context(c)
+    f1 = eth_ip_tcp(src=GW, dst=OWN, smac=GW_MAC, dmac=OWN_MAC)
+    f2 = ethernet(GW_MAC, OWN_MAC, 0x86dd,
+                  ipv6(ip_address(GW_V6).packed, ip_address(OWN_V6).packed,
+                       17, udp(546, 547)))
+    with tempfile.NamedTemporaryFile(suffix='.pcapng', delete=False) as fh:
+        fh.write(pcapng_file([(1.0, len(f1), f1), (1.0, len(f2), f2)]))
+        path = fh.name
+    try:
+        engine.ingest_batch(list(iter_capture_file(path)))
+    finally:
+        os.unlink(path)
+    a = engine.resolve_device(GW)
+    b = engine.resolve_device(GW_V6)
+    assert a is not None and b is not None
+    assert a.identity == b.identity                       # merged into one
+    assert a.device_type == 'Gateway'
+    assert set(a.addresses) >= {GW, GW_V6}
+    assert a.ip == GW and a.ipv4_addresses == (GW,)
+    assert sum(d.device_type == 'Gateway' for d in engine.device_view()[0]) == 1
+
+
+def test_global_ipv6_sharing_gateway_mac_without_router_flag_stays_separate(engine):
+    c = configured(engine)
+    gateway_mac = c.neighbors[0][1]
+    v6 = '2001:db8:1::99'
+    c = replace(c, addresses=c.addresses + (('2001:db8:1::50', OWN_MAC, 64),),
+                neighbors=c.neighbors + ((v6, gateway_mac),))
+    engine.hosts.apply_context(c)
+    assert engine.resolve_device(v6).identity != engine.resolve_device('10.0.0.1').identity
+
+
+def test_client_ipv4_and_global_ipv6_stay_separate_from_router(engine):
+    c = configured(engine)
+    gateway_mac = c.neighbors[0][1]
+    router_v6, peer_v6 = '2001:db8:1::1', '2001:db8:1::7'
+    c = replace(c, addresses=c.addresses + (('2001:db8:1::50', OWN_MAC, 64),),
+                neighbors=c.neighbors + ((router_v6, gateway_mac),
+                    ('10.0.0.7', PEER_MAC), (peer_v6, PEER_MAC)), routers=(router_v6,))
+    engine.hosts.apply_context(c)
+    router = engine.resolve_device(router_v6)
+    client = engine.resolve_device(peer_v6)
+    assert router.identity == engine.resolve_device('10.0.0.1').identity
+    assert client.identity == engine.resolve_device('10.0.0.7').identity
+    assert client.identity != router.identity
+    assert client.ipv4_addresses == ('10.0.0.7',)
+    assert client.monitor_eligible
+
+
+def test_router_flag_does_not_override_conflicting_mac_history(engine):
+    c = configured(engine)
+    v6 = '2001:db8:1::1'
+    engine.hosts.apply_context(replace(c, routers=(v6,),
+        neighbors=c.neighbors + ((v6, c.neighbors[0][1]),)))
+    engine.hosts.apply_context(replace(c, routers=(v6,),
+        neighbors=c.neighbors + ((v6, PEER_MAC),)))
+    assert engine.resolve_device(v6).identity != engine.resolve_device('10.0.0.1').identity
+    assert len(engine.resolve_device(v6).mac_addresses) == 2
+
+
+@pytest.mark.parametrize('flag', [None, True])
+def test_context_parses_router_flags_only_from_valid_selected_neighbors(flag):
+    def peer(ip, **changes):
+        return dict(dict(dev='wlan0', dst=ip, lladdr=PEER_MAC,
+                         state=['STALE'], router=flag), **changes)
+    c = NetworkContext.from_json('wlan0', [], [], [
+        peer('2001:db8::1'),
+        peer('2001:db8::2', dev='eth0'),
+        peer('2001:db8::3', state=['FAILED']),
+        peer('2001:db8::4', state=['INCOMPLETE']),
+        peer('2001:db8::5', lladdr='00:00:00:00:00:00'),
+        peer('2001:db8::6', router=False),
+        peer('invalid')])
+    assert c.routers == ('2001:db8::1',)
+    assert NetworkContext.from_json('wlan0', [], [], []).routers == ()
